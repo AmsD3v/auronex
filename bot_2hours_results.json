@@ -1,0 +1,1110 @@
+{
+  "start_time": "2025-10-25T19:36:37.313681",
+  "symbol": "ETHUSDT",
+  "strategy": "mean_reversion",
+  "analyses": [
+    {
+      "iteration": 1,
+      "timestamp": "2025-10-25T19:36:37.588720",
+      "price": 3954.78,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (52.2), volume baixo"
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-10-25T19:37:37.862591",
+      "price": 3955.44,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (53.0), volume baixo"
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-10-25T19:38:38.137207",
+      "price": 3956.09,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (53.7), volume baixo"
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-10-25T19:39:38.416183",
+      "price": 3956.1,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (53.7), volume baixo"
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-10-25T19:40:38.695622",
+      "price": 3955.63,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (53.2), volume baixo"
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-10-25T19:41:38.970439",
+      "price": 3957.51,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (49.4), volume baixo"
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-10-25T19:42:39.243545",
+      "price": 3956.41,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.9), volume baixo"
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-10-25T19:43:39.565774",
+      "price": 3956.61,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.2), volume baixo"
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-10-25T19:44:39.899014",
+      "price": 3956.61,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.2), volume baixo"
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-10-25T19:45:40.175584",
+      "price": 3959.7,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (52.0), volume baixo"
+    },
+    {
+      "iteration": 11,
+      "timestamp": "2025-10-25T19:46:40.450714",
+      "price": 3959.45,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (51.8), volume baixo"
+    },
+    {
+      "iteration": 12,
+      "timestamp": "2025-10-25T19:47:40.762878",
+      "price": 3960.61,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (53.1), volume baixo"
+    },
+    {
+      "iteration": 13,
+      "timestamp": "2025-10-25T19:48:41.039011",
+      "price": 3961.85,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (54.4), volume baixo"
+    },
+    {
+      "iteration": 14,
+      "timestamp": "2025-10-25T19:49:41.313277",
+      "price": 3964.31,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (56.8), volume baixo"
+    },
+    {
+      "iteration": 15,
+      "timestamp": "2025-10-25T19:50:41.593090",
+      "price": 3964.18,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (56.7), volume baixo"
+    },
+    {
+      "iteration": 16,
+      "timestamp": "2025-10-25T19:51:41.870832",
+      "price": 3963.86,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (56.4), volume baixo"
+    },
+    {
+      "iteration": 17,
+      "timestamp": "2025-10-25T19:52:42.151280",
+      "price": 3963.58,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (56.1), volume baixo"
+    },
+    {
+      "iteration": 18,
+      "timestamp": "2025-10-25T19:53:42.426386",
+      "price": 3963.5,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (56.1)"
+    },
+    {
+      "iteration": 19,
+      "timestamp": "2025-10-25T19:54:42.720401",
+      "price": 3963.5,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (56.1)"
+    },
+    {
+      "iteration": 20,
+      "timestamp": "2025-10-25T19:55:42.997484",
+      "price": 3961.13,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (53.6)"
+    },
+    {
+      "iteration": 21,
+      "timestamp": "2025-10-25T19:56:43.297939",
+      "price": 3961.56,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (50.4), volume baixo"
+    },
+    {
+      "iteration": 22,
+      "timestamp": "2025-10-25T19:57:43.575198",
+      "price": 3959.54,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (48.0), volume baixo"
+    },
+    {
+      "iteration": 23,
+      "timestamp": "2025-10-25T19:58:43.854816",
+      "price": 3959.28,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.7), volume baixo"
+    },
+    {
+      "iteration": 24,
+      "timestamp": "2025-10-25T19:59:44.132489",
+      "price": 3959.35,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.7), volume baixo"
+    },
+    {
+      "iteration": 25,
+      "timestamp": "2025-10-25T20:00:44.411485",
+      "price": 3962.8,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (51.9), volume baixo"
+    },
+    {
+      "iteration": 26,
+      "timestamp": "2025-10-25T20:01:44.691616",
+      "price": 3963.5,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (52.7), volume baixo"
+    },
+    {
+      "iteration": 27,
+      "timestamp": "2025-10-25T20:02:44.969872",
+      "price": 4331.86,
+      "signal": "sell",
+      "confidence": 90.0,
+      "reason": "Sobrecomprado: RSI 95.1, preço +9.04% da média"
+    },
+    {
+      "iteration": 28,
+      "timestamp": "2025-10-25T20:03:45.242919",
+      "price": 3960.06,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (48.6), volume baixo"
+    },
+    {
+      "iteration": 29,
+      "timestamp": "2025-10-25T20:04:45.520210",
+      "price": 3960.74,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (49.4), volume baixo"
+    },
+    {
+      "iteration": 30,
+      "timestamp": "2025-10-25T20:05:45.794955",
+      "price": 3960.97,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (49.7), volume baixo"
+    },
+    {
+      "iteration": 31,
+      "timestamp": "2025-10-25T20:06:46.096403",
+      "price": 3959.01,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.3), volume baixo"
+    },
+    {
+      "iteration": 32,
+      "timestamp": "2025-10-25T20:07:46.370828",
+      "price": 3959.0,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.3), volume baixo"
+    },
+    {
+      "iteration": 33,
+      "timestamp": "2025-10-25T20:08:46.648521",
+      "price": 3958.91,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.2), volume baixo"
+    },
+    {
+      "iteration": 34,
+      "timestamp": "2025-10-25T20:09:46.927804",
+      "price": 3959.27,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.6), volume baixo"
+    },
+    {
+      "iteration": 35,
+      "timestamp": "2025-10-25T20:10:47.254637",
+      "price": 3959.45,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (47.9), volume baixo"
+    },
+    {
+      "iteration": 36,
+      "timestamp": "2025-10-25T20:11:47.534324",
+      "price": 3960.82,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (54.5), volume baixo"
+    },
+    {
+      "iteration": 37,
+      "timestamp": "2025-10-25T20:12:47.814543",
+      "price": 3958.9,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (51.9), volume baixo"
+    },
+    {
+      "iteration": 38,
+      "timestamp": "2025-10-25T20:13:48.086971",
+      "price": 3957.81,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (50.5), volume baixo"
+    },
+    {
+      "iteration": 39,
+      "timestamp": "2025-10-25T20:14:48.365530",
+      "price": 3955.57,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.7), volume baixo"
+    },
+    {
+      "iteration": 40,
+      "timestamp": "2025-10-25T20:15:49.157542",
+      "price": 3956.0,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.2), volume baixo"
+    },
+    {
+      "iteration": 41,
+      "timestamp": "2025-10-25T20:16:49.950057",
+      "price": 3955.2,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.3), volume baixo"
+    },
+    {
+      "iteration": 42,
+      "timestamp": "2025-10-25T20:17:50.229407",
+      "price": 3955.79,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.0), volume baixo"
+    },
+    {
+      "iteration": 43,
+      "timestamp": "2025-10-25T20:18:51.028187",
+      "price": 3955.38,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.5), volume baixo"
+    },
+    {
+      "iteration": 44,
+      "timestamp": "2025-10-25T20:19:51.306484",
+      "price": 3955.37,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.5), volume baixo"
+    },
+    {
+      "iteration": 45,
+      "timestamp": "2025-10-25T20:20:51.585353",
+      "price": 3955.38,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.5), volume baixo"
+    },
+    {
+      "iteration": 46,
+      "timestamp": "2025-10-25T20:21:51.863070",
+      "price": 3954.0,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (46.0), volume baixo"
+    },
+    {
+      "iteration": 47,
+      "timestamp": "2025-10-25T20:22:52.143399",
+      "price": 3955.41,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.6), volume baixo"
+    },
+    {
+      "iteration": 48,
+      "timestamp": "2025-10-25T20:23:52.414014",
+      "price": 3955.4,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.6), volume baixo"
+    },
+    {
+      "iteration": 49,
+      "timestamp": "2025-10-25T20:24:52.690648",
+      "price": 3956.0,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.2), volume baixo"
+    },
+    {
+      "iteration": 50,
+      "timestamp": "2025-10-25T20:25:52.964935",
+      "price": 3957.42,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (50.0), volume baixo"
+    },
+    {
+      "iteration": 51,
+      "timestamp": "2025-10-25T20:26:53.240665",
+      "price": 3956.67,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (49.6), volume baixo"
+    },
+    {
+      "iteration": 52,
+      "timestamp": "2025-10-25T20:27:53.518143",
+      "price": 3953.86,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (46.3), volume baixo"
+    },
+    {
+      "iteration": 53,
+      "timestamp": "2025-10-25T20:28:53.793688",
+      "price": 3953.86,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (46.3), volume baixo"
+    },
+    {
+      "iteration": 54,
+      "timestamp": "2025-10-25T20:29:54.066335",
+      "price": 3955.06,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.6), volume baixo"
+    },
+    {
+      "iteration": 55,
+      "timestamp": "2025-10-25T20:30:54.351763",
+      "price": 3956.24,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (49.0), volume baixo"
+    },
+    {
+      "iteration": 56,
+      "timestamp": "2025-10-25T20:31:54.628209",
+      "price": 3954.94,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.5), volume baixo"
+    },
+    {
+      "iteration": 57,
+      "timestamp": "2025-10-25T20:32:54.902911",
+      "price": 3955.41,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.0), volume baixo"
+    },
+    {
+      "iteration": 58,
+      "timestamp": "2025-10-25T20:33:55.177211",
+      "price": 3955.41,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.0), volume baixo"
+    },
+    {
+      "iteration": 59,
+      "timestamp": "2025-10-25T20:34:55.451280",
+      "price": 3955.89,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.6), volume baixo"
+    },
+    {
+      "iteration": 60,
+      "timestamp": "2025-10-25T20:35:55.731380",
+      "price": 3955.76,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.5)"
+    },
+    {
+      "iteration": 61,
+      "timestamp": "2025-10-25T20:36:56.011492",
+      "price": 3954.69,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.2)"
+    },
+    {
+      "iteration": 62,
+      "timestamp": "2025-10-25T20:37:56.286433",
+      "price": 3955.05,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.6)"
+    },
+    {
+      "iteration": 63,
+      "timestamp": "2025-10-25T20:38:56.561244",
+      "price": 3954.87,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.4)"
+    },
+    {
+      "iteration": 64,
+      "timestamp": "2025-10-25T20:39:56.834790",
+      "price": 3954.86,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.4)"
+    },
+    {
+      "iteration": 65,
+      "timestamp": "2025-10-25T20:40:57.113263",
+      "price": 3954.07,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (46.5)"
+    },
+    {
+      "iteration": 66,
+      "timestamp": "2025-10-25T20:41:57.388750",
+      "price": 3953.37,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (50.5), volume baixo"
+    },
+    {
+      "iteration": 67,
+      "timestamp": "2025-10-25T20:42:57.667114",
+      "price": 3952.11,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.9), volume baixo"
+    },
+    {
+      "iteration": 68,
+      "timestamp": "2025-10-25T20:43:57.939530",
+      "price": 3952.96,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (50.0), volume baixo"
+    },
+    {
+      "iteration": 69,
+      "timestamp": "2025-10-25T20:44:58.252285",
+      "price": 3954.14,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (51.5), volume baixo"
+    },
+    {
+      "iteration": 70,
+      "timestamp": "2025-10-25T20:45:58.530800",
+      "price": 3954.59,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (52.0), volume baixo"
+    },
+    {
+      "iteration": 71,
+      "timestamp": "2025-10-25T20:46:58.814585",
+      "price": 3952.71,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (49.7), volume baixo"
+    },
+    {
+      "iteration": 72,
+      "timestamp": "2025-10-25T20:47:59.114550",
+      "price": 3951.21,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.9), volume baixo"
+    },
+    {
+      "iteration": 73,
+      "timestamp": "2025-10-25T20:48:59.393171",
+      "price": 3950.48,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.0), volume baixo"
+    },
+    {
+      "iteration": 74,
+      "timestamp": "2025-10-25T20:49:59.669537",
+      "price": 3952.02,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.8), volume baixo"
+    },
+    {
+      "iteration": 75,
+      "timestamp": "2025-10-25T20:50:59.946544",
+      "price": 3952.19,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (49.0), volume baixo"
+    },
+    {
+      "iteration": 76,
+      "timestamp": "2025-10-25T20:52:00.227165",
+      "price": 3952.19,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (49.0), volume baixo"
+    },
+    {
+      "iteration": 77,
+      "timestamp": "2025-10-25T20:53:00.548828",
+      "price": 3954.9,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (52.4)"
+    },
+    {
+      "iteration": 78,
+      "timestamp": "2025-10-25T20:54:00.821095",
+      "price": 3954.49,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (51.9)"
+    },
+    {
+      "iteration": 79,
+      "timestamp": "2025-10-25T20:55:01.099816",
+      "price": 3953.32,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (50.4)"
+    },
+    {
+      "iteration": 80,
+      "timestamp": "2025-10-25T20:56:01.380298",
+      "price": 3953.82,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (51.1)"
+    },
+    {
+      "iteration": 81,
+      "timestamp": "2025-10-25T20:57:01.662050",
+      "price": 3953.12,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (50.1), volume baixo"
+    },
+    {
+      "iteration": 82,
+      "timestamp": "2025-10-25T20:58:02.450447",
+      "price": 3952.01,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (48.8), volume baixo"
+    },
+    {
+      "iteration": 83,
+      "timestamp": "2025-10-25T20:59:02.767209",
+      "price": 3950.93,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.5), volume baixo"
+    },
+    {
+      "iteration": 84,
+      "timestamp": "2025-10-25T21:00:03.045186",
+      "price": 3951.09,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.7), volume baixo"
+    },
+    {
+      "iteration": 85,
+      "timestamp": "2025-10-25T21:01:03.319548",
+      "price": 3950.69,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (47.3), volume baixo"
+    },
+    {
+      "iteration": 86,
+      "timestamp": "2025-10-25T21:02:03.598891",
+      "price": 3949.91,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (46.4), volume baixo"
+    },
+    {
+      "iteration": 87,
+      "timestamp": "2025-10-25T21:03:03.877835",
+      "price": 3947.66,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (44.1), volume baixo"
+    },
+    {
+      "iteration": 88,
+      "timestamp": "2025-10-25T21:04:04.157589",
+      "price": 3947.28,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (43.7)"
+    },
+    {
+      "iteration": 89,
+      "timestamp": "2025-10-25T21:05:04.438096",
+      "price": 3948.31,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (44.7)"
+    },
+    {
+      "iteration": 90,
+      "timestamp": "2025-10-25T21:06:04.713247",
+      "price": 3949.23,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (45.7)"
+    },
+    {
+      "iteration": 91,
+      "timestamp": "2025-10-25T21:07:04.992593",
+      "price": 3948.97,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (45.4)"
+    },
+    {
+      "iteration": 92,
+      "timestamp": "2025-10-25T21:08:05.279393",
+      "price": 3949.81,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (46.3)"
+    },
+    {
+      "iteration": 93,
+      "timestamp": "2025-10-25T21:09:05.555684",
+      "price": 3949.34,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (45.8)"
+    },
+    {
+      "iteration": 94,
+      "timestamp": "2025-10-25T21:10:05.840065",
+      "price": 3949.55,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (46.0)"
+    },
+    {
+      "iteration": 95,
+      "timestamp": "2025-10-25T21:11:06.124810",
+      "price": 3948.83,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (45.3)"
+    },
+    {
+      "iteration": 96,
+      "timestamp": "2025-10-25T21:12:06.405727",
+      "price": 3951.32,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (56.8), volume baixo"
+    },
+    {
+      "iteration": 97,
+      "timestamp": "2025-10-25T21:13:06.685411",
+      "price": 3948.52,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (53.4), volume baixo"
+    },
+    {
+      "iteration": 98,
+      "timestamp": "2025-10-25T21:14:06.964244",
+      "price": 3949.39,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (54.5), volume baixo"
+    },
+    {
+      "iteration": 99,
+      "timestamp": "2025-10-25T21:15:07.239950",
+      "price": 3949.56,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (54.7), volume baixo"
+    },
+    {
+      "iteration": 100,
+      "timestamp": "2025-10-25T21:16:07.512481",
+      "price": 3948.19,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (52.9), volume baixo"
+    },
+    {
+      "iteration": 101,
+      "timestamp": "2025-10-25T21:17:07.790420",
+      "price": 3950.48,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (55.8), volume baixo"
+    },
+    {
+      "iteration": 102,
+      "timestamp": "2025-10-25T21:18:08.074790",
+      "price": 3951.88,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (57.4)"
+    },
+    {
+      "iteration": 103,
+      "timestamp": "2025-10-25T21:19:08.357244",
+      "price": 3951.88,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (57.4)"
+    },
+    {
+      "iteration": 104,
+      "timestamp": "2025-10-25T21:20:08.629623",
+      "price": 3952.17,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (57.7)"
+    },
+    {
+      "iteration": 105,
+      "timestamp": "2025-10-25T21:21:08.904607",
+      "price": 3950.6,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (56.0)"
+    },
+    {
+      "iteration": 106,
+      "timestamp": "2025-10-25T21:22:09.186337",
+      "price": 3950.01,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (55.3)"
+    },
+    {
+      "iteration": 107,
+      "timestamp": "2025-10-25T21:23:09.462902",
+      "price": 3950.0,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (55.3)"
+    },
+    {
+      "iteration": 108,
+      "timestamp": "2025-10-25T21:24:09.785360",
+      "price": 3952.04,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (57.5)"
+    },
+    {
+      "iteration": 109,
+      "timestamp": "2025-10-25T21:25:10.069420",
+      "price": 3953.32,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (58.8)"
+    },
+    {
+      "iteration": 110,
+      "timestamp": "2025-10-25T21:26:10.350699",
+      "price": 3955.09,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "preço próximo à média, RSI neutro (61.3), volume baixo"
+    },
+    {
+      "iteration": 111,
+      "timestamp": "2025-10-25T21:27:10.635426",
+      "price": 3957.18,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (63.8), volume baixo"
+    },
+    {
+      "iteration": 112,
+      "timestamp": "2025-10-25T21:28:10.914606",
+      "price": 3957.7,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (64.3), volume baixo"
+    },
+    {
+      "iteration": 113,
+      "timestamp": "2025-10-25T21:29:11.185669",
+      "price": 3957.59,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (64.2), volume baixo"
+    },
+    {
+      "iteration": 114,
+      "timestamp": "2025-10-25T21:30:11.465601",
+      "price": 3959.09,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (65.3), volume baixo"
+    },
+    {
+      "iteration": 115,
+      "timestamp": "2025-10-25T21:31:11.793966",
+      "price": 3958.67,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (65.0), volume baixo"
+    },
+    {
+      "iteration": 116,
+      "timestamp": "2025-10-25T21:32:12.069643",
+      "price": 3958.68,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (65.0), volume baixo"
+    },
+    {
+      "iteration": 117,
+      "timestamp": "2025-10-25T21:33:12.345277",
+      "price": 3958.26,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (64.7), volume baixo"
+    },
+    {
+      "iteration": 118,
+      "timestamp": "2025-10-25T21:34:12.669307",
+      "price": 3957.75,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (64.3), volume baixo"
+    },
+    {
+      "iteration": 119,
+      "timestamp": "2025-10-25T21:35:12.946548",
+      "price": 3959.05,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (65.3), volume baixo"
+    },
+    {
+      "iteration": 120,
+      "timestamp": "2025-10-25T21:36:13.229841",
+      "price": 3960.44,
+      "signal": "hold",
+      "confidence": 0.0,
+      "reason": "RSI neutro (66.3), volume baixo"
+    }
+  ],
+  "signals": [
+    {
+      "iteration": 27,
+      "timestamp": "2025-10-25T20:02:44.969872",
+      "price": 4331.86,
+      "signal": "sell",
+      "confidence": 90.0,
+      "reason": "Sobrecomprado: RSI 95.1, preço +9.04% da média"
+    }
+  ],
+  "prices": [
+    3954.78,
+    3955.44,
+    3956.09,
+    3956.1,
+    3955.63,
+    3957.51,
+    3956.41,
+    3956.61,
+    3956.61,
+    3959.7,
+    3959.45,
+    3960.61,
+    3961.85,
+    3964.31,
+    3964.18,
+    3963.86,
+    3963.58,
+    3963.5,
+    3963.5,
+    3961.13,
+    3961.56,
+    3959.54,
+    3959.28,
+    3959.35,
+    3962.8,
+    3963.5,
+    4331.86,
+    3960.06,
+    3960.74,
+    3960.97,
+    3959.01,
+    3959.0,
+    3958.91,
+    3959.27,
+    3959.45,
+    3960.82,
+    3958.9,
+    3957.81,
+    3955.57,
+    3956.0,
+    3955.2,
+    3955.79,
+    3955.38,
+    3955.37,
+    3955.38,
+    3954.0,
+    3955.41,
+    3955.4,
+    3956.0,
+    3957.42,
+    3956.67,
+    3953.86,
+    3953.86,
+    3955.06,
+    3956.24,
+    3954.94,
+    3955.41,
+    3955.41,
+    3955.89,
+    3955.76,
+    3954.69,
+    3955.05,
+    3954.87,
+    3954.86,
+    3954.07,
+    3953.37,
+    3952.11,
+    3952.96,
+    3954.14,
+    3954.59,
+    3952.71,
+    3951.21,
+    3950.48,
+    3952.02,
+    3952.19,
+    3952.19,
+    3954.9,
+    3954.49,
+    3953.32,
+    3953.82,
+    3953.12,
+    3952.01,
+    3950.93,
+    3951.09,
+    3950.69,
+    3949.91,
+    3947.66,
+    3947.28,
+    3948.31,
+    3949.23,
+    3948.97,
+    3949.81,
+    3949.34,
+    3949.55,
+    3948.83,
+    3951.32,
+    3948.52,
+    3949.39,
+    3949.56,
+    3948.19,
+    3950.48,
+    3951.88,
+    3951.88,
+    3952.17,
+    3950.6,
+    3950.01,
+    3950.0,
+    3952.04,
+    3953.32,
+    3955.09,
+    3957.18,
+    3957.7,
+    3957.59,
+    3959.09,
+    3958.67,
+    3958.68,
+    3958.26,
+    3957.75,
+    3959.05,
+    3960.44
+  ],
+  "end_time": "2025-10-25T21:37:13.232773",
+  "duration_minutes": 120,
+  "stats": {
+    "total_analyses": 120,
+    "strong_signals": 1,
+    "initial_price": 3954.78,
+    "final_price": 3960.44,
+    "price_variation": 0.1431179484067345,
+    "min_price": 3947.28,
+    "max_price": 4331.86
+  }
+}

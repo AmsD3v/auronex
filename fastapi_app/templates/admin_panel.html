@@ -1,0 +1,937 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Auronex{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Admin -->
+            <div class="col-md-2 bg-dark text-white vh-100 position-fixed">
+                <div class="p-3">
+                    <h5 class="mb-4"><i class="fas fa-shield-alt"></i> Admin Panel</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-white active" href="#dashboard" onclick="showSection('dashboard')">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-white-50" href="#users" onclick="showSection('users')">
+                                <i class="fas fa-users"></i> Usuários
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-white-50" href="#subscriptions" onclick="showSection('subscriptions')">
+                                <i class="fas fa-credit-card"></i> Assinaturas
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-white-50" href="#bots" onclick="showSection('bots')">
+                                <i class="fas fa-robot"></i> Bots
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-white-50" href="#payments" onclick="showSection('payments')">
+                                <i class="fas fa-dollar-sign"></i> Pagamentos
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-white-50" href="#settings" onclick="showSection('settings')">
+                                <i class="fas fa-cog"></i> Configurações
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 offset-md-2">
+                <div class="p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Painel Administrativo - Auronex</h2>
+                        <div>
+                            <span class="badge bg-success">Sistema Online</span>
+                            <span class="badge bg-info ms-2" id="users-online">0 Usuários</span>
+                        </div>
+                    </div>
+                    
+                    <!-- DASHBOARD (padrão) -->
+                    <div id="section-dashboard" class="admin-section">
+                        <!-- Stats Cards -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body">
+                                        <h6>Total Usuários</h6>
+                                        <h2 id="total-users">0</h2>
+                                        <small>Cadastrados</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body">
+                                        <h6>Assinaturas Ativas</h6>
+                                        <h2 id="active-subs">0</h2>
+                                        <small>PRO + Premium</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body">
+                                        <h6>Bots Ativos</h6>
+                                        <h2 id="active-bots">0</h2>
+                                        <small>Operando</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body">
+                                        <h6>Receita Mensal</h6>
+                                        <h2 id="monthly-revenue">R$ 0</h2>
+                                        <small>Estimado</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Atividade Recente -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Atividade Recente</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="recent-activity" class="list-group">
+                                    <div class="list-group-item text-center text-muted">
+                                        Carregando...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- USUÁRIOS -->
+                    <div id="section-users" class="admin-section" style="display:none;">
+                        <div class="card">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Gerenciar Usuários</h5>
+                                <input type="text" class="form-control w-50" id="search-users" placeholder="Buscar por nome ou email..." onkeyup="searchUsers()">
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nome</th>
+                                                <th>Email</th>
+                                                <th>Plano</th>
+                                                <th>Cadastro</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="users-table">
+                                            <tr><td colspan="6" class="text-center">Carregando...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ASSINATURAS -->
+                    <div id="section-subscriptions" class="admin-section" style="display:none;">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Gerenciar Assinaturas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Usuário</th>
+                                                <th>Plano</th>
+                                                <th>Status</th>
+                                                <th>Valor</th>
+                                                <th>Método</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="subscriptions-table">
+                                            <tr><td colspan="6" class="text-center">Carregando...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- BOTS -->
+                    <div id="section-bots" class="admin-section" style="display:none;">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Todos os Bots do Sistema</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="bots-list">Carregando...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PAGAMENTOS -->
+                    <div id="section-payments" class="admin-section" style="display:none;">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Histórico de Pagamentos</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Usuário</th>
+                                                <th>Valor</th>
+                                                <th>Gateway</th>
+                                                <th>Status</th>
+                                                <th>Data</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="payments-table">
+                                            <tr><td colspan="6" class="text-center">Carregando...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CONFIGURAÇÕES -->
+                    <div id="section-settings" class="admin-section" style="display:none;">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Configurações do Sistema</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="settings-form">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome do Sistema</label>
+                                        <input type="text" class="form-control" value="Auronex Robô Trader" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email de Suporte</label>
+                                        <input type="email" class="form-control" value="support@auronex.com.br">
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="allow-register" checked>
+                                            <label class="form-check-label">Permitir Novos Cadastros</label>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="saveSettings()">
+                                        <i class="fas fa-save"></i> Salvar Configurações
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Editar Usuário -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-edit"></i> Editar Usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-user-id">
+                
+                <div class="mb-3">
+                    <label for="edit-first-name" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="edit-first-name" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="edit-last-name" class="form-label">Sobrenome</label>
+                    <input type="text" class="form-control" id="edit-last-name" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="edit-email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="edit-email" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="edit-password" class="form-label">Nova Senha (Opcional)</label>
+                    <input type="password" class="form-control" id="edit-password" placeholder="Deixe vazio para não alterar">
+                    <small class="text-muted">Preencha apenas se quiser redefinir a senha do usuário</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveUserEdit()">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Mudar Plano -->
+<div class="modal fade" id="changePlanModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Alterar Plano do Usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">Selecione o novo plano:</p>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="planRadio" id="planFree" value="free">
+                    <label class="form-check-label" for="planFree">
+                        <strong>FREE</strong> - Gratuito (7 dias)
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="planRadio" id="planPro" value="pro" checked>
+                    <label class="form-check-label" for="planPro">
+                        <strong>PRO</strong> - R$ 1,00/mês (3 bots)
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="planRadio" id="planPremium" value="premium">
+                    <label class="form-check-label" for="planPremium">
+                        <strong>PREMIUM</strong> - R$ 5,00/mês (10 bots)
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="savePlanChange()">
+                    <i class="fas fa-save"></i> Salvar Alteração
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Deletar Usuário -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> ATENÇÃO!</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6 class="text-danger mb-3">Deletar usuário e TODOS os seus dados?</h6>
+                <ul class="list-unstyled mb-3">
+                    <li><i class="fas fa-times text-danger"></i> Bots</li>
+                    <li><i class="fas fa-times text-danger"></i> API Keys</li>
+                    <li><i class="fas fa-times text-danger"></i> Subscriptions</li>
+                    <li><i class="fas fa-times text-danger"></i> Pagamentos</li>
+                </ul>
+                <div class="alert alert-danger">
+                    <strong>Esta ação NÃO pode ser desfeita!</strong>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="confirmDelete">
+                    <label class="form-check-label text-danger" for="confirmDelete">
+                        <strong>Confirmo que quero deletar este usuário</strong>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i> Deletar Permanentemente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmar Pagamento -->
+<div class="modal fade" id="confirmPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-check-circle"></i> Confirmar Pagamento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Confirmar que o pagamento foi recebido?</p>
+                <p class="mb-0">O usuário terá acesso completo ao plano contratado.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="confirmPaymentAction()">
+                    <i class="fas fa-check"></i> Confirmar Pagamento
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Aprovar Subscription -->
+<div class="modal fade" id="approveSubModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-check"></i> Aprovar Assinatura</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Aprovar esta assinatura manualmente?</p>
+                <p class="mb-0 text-muted">Útil quando o pagamento foi confirmado externamente.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="confirmApproveSub()">
+                    <i class="fas fa-check"></i> Aprovar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cancelar Subscription -->
+<div class="modal fade" id="cancelSubModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title"><i class="fas fa-times-circle"></i> Cancelar Assinatura</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Cancelar esta assinatura?</p>
+                <p class="mb-0 text-muted">O usuário perderá acesso ao plano.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-warning" onclick="confirmCancelSub()">
+                    <i class="fas fa-times"></i> Sim, Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentSection = 'dashboard';
+
+function showSection(section) {
+    // Esconder todas as seções
+    document.querySelectorAll('.admin-section').forEach(el => el.style.display = 'none');
+    
+    // Mostrar seção selecionada
+    document.getElementById('section-' + section).style.display = 'block';
+    
+    // Atualizar nav
+    document.querySelectorAll('.nav-link').forEach(el => {
+        el.classList.remove('active', 'text-white');
+        el.classList.add('text-white-50');
+    });
+    event.target.classList.add('active', 'text-white');
+    event.target.classList.remove('text-white-50');
+    
+    currentSection = section;
+    
+    // Carregar dados da seção
+    loadSectionData(section);
+}
+
+async function loadSectionData(section) {
+    switch(section) {
+        case 'dashboard':
+            loadDashboardStats();
+            break;
+        case 'users':
+            loadUsers();
+            break;
+        case 'subscriptions':
+            loadSubscriptions();
+            break;
+        case 'bots':
+            loadBots();
+            break;
+        case 'payments':
+            loadPayments();
+            break;
+    }
+}
+
+// Carregar estatísticas
+async function loadDashboardStats() {
+    try {
+        // Buscar usuários
+        const usersResp = await fetch('/api/admin/users/count', {credentials: 'include'});
+        if (usersResp.ok) {
+            const data = await usersResp.json();
+            document.getElementById('total-users').textContent = data.total || 0;
+            document.getElementById('users-online').textContent = data.total + ' Usuários';
+        }
+        
+        // Buscar assinaturas ativas
+        const subsResp = await fetch('/api/admin/subscriptions/count', {credentials: 'include'});
+        if (subsResp.ok) {
+            const data = await subsResp.json();
+            document.getElementById('active-subs').textContent = data.active || 0;
+            document.getElementById('monthly-revenue').textContent = 'R$ ' + (data.revenue || 0);
+        }
+        
+        // Buscar bots ativos
+        const botsResp = await fetch('/api/admin/bots/count', {credentials: 'include'});
+        if (botsResp.ok) {
+            const data = await botsResp.json();
+            document.getElementById('active-bots').textContent = data.active || 0;
+        }
+        
+        // Carregar atividades REAIS
+        const activityResp = await fetch('/api/admin/activity/recent', {credentials: 'include'});
+        if (activityResp.ok) {
+            const activities = await activityResp.json();
+            if (activities.length > 0) {
+                document.getElementById('recent-activity').innerHTML = activities.map(act => `
+                    <div class="list-group-item">
+                        <i class="fas fa-${act.type === 'user' ? 'user-plus text-success' : 'credit-card text-primary'}"></i> 
+                        ${act.message}
+                        <small class="text-muted float-end">${act.time}</small>
+                    </div>
+                `).join('');
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar stats:', error);
+    }
+}
+
+// Carregar usuários
+async function loadUsers() {
+    try {
+        const response = await fetch('/api/admin/users/', {credentials: 'include'});
+        if (response.ok) {
+            const users = await response.json();
+            displayUsers(users);
+        }
+    } catch (error) {
+        document.getElementById('users-table').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erro ao carregar usuários</td></tr>';
+    }
+}
+
+function displayUsers(users) {
+    const tbody = document.getElementById('users-table');
+    
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum usuário encontrado</td></tr>';
+        return;
+    }
+    
+    // Paginação: Mostrar apenas primeiros 50 (depois implementar paginação real)
+    const usersToShow = users.slice(0, 50);
+    
+    tbody.innerHTML = usersToShow.map(user => `
+        <tr>
+            <td>${user.id}</td>
+            <td>${user.first_name} ${user.last_name}</td>
+            <td>${user.email}</td>
+            <td><span class="badge bg-${user.plan === 'premium' ? 'warning' : user.plan === 'pro' ? 'primary' : 'secondary'}">${user.plan || 'FREE'}</span></td>
+            <td>${new Date(user.date_joined).toLocaleDateString('pt-BR')}</td>
+            <td>
+                <button class="btn btn-sm btn-primary" onclick="editUser(${user.id}, '${user.first_name}', '${user.last_name}', '${user.email}')" title="Editar Usuário">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-success" onclick="changeUserPlan(${user.id})" title="Mudar Plano">
+                    <i class="fas fa-crown"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})" title="Deletar Usuário">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+    
+    // Adicionar info de paginação
+    if (users.length > 50) {
+        tbody.innerHTML += `<tr><td colspan="7" class="text-center text-muted">Mostrando 50 de ${users.length} usuários. Use a busca para encontrar outros.</td></tr>`;
+    }
+}
+
+// Buscar usuários (filtro)
+function searchUsers() {
+    const query = document.getElementById('search-users').value.toLowerCase();
+    
+    // Buscar via API com filtro
+    fetch(`/api/admin/users/?search=${query}`, {credentials: 'include'})
+        .then(r => r.json())
+        .then(users => displayUsers(users))
+        .catch(e => console.error(e));
+}
+
+// Carregar assinaturas
+async function loadSubscriptions() {
+    try {
+        const response = await fetch('/api/admin/subscriptions/', {credentials: 'include'});
+        if (response.ok) {
+            const subs = await response.json();
+            displaySubscriptions(subs);
+        }
+    } catch (error) {
+        document.getElementById('subscriptions-table').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erro ao carregar</td></tr>';
+    }
+}
+
+function displaySubscriptions(subs) {
+    const tbody = document.getElementById('subscriptions-table');
+    
+    if (subs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma assinatura</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = subs.map(sub => `
+        <tr>
+            <td>${sub.user_email || 'User #' + sub.user_id}</td>
+            <td><span class="badge bg-${sub.plan === 'premium' ? 'warning' : sub.plan === 'pro' ? 'primary' : 'secondary'}">${sub.plan.toUpperCase()}</span></td>
+            <td><span class="badge bg-${sub.status === 'active' ? 'success' : 'secondary'}">${sub.status}</span></td>
+            <td>R$ ${sub.amount || 0}</td>
+            <td>
+                ${sub.payment_method === 'none' || sub.payment_method === 'simulated' ? 
+                    '<span class="badge bg-warning">⚠️ Pagamento não confirmado</span>' : 
+                    sub.payment_method || '-'}
+            </td>
+            <td>
+                ${sub.status !== 'active' ? 
+                    `<button class="btn btn-sm btn-success" onclick="approveSubscription(${sub.id})"><i class="fas fa-check"></i> Aprovar</button>` : 
+                    ''}
+                ${sub.payment_method === 'none' || sub.payment_method === 'simulated' ? 
+                    `<button class="btn btn-sm btn-success" onclick="confirmPayment(${sub.id})"><i class="fas fa-check-circle"></i> Confirmar Pgto</button>` : 
+                    ''}
+                <button class="btn btn-sm btn-danger" onclick="cancelSubscription(${sub.id})">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Confirmar pagamento - Modal
+let subToConfirm = null;
+
+function confirmPayment(subId) {
+    subToConfirm = subId;
+    const modal = new bootstrap.Modal(document.getElementById('confirmPaymentModal'));
+    modal.show();
+}
+
+async function confirmPaymentAction() {
+    try {
+        const response = await fetch(`/api/admin/subscriptions/${subToConfirm}/approve`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('confirmPaymentModal')).hide();
+            loadSubscriptions();
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Cancelar subscription - Modal
+let subToCancel = null;
+
+function cancelSubscription(subId) {
+    subToCancel = subId;
+    const modal = new bootstrap.Modal(document.getElementById('cancelSubModal'));
+    modal.show();
+}
+
+async function confirmCancelSub() {
+    try {
+        const response = await fetch(`/api/admin/subscriptions/${subToCancel}/cancel`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('cancelSubModal')).hide();
+            loadSubscriptions();
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Editar usuário
+let userToEditId = null;
+
+function editUser(userId, firstName, lastName, email) {
+    userToEditId = userId;
+    
+    // Preencher formulário
+    document.getElementById('edit-user-id').value = userId;
+    document.getElementById('edit-first-name').value = firstName;
+    document.getElementById('edit-last-name').value = lastName;
+    document.getElementById('edit-email').value = email;
+    
+    // Abrir modal
+    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+}
+
+async function saveUserEdit() {
+    const password = document.getElementById('edit-password').value;
+    
+    const data = {
+        first_name: document.getElementById('edit-first-name').value,
+        last_name: document.getElementById('edit-last-name').value,
+        email: document.getElementById('edit-email').value
+    };
+    
+    // Adicionar senha se preenchida
+    if (password && password.length > 0) {
+        data.password = password;
+    }
+    
+    try {
+        const response = await fetch(`/api/admin/users/${userToEditId}/edit`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data),
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+            loadUsers();
+        } else {
+            const error = await response.json();
+            alert('Erro: ' + (error.detail || 'Erro ao atualizar usuário'));
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Modal para mudar plano
+let selectedUserId = null;
+
+function changeUserPlan(userId) {
+    selectedUserId = userId;
+    // Mostrar modal Bootstrap
+    const modal = new bootstrap.Modal(document.getElementById('changePlanModal'));
+    modal.show();
+}
+
+async function savePlanChange() {
+    const plan = document.querySelector('input[name="planRadio"]:checked')?.value;
+    
+    if (!plan) {
+        alert('Selecione um plano!');
+        return;
+    }
+    
+    // REMOVER CONFIRMAÇÃO - Alterar imediatamente!
+    try {
+        const response = await fetch(`/api/admin/users/${selectedUserId}/plan`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ plan: plan }),
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            // SEM ALERT - Fecha modal e recarrega
+            bootstrap.Modal.getInstance(document.getElementById('changePlanModal')).hide();
+            loadUsers();
+        } else {
+            const error = await response.json();
+            alert('Erro: ' + (error.detail || 'Erro ao atualizar'));
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Deletar usuário - Abrir modal
+let userToDelete = null;
+
+function deleteUser(userId) {
+    userToDelete = userId;
+    document.getElementById('confirmDelete').checked = false;
+    const modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+    modal.show();
+}
+
+async function confirmDelete() {
+    const checkbox = document.getElementById('confirmDelete');
+    
+    if (!checkbox.checked) {
+        alert('Marque a caixa de confirmação!');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/admin/users/${userToDelete}/delete-complete`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('deleteUserModal')).hide();
+            loadUsers();
+        } else {
+            alert('Erro ao deletar');
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Aprovar assinatura - Modal
+let subToApprove = null;
+
+function approveSubscription(subId) {
+    subToApprove = subId;
+    const modal = new bootstrap.Modal(document.getElementById('approveSubModal'));
+    modal.show();
+}
+
+async function confirmApproveSub() {
+    try {
+        const response = await fetch(`/api/admin/subscriptions/${subToApprove}/approve`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('approveSubModal')).hide();
+            loadSubscriptions();
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Carregar dados ao iniciar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin panel carregado');
+    loadDashboardStats();
+    setInterval(loadDashboardStats, 30000);
+});
+
+// Carregar bots - CORRIGIDO
+async function loadBots() {
+    console.log('Carregando bots...');
+    
+    try {
+        const response = await fetch('/api/bots/', {credentials: 'include'});
+        console.log('Resposta bots:', response.status);
+        
+        if (response.ok) {
+            const bots = await response.json();
+            console.log('Total bots:', bots.length);
+            
+            if (bots.length === 0) {
+                document.getElementById('bots-list').innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Nenhum bot foi criado ainda no sistema.
+                        <br><small>Bots aparecerão aqui quando os usuários criarem.</small>
+                    </div>`;
+            } else {
+                document.getElementById('bots-list').innerHTML = 
+                    '<div class="table-responsive"><table class="table table-hover"><thead class="table-dark"><tr><th>Nome</th><th>Exchange</th><th>Usuário</th><th>Status</th></tr></thead><tbody>' +
+                    bots.map(bot => `
+                        <tr>
+                            <td><strong>${bot.name}</strong></td>
+                            <td><span class="badge bg-primary">${bot.exchange}</span></td>
+                            <td>User #${bot.user_id}</td>
+                            <td><span class="badge bg-${bot.is_active ? 'success' : 'secondary'}">${bot.is_active ? 'Ativo' : 'Inativo'}</span></td>
+                        </tr>
+                    `).join('') + '</tbody></table></div>';
+            }
+        } else {
+            console.error('Erro HTTP:', response.status);
+            document.getElementById('bots-list').innerHTML = '<div class="alert alert-info">Nenhum bot criado no sistema.</div>';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar bots:', error);
+        document.getElementById('bots-list').innerHTML = '<div class="alert alert-info"><i class="fas fa-robot"></i> Nenhum bot criado ainda. Os bots dos usuários aparecerão aqui.</div>';
+    }
+}
+
+// Carregar pagamentos REAIS
+async function loadPayments() {
+    try {
+        const response = await fetch('/api/admin/payments/', {credentials: 'include'});
+        
+        if (response.ok) {
+            const payments = await response.json();
+            console.log('Pagamentos carregados:', payments.length);
+            
+            if (payments.length === 0) {
+                document.getElementById('payments-table').innerHTML = '<tr><td colspan="6" class="text-center text-muted">Nenhum pagamento registrado ainda</td></tr>';
+            } else {
+                // Mostrar pagamentos REAIS
+                document.getElementById('payments-table').innerHTML = payments.map(p => `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${p.user_email || 'User #' + p.user_id}</td>
+                        <td class="fw-bold">R$ ${parseFloat(p.amount || 0).toFixed(2)}</td>
+                        <td><span class="badge bg-info">${(p.gateway || 'N/A').toUpperCase()}</span></td>
+                        <td><span class="badge bg-${p.status === 'approved' ? 'success' : p.status === 'pending' ? 'warning' : 'secondary'}">${p.status || 'pending'}</span></td>
+                        <td>${p.created_at ? new Date(p.created_at).toLocaleString('pt-BR') : '-'}</td>
+                    </tr>
+                `).join('');
+            }
+        } else {
+            console.error('Erro ao carregar pagamentos');
+            document.getElementById('payments-table').innerHTML = '<tr><td colspan="6" class="text-center text-warning">Erro ao carregar. Verifique console.</td></tr>';
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        document.getElementById('payments-table').innerHTML = '<tr><td colspan="6" class="text-center text-info">Nenhum pagamento registrado</td></tr>';
+    }
+}
+
+// Salvar configurações
+function saveSettings() {
+    alert('Configurações salvas! (funcionalidade em desenvolvimento)');
+}
+</script>
+
+<style>
+.admin-section {
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.nav-link {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+}
+</style>
+{% endblock %}

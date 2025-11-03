@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Documentação - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 bg-white shadow-sm" style="min-height: 90vh;">
+                <div class="p-3">
+                    <h5 class="mb-4"><i class="fas fa-book"></i> Docs</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link active" href="#getting-started">Começando</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="#api-keys">API Keys</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="#creating-bots">Criar Bots</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="#strategies">Estratégias</a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="#faq">FAQ</a>
+                        </li>
+                        <li class="nav-item mb-2 mt-3">
+                            <a class="nav-link text-primary" href="/dashboard">
+                                <i class="fas fa-arrow-left"></i> Voltar
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10">
+                <div class="p-4">
+                    <div class="card shadow-sm bg-white">
+                        <div class="card-body p-5">
+                            <h1 class="mb-4"><i class="fas fa-book-open"></i> Documentação RoboTrader</h1>
+                            
+                            <!-- Começando -->
+                            <section id="getting-started" class="mb-5">
+                                <h2 class="mb-3">🚀 Começando</h2>
+                                <p class="lead">Guia rápido para iniciar com o RoboTrader</p>
+                                
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h5>Passo 1: Criar Conta</h5>
+                                        <p>Acesse <a href="/register">página de registro</a> e crie sua conta gratuita.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h5>Passo 2: Adicionar API Keys</h5>
+                                        <p>Vá em <a href="/api-keys-page">API Keys</a> e adicione suas credenciais da exchange.</p>
+                                        <ul>
+                                            <li><strong>Binance Testnet:</strong> <a href="https://testnet.binance.vision/" target="_blank">testnet.binance.vision</a></li>
+                                            <li><strong>Binance Produção:</strong> <a href="https://www.binance.com/" target="_blank">binance.com</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h5>Passo 3: Criar Bot</h5>
+                                        <p>Em <a href="/bots-page">Meus Bots</a>, clique em "Criar Novo Bot" e configure:</p>
+                                        <ul>
+                                            <li>Nome do bot</li>
+                                            <li>Exchange</li>
+                                            <li>Criptomoedas (símbolos)</li>
+                                            <li>Capital inicial</li>
+                                            <li>Estratégia</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5>Passo 4: Iniciar Trading</h5>
+                                        <p>Clique em "Iniciar" no bot desejado. O bot começará a operar em 5-15 minutos.</p>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            <!-- API Keys -->
+                            <section id="api-keys" class="mb-5">
+                                <h2 class="mb-3">🔑 API Keys</h2>
+                                
+                                <h4>Como Obter API Keys da Binance (Testnet)</h4>
+                                <ol>
+                                    <li>Acesse <a href="https://testnet.binance.vision/" target="_blank">testnet.binance.vision</a></li>
+                                    <li>Faça login com GitHub</li>
+                                    <li>Clique em "Generate HMAC_SHA256 Key"</li>
+                                    <li>Copie API Key e Secret Key</li>
+                                    <li>Cole no RoboTrader</li>
+                                </ol>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> <strong>Segurança:</strong>
+                                    <ul class="mb-0">
+                                        <li>NUNCA compartilhe suas Secret Keys</li>
+                                        <li>Use Testnet para testes (dinheiro virtual)</li>
+                                        <li>Ative IP Whitelist na produção</li>
+                                        <li>Desabilite permissão de Saque (Withdraw)</li>
+                                    </ul>
+                                </div>
+                            </section>
+                            
+                            <!-- Criando Bots -->
+                            <section id="creating-bots" class="mb-5">
+                                <h2 class="mb-3">🤖 Criando Bots</h2>
+                                
+                                <h4>Configurações Recomendadas para Iniciantes</h4>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Configuração</th>
+                                            <th>Recomendado</th>
+                                            <th>Explicação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Capital Inicial</td>
+                                            <td>$1000 USDT</td>
+                                            <td>Valor seguro para começar</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Stop Loss</td>
+                                            <td>1.5%</td>
+                                            <td>Limita perdas por trade</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Take Profit</td>
+                                            <td>3.0%</td>
+                                            <td>Objetivo de lucro por trade</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Timeframe</td>
+                                            <td>15 minutos</td>
+                                            <td>Bom equilíbrio velocidade/precisão</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Estratégia</td>
+                                            <td>Mean Reversion</td>
+                                            <td>Funciona bem em mercados laterais</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </section>
+                            
+                            <!-- Estratégias -->
+                            <section id="strategies" class="mb-5">
+                                <h2 class="mb-3">📊 Estratégias Disponíveis</h2>
+                                
+                                <div class="accordion" id="strategiesAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#strategy1">
+                                                Mean Reversion (Reversão à Média)
+                                            </button>
+                                        </h2>
+                                        <div id="strategy1" class="accordion-collapse collapse show">
+                                            <div class="accordion-body">
+                                                <p><strong>Como funciona:</strong> Compra quando o preço está abaixo da média e vende quando volta à média.</p>
+                                                <p><strong>Melhor para:</strong> Mercados laterais (sem tendência forte)</p>
+                                                <p><strong>Risco:</strong> Médio</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#strategy2">
+                                                Trend Following (Seguir Tendência)
+                                            </button>
+                                        </h2>
+                                        <div id="strategy2" class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                <p><strong>Como funciona:</strong> Identifica tendências e entra na direção do movimento.</p>
+                                                <p><strong>Melhor para:</strong> Mercados em forte alta ou baixa</p>
+                                                <p><strong>Risco:</strong> Médio-Alto</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#strategy3">
+                                                Scalping (Rápido)
+                                            </button>
+                                        </h2>
+                                        <div id="strategy3" class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                <p><strong>Como funciona:</strong> Muitas operações rápidas com pequenos lucros.</p>
+                                                <p><strong>Melhor para:</strong> Traders experientes, mercado volátil</p>
+                                                <p><strong>Risco:</strong> Alto (requer monitoramento)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            <!-- FAQ -->
+                            <section id="faq" class="mb-5">
+                                <h2 class="mb-3">❓ Perguntas Frequentes</h2>
+                                
+                                <h5>O bot pode perder todo meu dinheiro?</h5>
+                                <p>Não. Cada bot tem Stop Loss configurado que limita perdas. Além disso, recomendamos SEMPRE usar Testnet primeiro.</p>
+                                
+                                <h5>Quanto tempo leva para o primeiro trade?</h5>
+                                <p>Normalmente 5-15 minutos após iniciar. O bot aguarda condições favoráveis do mercado.</p>
+                                
+                                <h5>Posso usar múltiplas exchanges?</h5>
+                                <p>Sim! No plano Pro você pode criar bots para diferentes exchanges simultaneamente.</p>
+                                
+                                <h5>Preciso deixar o computador ligado?</h5>
+                                <p>Não. O bot roda em nossos servidores 24/7. Você só acessa o dashboard para monitorar.</p>
+                                
+                                <h5>Como cancelo minha assinatura?</h5>
+                                <p>Em <a href="/pricing">Planos</a>, clique em "Gerenciar Assinatura". Sem multas ou taxas.</p>
+                            </section>
+                            
+                            <!-- Links Úteis -->
+                            <section>
+                                <h2 class="mb-3">🔗 Links Úteis</h2>
+                                <ul>
+                                    <li><a href="/api/docs" target="_blank">API Documentation (Swagger)</a></li>
+                                    <li><a href="http://localhost:8501" target="_blank">Dashboard Streamlit (Avançado)</a></li>
+                                    <li><a href="/admin-panel">Painel Administrativo</a> (apenas admins)</li>
+                                </ul>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

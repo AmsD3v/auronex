@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolha o Pagamento - RoboTrader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .plan-info {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .plan-info h2 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .plan-info .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .payment-options {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .payment-option {
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .payment-option:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .payment-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .payment-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .payment-icon {
+            font-size: 2.5em;
+        }
+        
+        .payment-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .payment-description {
+            color: #666;
+            margin-left: 60px;
+        }
+        
+        .payment-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-left: 10px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.3s;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 RoboTrader</h1>
+        
+        <div class="plan-info">
+            <h2 id="planName">Carregando...</h2>
+            <div class="price" id="planPrice">R$ 0,00</div>
+            <p style="color: #666;">por mês</p>
+        </div>
+        
+        <h3 style="margin-bottom: 20px;">Escolha a forma de pagamento:</h3>
+        
+        <div class="payment-options">
+            <label class="payment-option" onclick="selectPayment('pix')">
+                <input type="radio" name="payment" value="pix">
+                <div class="payment-header">
+                    <div class="payment-icon">📱</div>
+                    <div>
+                        <div class="payment-name">
+                            PIX
+                            <span class="payment-badge">MAIS USADO</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-description">
+                    ✅ Aprovação instantânea (2-10 segundos)<br>
+                    ✅ Pague pelo app do seu banco<br>
+                    ✅ Disponível 24/7
+                </div>
+            </label>
+            
+            <label class="payment-option" onclick="selectPayment('card')">
+                <input type="radio" name="payment" value="card">
+                <div class="payment-header">
+                    <div class="payment-icon">💳</div>
+                    <div>
+                        <div class="payment-name">Cartão de Crédito</div>
+                    </div>
+                </div>
+                <div class="payment-description">
+                    ✅ Aprovação imediata<br>
+                    ✅ Parcelamento disponível<br>
+                    ✅ Todas as bandeiras aceitas
+                </div>
+            </label>
+        </div>
+        
+        <button class="submit-btn" id="submitBtn" onclick="processPayment()" disabled>
+            Continuar para Pagamento →
+        </button>
+        
+        <p style="text-align: center; margin-top: 20px; color: #999;">
+            <a href="/dashboard/" style="color: #667eea; text-decoration: none;">← Voltar ao dashboard</a>
+        </p>
+    </div>
+    
+    <script>
+        // Pegar plano da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan') || 'pro';
+        
+        const planInfo = {
+            'pro': { name: 'Plano Pro', price: 'R$ 2,00' },
+            'premium': { name: 'Plano Premium', price: 'R$ 5,00' }
+        };
+        
+        document.getElementById('planName').textContent = planInfo[plan].name;
+        document.getElementById('planPrice').textContent = planInfo[plan].price;
+        
+        let selectedPayment = null;
+        
+        function selectPayment(method) {
+            selectedPayment = method;
+            
+            // Visual feedback
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Habilitar botão
+            document.getElementById('submitBtn').disabled = false;
+        }
+        
+        async function processPayment() {
+            if (!selectedPayment) {
+                alert('Selecione uma forma de pagamento');
+                return;
+            }
+            
+            const token = localStorage.getItem('access_token');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processando...';
+            
+            try {
+                let endpoint = '';
+                
+                if (selectedPayment === 'pix') {
+                    endpoint = '/api/payment/mercadopago/create/';
+                } else {
+                    endpoint = '/api/payment/create-checkout/';
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ plan: plan })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else {
+                    alert(data.message || 'Erro ao processar pagamento. Tente novamente.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Continuar para Pagamento →';
+                }
+            } catch (error) {
+                alert('Erro de conexão. Tente novamente.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Continuar para Pagamento →';
+            }
+        }
+    </script>
+</body>
+</html>
+
+

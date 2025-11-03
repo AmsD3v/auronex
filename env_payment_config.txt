@@ -1,0 +1,86 @@
+# ========================================
+# CONFIGURAÇÃO DE PAGAMENTOS - ROBOTRADER
+# ========================================
+
+COMO CONFIGURAR MERCADOPAGO (PIX + CARTAO BRASIL):
+==============================================
+
+1. Criar conta MercadoPago:
+   https://www.mercadopago.com.br/
+
+2. Acessar Developer Panel:
+   https://www.mercadopago.com.br/developers/
+
+3. Criar aplicação:
+   - Clique em "Suas integrações"
+   - Clique em "Criar aplicação"
+   - Escolha "Pagamentos online"
+
+4. Copiar credenciais:
+   - Access Token (TESTE): TEST-xxxx-xxxxxx
+   - Public Key (TESTE): TEST-xxxx-xxxxxx
+   
+5. Cole no código:
+   fastapi_app/routers/payments.py
+   Linha 17: MERCADOPAGO_ACCESS_TOKEN = "SEU_TOKEN_AQUI"
+
+
+COMO CONFIGURAR STRIPE (CARTÃO INTERNACIONAL):
+==============================================
+
+1. Criar conta Stripe:
+   https://dashboard.stripe.com/register
+
+2. Acessar API Keys:
+   https://dashboard.stripe.com/apikeys
+
+3. Copiar credenciais de TESTE:
+   - Secret Key: sk_test_xxxxxxxxxxxxx
+   - Publishable Key: pk_test_xxxxxxxxxxxxx
+
+4. Cole no código:
+   fastapi_app/routers/payments.py
+   Linha 18: STRIPE_SECRET_KEY = "SUA_SECRET_KEY_AQUI"
+
+
+PREÇOS DOS PLANOS:
+==================
+
+Free: $0/mês (1 bot)
+Pro: $29/mês (3 bots)
+Premium: $99/mês (ilimitado)
+
+Para mudar: edite fastapi_app/routers/payments.py, linha 20-24
+
+
+WEBHOOKS (PRODUÇÃO):
+====================
+
+MercadoPago:
+URL: https://seu-dominio.com/api/payments/mercadopago/webhook
+
+Stripe:
+URL: https://seu-dominio.com/api/payments/stripe/webhook
+
+
+IMPORTANTE:
+===========
+
+- Use TESTNET para testes (dinheiro virtual)
+- Apenas ative PRODUÇÃO quando tiver 100% de certeza
+- NUNCA commite seus tokens no git!
+- Use variáveis de ambiente em produção
+
+
+
+
+
+
+
+
+
+
+
+
+
+

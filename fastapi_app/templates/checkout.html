@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center text-white mb-5">
+            <h2>Escolha como deseja pagar</h2>
+            <h3>Valor: R$ {{ "%.2f"|format(plan.price) }}</h3>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row g-4">
+                    <!-- MERCADOPAGO - PIX + Cartão + Boleto -->
+                    <div class="col-md-6">
+                        <a href="#" onclick="pagarComMercadoPago(); return false;" class="text-decoration-none">
+                            <div class="card border-info text-center" style="cursor: pointer;">
+                                <div class="card-body p-5">
+                                    <i class="fas fa-hand-holding-usd fa-4x text-info mb-3"></i>
+                                    <h4>Mercado Pago</h4>
+                                    <p class="text-muted mb-2">PIX, Cartão ou Boleto</p>
+                                    <small class="text-muted d-block mb-3">Escolha no checkout</small>
+                                    <span class="btn btn-info btn-lg w-100" id="btn-mercadopago">Pagar com Mercado Pago</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                            <!-- Cartão - DIRETO PARA STRIPE -->
+                            <div class="col-md-6">
+                                <a href="#" onclick="pagarComCartao(); return false;" class="text-decoration-none">
+                                    <div class="card border-primary text-center" style="cursor: pointer;">
+                                        <div class="card-body p-5">
+                                            <i class="fas fa-credit-card fa-4x text-primary mb-3"></i>
+                                            <h4>Cartão de Crédito</h4>
+                                            <p class="text-muted mb-4">Todas as bandeiras</p>
+                                            <span class="btn btn-primary btn-lg w-100" id="btn-cartao">Pagar com Cartão</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+async function pagarComMercadoPago() {
+    const btn = document.getElementById('btn-mercadopago');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Carregando...';
+    
+    try {
+        const plan = new URLSearchParams(window.location.search).get('plan') || 'pro';
+        
+        // Chamar API MercadoPago Checkout Pro
+        const response = await fetch('/api/payments-public/mercadopago/checkout', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ plan: plan }),
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.checkout_url) {
+                // Redirecionar para Checkout Pro do MercadoPago
+                window.location.href = data.checkout_url;
+                return;
+            }
+        }
+        
+        alert('Erro ao processar. Tente novamente.');
+        btn.innerHTML = originalText;
+    } catch (error) {
+        alert('Erro de conexão.');
+        btn.innerHTML = originalText;
+    }
+}
+
+async function pagarComCartao() {
+    const btn = document.getElementById('btn-cartao');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Aguarde...';
+    
+    try {
+        const plan = new URLSearchParams(window.location.search).get('plan') || 'pro';
+        
+        // Chamar API Stripe e ir DIRETO para checkout.stripe.com
+        const response = await fetch('/api/payments-public/stripe/checkout', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ plan: plan }),
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.checkout_url) {
+                // Redirecionar DIRETO para Stripe (SEM página intermediária)
+                window.location.href = data.checkout_url;
+                return;
+            }
+        }
+        
+        alert('Erro ao processar. Tente PIX.');
+        btn.innerHTML = originalText;
+    } catch (error) {
+        alert('Erro de conexão. Tente novamente.');
+        btn.innerHTML = originalText;
+    }
+}
+</script>
+{% endblock %}

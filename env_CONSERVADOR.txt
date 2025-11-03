@@ -1,0 +1,64 @@
+# ========================================
+# RoboTrader - Configuração CONSERVADORA
+# ========================================
+
+# ========================================
+# BINANCE API - TESTNET
+# ========================================
+BINANCE_TESTNET_API_KEY=spuFr4SabtmB7aX9OlEeIC1lW1ryTXxMNozw54eNq8StoXotKf7ZPzUz8ErPHcrx
+BINANCE_TESTNET_SECRET_KEY=C9IRpvvjwQCObjQ0BSSNIBRjVIqAbzE4h3yHyxp2VbBMI7XSpUwuAfllBEzlFy0O
+
+# ========================================
+# BINANCE API - PRODUÇÃO (USE APENAS APÓS MUITOS TESTES)
+# ========================================
+BINANCE_API_KEY=sua_api_key_producao_aqui
+BINANCE_SECRET_KEY=sua_secret_key_producao_aqui
+
+# ========================================
+# MODO DE OPERAÇÃO
+# ========================================
+USE_TESTNET=True
+
+# ========================================
+# CONFIGURAÇÕES DE TRADING
+# ========================================
+TRADING_SYMBOL=BTCUSDT
+TIMEFRAME=15m
+STRATEGY=mean_reversion
+
+# ========================================
+# GERENCIAMENTO DE RISCO - CONSERVADOR
+# ========================================
+POSITION_SIZE_PERCENT=0.10
+STOP_LOSS_PERCENT=0.015       # 1.5% (mais apertado)
+TAKE_PROFIT_PERCENT=0.03      # 3.0% (mais próximo)
+MAX_DRAWDOWN_PERCENT=0.10
+MAX_TRADES_PER_DAY=10
+
+# ========================================
+# TELEGRAM (OPCIONAL)
+# ========================================
+TELEGRAM_BOT_TOKEN=seu_token_aqui
+TELEGRAM_CHAT_ID=seu_chat_id_aqui
+ENABLE_TELEGRAM=False
+
+# ========================================
+# CONFIGURAÇÕES AVANÇADAS
+# ========================================
+UPDATE_INTERVAL=60
+SAVE_HISTORICAL_DATA=True
+DEBUG_MODE=True
+PAPER_TRADING=True
+
+# ========================================
+# BANCO DE DADOS
+# ========================================
+DATABASE_URL=sqlite:///data/trading.db
+
+
+
+
+
+
+
+

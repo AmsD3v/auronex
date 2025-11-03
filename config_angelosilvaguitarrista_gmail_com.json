@@ -1,0 +1,11 @@
+{
+  "perfil": "\ud83d\udcc8 Day Trader",
+  "freq_update": 3,
+  "capital": 1000.0,
+  "moeda": "BRL",
+  "symbols": [
+    "DOTUSDT",
+    "BNBUSDT"
+  ],
+  "strategy": "mean_reversion"
+}

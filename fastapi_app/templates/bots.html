@@ -1,0 +1,687 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Bots - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 bg-white shadow-sm" style="min-height: 90vh;">
+                <div class="p-3">
+                    <h5 class="mb-4"><i class="fas fa-user-circle"></i> Minha Conta</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/dashboard">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/api-keys-page">
+                                <i class="fas fa-key"></i> API Keys
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link active" href="/bots-page">
+                                <i class="fas fa-robot"></i> Meus Bots
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/pricing">
+                                <i class="fas fa-arrow-up"></i> Upgrade
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/docs-page">
+                                <i class="fas fa-book"></i> Documentação
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-danger" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10">
+                <div class="p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="text-white">Meus Bots de Trading</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBotModal">
+                            <i class="fas fa-plus"></i> Criar Novo Bot
+                        </button>
+                    </div>
+                    
+                    <!-- Alerta se não tem API Keys -->
+                    <div class="alert alert-warning" id="no-keys-alert" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Atenção:</strong> 
+                        Você precisa adicionar uma API Key antes de criar um bot.
+                        <a href="/api-keys-page" class="alert-link fw-bold">Adicionar API Key</a>
+                    </div>
+                    
+                    <!-- Lista de Bots -->
+                    <div id="bots-list">
+                        <div class="text-center py-5 text-white">
+                            <i class="fas fa-robot fa-4x mb-3 opacity-50"></i>
+                            <p class="lead">Nenhum bot criado ainda.</p>
+                            <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#createBotModal">
+                                <i class="fas fa-plus"></i> Criar Meu Primeiro Bot
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal: Sem Saldo -->
+<div class="modal fade" id="modalSemSaldo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i> Saldo Insuficiente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-4">
+                    <i class="fas fa-wallet fa-3x text-warning mb-3"></i>
+                    <h5><strong>Corretora sem saldo suficiente!</strong></h5>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <p class="mb-0" id="modal-saldo-mensagem">A corretora não tem saldo suficiente para realizar trades.</p>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Por favor, aumente o saldo para no mínimo R$ 10,00 para ativar o Bot.</strong>
+                </div>
+                <p class="text-muted small">Deposite USDT, BUSD ou USDC na corretora.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Bot -->
+<div class="modal fade" id="editBotModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Bot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-bot-form">
+                    <input type="hidden" id="edit-bot-id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Bot</label>
+                        <input type="text" class="form-control" id="edit-bot-name" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Capital (USDT)</label>
+                            <input type="number" class="form-control" id="edit-bot-capital" step="0.01" min="10" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Estratégia</label>
+                            <select class="form-select" id="edit-bot-strategy" required>
+                                <option value="scalping">Scalping (Rápido)</option>
+                                <option value="day_trade">Day Trade (Intraday)</option>
+                                <option value="swing">Swing Trade (Médio Prazo)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Timeframe</label>
+                            <select class="form-select" id="edit-bot-timeframe" required>
+                                <option value="1m">1 Minuto</option>
+                                <option value="5m">5 Minutos</option>
+                                <option value="15m">15 Minutos</option>
+                                <option value="1h">1 Hora</option>
+                                <option value="4h">4 Horas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Stop Loss (%)</label>
+                            <input type="number" class="form-control" id="edit-bot-stoploss" step="0.1" min="0.5" max="10" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Take Profit (%)</label>
+                            <input type="number" class="form-control" id="edit-bot-takeprofit" step="0.1" min="0.5" max="20" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="edit-bot-active">
+                        <label class="form-check-label" for="edit-bot-active">
+                            <i class="fas fa-power-off"></i> Bot Ativo
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveBotEdit()">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Deletar Bot -->
+<div class="modal fade" id="deleteBotModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Deletar Bot</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja deletar este bot?</p>
+                <p class="fw-bold" id="bot-name-to-delete"></p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i> Esta ação não pode ser desfeita!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="executeDeleteBot()">
+                    <i class="fas fa-trash"></i> Sim, Deletar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Criar Bot -->
+<div class="modal fade" id="createBotModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-robot"></i> Criar Novo Bot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-bot-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Configurações Básicas</h6>
+                            
+                            <div class="mb-3">
+                                <label for="bot_name" class="form-label">Nome do Bot</label>
+                                <input type="text" class="form-control" id="bot_name" name="name" required placeholder="ex: Bot BTC Scalper">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="bot_exchange" class="form-label">Exchange</label>
+                                <select class="form-select" id="bot_exchange" name="exchange" required onchange="loadApiKeysForExchange()">
+                                    <option value="">Selecione...</option>
+                                    <option value="binance">Binance</option>
+                                    <option value="bybit">Bybit</option>
+                                    <option value="okx">OKX</option>
+                                    <option value="kucoin">KuCoin</option>
+                                    <option value="coinbase">Coinbase</option>
+                                    <option value="kraken">Kraken</option>
+                                    <option value="mercadobitcoin">Mercado Bitcoin 🇧🇷</option>
+                                    <option value="brasilbitcoin">Brasil Bitcoin 🇧🇷</option>
+                                    <option value="foxbit">Foxbit 🇧🇷</option>
+                                    <option value="bitso">Bitso</option>
+                                    <option value="novadax">NovaDAX 🇧🇷</option>
+                                    <option value="bitfinex">Bitfinex</option>
+                                    <option value="gateio">Gate.io</option>
+                                    <option value="mexc">MEXC</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3" id="api-key-selector" style="display:none;">
+                                <label for="bot_api_key" class="form-label">API Key</label>
+                                <select class="form-select" id="bot_api_key" name="api_key_id">
+                                    <option value="">Carregando...</option>
+                                </select>
+                                <small class="text-muted">Escolha qual API Key este bot usará</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="symbols" class="form-label">Criptomoedas</label>
+                                <select class="form-select" id="symbols" name="symbols" multiple size="5">
+                                    <option value="BTCUSDT">BTC/USDT</option>
+                                    <option value="ETHUSDT">ETH/USDT</option>
+                                    <option value="BNBUSDT">BNB/USDT</option>
+                                    <option value="SOLUSDT">SOL/USDT</option>
+                                    <option value="ADAUSDT">ADA/USDT</option>
+                                    <option value="XRPUSDT">XRP/USDT</option>
+                                </select>
+                                <small class="text-muted">Segure CTRL para selecionar múltiplos</small>
+                            </div>
+                            
+                            <!-- CAMPO CAPITAL REMOVIDO - Usa saldo real da exchange -->
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="mb-3">Configurações Avançadas</h6>
+                            
+                            <div class="mb-3">
+                                <label for="strategy" class="form-label">Estratégia</label>
+                                <select class="form-select" id="strategy" name="strategy">
+                                    <option value="mean_reversion">Mean Reversion (Reversão à Média)</option>
+                                    <option value="trend_following">Trend Following (Seguir Tendência)</option>
+                                    <option value="scalping">Scalping (Rápido)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="timeframe" class="form-label">Timeframe</label>
+                                <select class="form-select" id="timeframe" name="timeframe">
+                                    <option value="1m">1 Minuto</option>
+                                    <option value="5m">5 Minutos</option>
+                                    <option value="15m" selected>15 Minutos</option>
+                                    <option value="1h">1 Hora</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="stop_loss" class="form-label">Stop Loss (%)</label>
+                                <input type="number" class="form-control" id="stop_loss" name="stop_loss_percent" value="1.5" step="0.1" min="0.5" max="10">
+                                <small class="text-muted">Perda máxima por trade</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="take_profit" class="form-label">Take Profit (%)</label>
+                                <input type="number" class="form-control" id="take_profit" name="take_profit_percent" value="3.0" step="0.1" min="0.5" max="20">
+                                <small class="text-muted">Lucro alvo por trade</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb"></i> <strong>Dica:</strong> 
+                        Comece com valores conservadores. Você pode ajustar depois!
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success flex-fill">
+                            <i class="fas fa-robot"></i> Criar Bot
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Carregar bots do backend
+async function loadBots() {
+    try {
+        // Verificar se helper existe
+        if (typeof authenticatedFetch === 'undefined') {
+            console.error('authenticatedFetch não carregado ainda');
+            setTimeout(loadBots, 100);  // Tentar novamente
+            return;
+        }
+        
+        // Usar helper global  
+        const response = await authenticatedFetch('/api/bots/', {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Se retornou objeto com info de limite
+            if (data.bots) {
+                displayBots(data.bots);
+                
+                // Atualizar botão criar
+                const createBtn = document.querySelector('[data-bs-target="#createBotModal"]');
+                if (createBtn) {
+                    if (data.can_create) {
+                        createBtn.disabled = false;
+                        createBtn.innerHTML = '<i class="fas fa-plus"></i> Criar Bot';
+                    } else {
+                        createBtn.disabled = true;
+                        createBtn.innerHTML = `<i class="fas fa-lock"></i> Limite Atingido (${data.total}/${data.limit})`;
+                        createBtn.title = `Plano ${data.plan.toUpperCase()}: máximo ${data.limit} bot(s). Faça upgrade!`;
+                    }
+                }
+            } else {
+                // Formato antigo (array direto)
+                displayBots(data);
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar bots:', error);
+    }
+}
+
+function displayBots(bots) {
+    const container = document.getElementById('bots-list');
+    
+    console.log('📊 displayBots chamado com', bots.length, 'bots');
+    
+    if (bots.length === 0) {
+        container.innerHTML = '<div class="alert alert-info text-center"><i class="fas fa-robot"></i> Nenhum bot criado ainda.</div>';
+        return;
+    }
+    
+    container.innerHTML = bots.map(bot => `
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5 class="mb-1"><i class="fas fa-robot"></i> ${bot.name}</h5>
+                        <small class="text-muted">${bot.exchange.toUpperCase()}</small>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Saldo Corretora:</strong> 
+                        <span id="saldo-${bot.id}">R$ 0.00</span>
+                        <button class="btn btn-sm btn-outline-primary ms-2" onclick="verSaldo(${bot.id})" title="Buscar saldo real">
+                            <i class="fas fa-sync"></i> Ver Saldo
+                        </button>
+                        <br>
+                        <small class="text-muted">${bot.symbols.length} símbolos</small>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="badge ${bot.is_active ? 'bg-success' : 'bg-secondary'} p-2">
+                            ${bot.is_active ? '✓ Ativo' : '○ Inativo'}
+                        </span>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        ${bot.is_active 
+                            ? `<button class="btn btn-sm btn-warning" onclick="toggleBot(${bot.id}, false)" title="Pausar Bot"><i class="fas fa-pause"></i></button>`
+                            : `<button class="btn btn-sm btn-success" onclick="toggleBot(${bot.id}, true)" title="Iniciar Bot"><i class="fas fa-play"></i></button>`
+                        }
+                        <button class="btn btn-sm btn-primary me-1" onclick="editBot(${bot.id})" title="Editar Bot">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDeleteBot(${bot.id}, '${bot.name}')" title="Deletar Bot">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Criar bot
+document.getElementById('create-bot-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const selectedSymbols = Array.from(document.getElementById('symbols').selectedOptions).map(opt => opt.value);
+    
+    const data = {
+        name: formData.get('name'),
+        exchange: formData.get('exchange'),
+        symbols: selectedSymbols,
+        capital: parseFloat(formData.get('capital')),
+        strategy: formData.get('strategy'),
+        timeframe: formData.get('timeframe'),
+        stop_loss_percent: parseFloat(formData.get('stop_loss_percent')),
+        take_profit_percent: parseFloat(formData.get('take_profit_percent')),
+        is_active: false
+    };
+    
+    try {
+        // Usar helper global
+        const response = await authenticatedFetch('/api/bots/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            // SEM ALERT - Cria imediatamente!
+            bootstrap.Modal.getInstance(document.getElementById('createBotModal')).hide();
+            e.target.reset();
+            loadBots();  // Recarrega e mostra bot criado
+        } else {
+            const error = await response.json();
+            const errorMsg = typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail || error);
+            alert('❌ ' + errorMsg);
+        }
+    } catch (error) {
+        alert('❌ Erro de conexão: ' + error.message);
+    }
+});
+
+// Editar bot - Carregar dados do bot
+let botToEdit = null;
+
+async function editBot(botId) {
+    botToEdit = botId;
+    
+    try {
+        // Buscar dados do bot
+        const response = await authenticatedFetch(`/api/bots/${botId}`, {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const bot = await response.json();
+            
+            // Preencher formulário
+            document.getElementById('edit-bot-id').value = bot.id;
+            document.getElementById('edit-bot-name').value = bot.name;
+            document.getElementById('edit-bot-capital').value = bot.capital;
+            document.getElementById('edit-bot-strategy').value = bot.strategy;
+            document.getElementById('edit-bot-timeframe').value = bot.timeframe;
+            document.getElementById('edit-bot-stoploss').value = bot.stop_loss_percent;
+            document.getElementById('edit-bot-takeprofit').value = bot.take_profit_percent;
+            document.getElementById('edit-bot-active').checked = bot.is_active;
+            
+            // Abrir modal
+            const modal = new bootstrap.Modal(document.getElementById('editBotModal'));
+            modal.show();
+        }
+    } catch (error) {
+        alert('Erro ao carregar bot: ' + error.message);
+    }
+}
+
+async function saveBotEdit() {
+    const data = {
+        name: document.getElementById('edit-bot-name').value,
+        capital: parseFloat(document.getElementById('edit-bot-capital').value),
+        strategy: document.getElementById('edit-bot-strategy').value,
+        timeframe: document.getElementById('edit-bot-timeframe').value,
+        stop_loss_percent: parseFloat(document.getElementById('edit-bot-stoploss').value),
+        take_profit_percent: parseFloat(document.getElementById('edit-bot-takeprofit').value),
+        is_active: document.getElementById('edit-bot-active').checked
+    };
+    
+    try {
+        const response = await authenticatedFetch(`/api/bots/${botToEdit}/`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('editBotModal')).hide();
+            loadBots();
+        } else {
+            alert('Erro ao atualizar bot');
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Deletar bot - Abrir modal
+let botToDelete = null;
+
+function confirmDeleteBot(botId, botName) {
+    botToDelete = botId;
+    document.getElementById('bot-name-to-delete').textContent = botName;
+    const modal = new bootstrap.Modal(document.getElementById('deleteBotModal'));
+    modal.show();
+}
+
+async function executeDeleteBot() {
+    try {
+        const response = await authenticatedFetch(`/api/bots/${botToDelete}/`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('deleteBotModal')).hide();
+            loadBots();
+        } else {
+            alert('Erro ao deletar bot');
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Toggle bot (ativar/desativar) - SEMPRE MODAL
+async function toggleBot(id, activate) {
+    try {
+        const response = await authenticatedFetch(`/api/bots/${id}/toggle`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ is_active: activate })
+        });
+        
+        if (response.ok) {
+            console.log(`✅ Bot ${activate ? 'INICIADO' : 'PAUSADO'}`);
+            loadBots();
+        } else {
+            // SEMPRE mostrar modal (nunca alert)
+            const error = await response.json();
+            let errorMsg = error.detail || 'Erro ao alterar status';
+            
+            // Remover código HTTP da mensagem
+            errorMsg = errorMsg.replace(/^\d+:\s*/, '');
+            
+            // Mostrar no modal
+            document.getElementById('modal-saldo-mensagem').textContent = errorMsg;
+            const modal = new bootstrap.Modal(document.getElementById('modalSemSaldo'));
+            modal.show();
+            
+            // Garantir que não ativou
+            loadBots();
+        }
+    } catch (error) {
+        // Erro de conexão também no modal
+        document.getElementById('modal-saldo-mensagem').textContent = 'Erro de conexão: ' + error.message;
+        const modal = new bootstrap.Modal(document.getElementById('modalSemSaldo'));
+        modal.show();
+        loadBots();
+    }
+}
+
+// Deletar bot
+async function deleteBot(id) {
+    if (!confirm('Tem certeza que deseja excluir este bot?')) {
+        return;
+    }
+    
+    const token = document.cookie.split('; ').find(row => row.startsWith('access_token='))?.split('=')[1]?.replace('Bearer%20', '');
+    
+    try {
+        const response = await fetch(`http://localhost:8001/api/bots/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            alert('Bot excluído!');
+            loadBots();
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Carregar API Keys quando seleciona exchange
+async function loadApiKeysForExchange() {
+    const exchange = document.getElementById('bot_exchange').value;
+    const selector = document.getElementById('api-key-selector');
+    const select = document.getElementById('bot_api_key');
+    
+    if (!exchange) {
+        selector.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const response = await authenticatedFetch('/api/api-keys/', {method: 'GET'});
+        
+        if (response.ok) {
+            const keys = await response.json();
+            const filteredKeys = keys.filter(k => k.exchange.toLowerCase() === exchange.toLowerCase());
+            
+            if (filteredKeys.length > 0) {
+                selector.style.display = 'block';
+                select.innerHTML = filteredKeys.map(k => 
+                    `<option value="${k.id}">${k.exchange.toUpperCase()} - ${k.is_testnet ? 'Testnet' : 'Produção'}</option>`
+                ).join('');
+            } else {
+                selector.style.display = 'block';
+                select.innerHTML = '<option value="">Nenhuma API Key para esta exchange</option>';
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar keys:', error);
+    }
+}
+
+// Ver saldo de um bot específico
+async function verSaldo(botId) {
+    const saldoSpan = document.getElementById(`saldo-${botId}`);
+    saldoSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    
+    try {
+        const response = await authenticatedFetch(`/api/bots/${botId}/saldo`, {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.erro) {
+                saldoSpan.innerHTML = '⚠️ ' + data.erro;
+            } else {
+                saldoSpan.innerHTML = `R$ ${data.saldo_brl.toFixed(2)}`;
+            }
+        } else {
+            saldoSpan.innerHTML = 'Erro';
+        }
+    } catch (error) {
+        saldoSpan.innerHTML = 'Erro de conexão';
+    }
+}
+
+// Carregar ao iniciar
+setTimeout(loadBots, 200);
+</script>
+{% endblock %}
+
+
+
+
+
+
+

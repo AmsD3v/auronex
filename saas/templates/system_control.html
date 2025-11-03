@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle do Sistema - RoboTrader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar h1 {
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .server-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .server-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .status.online {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .server-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .server-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-start {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-stop {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-restart {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .btn-open {
+            background: #667eea;
+            color: white;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 onclick="window.location.href='/dashboard/'">🤖 RoboTrader - Controle do Sistema</h1>
+    </div>
+    
+    <div class="container">
+        <div class="info-box">
+            <h3>💡 Como Funciona</h3>
+            <p>O RoboTrader precisa de <strong>2 servidores</strong> rodando simultaneamente:</p>
+            <ul>
+                <li><strong>Django (Backend):</strong> Gerenciamento, API, banco de dados</li>
+                <li><strong>Streamlit (Dashboard):</strong> Gráficos, análises em tempo real</li>
+            </ul>
+            <p style="margin-top: 10px;">Use os botões abaixo para controlar cada servidor sem precisar usar o terminal!</p>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <!-- Django Server -->
+        <div class="server-card">
+            <div class="server-header">
+                <div class="server-name">🔷 Django (Backend)</div>
+                <div class="status" id="django-status">
+                    <span id="django-status-text">Verificando...</span>
+                </div>
+            </div>
+            
+            <div class="server-info">
+                <p><strong>Porta:</strong> 8001</p>
+                <p><strong>URL:</strong> <a href="http://localhost:8001" target="_blank">http://localhost:8001</a></p>
+                <p><strong>Função:</strong> Backend, API REST, Autenticação, Banco de Dados</p>
+                <p><strong>Status:</strong> <span id="django-info">Este servidor já está rodando (você está nele agora!)</span></p>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-open" onclick="window.open('http://localhost:8001', '_blank')">
+                    🌐 Abrir Django
+                </button>
+                <button class="btn btn-open" id="btn-admin" onclick="window.open('http://localhost:8001/admin/', '_blank')" style="display: none;">
+                    🔐 Admin Panel
+                </button>
+            </div>
+            
+            <script>
+                // Mostrar botão Admin apenas para admins
+                async function checkIfAdmin() {
+                    try {
+                        const token = localStorage.getItem('access_token');
+                        const response = await fetch('/api/profile/', {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        });
+                        
+                        if (response.ok) {
+                            const profile = await response.json();
+                            // Se for admin (pode verificar via endpoint específico)
+                            // Por enquanto, esconder para todos exceto você
+                            document.getElementById('btn-admin').style.display = 'none';
+                        }
+                    } catch (error) {
+                        // Esconder em caso de erro
+                    }
+                }
+                checkIfAdmin();
+            </script>
+        </div>
+        
+        <!-- Streamlit Server -->
+        <div class="server-card">
+            <div class="server-header">
+                <div class="server-name">📊 Streamlit (Dashboard)</div>
+                <div class="status" id="streamlit-status">
+                    <span id="streamlit-status-text">Verificando...</span>
+                </div>
+            </div>
+            
+            <div class="server-info">
+                <p><strong>Porta:</strong> 8501</p>
+                <p><strong>URL:</strong> <a href="http://localhost:8501" target="_blank">http://localhost:8501</a></p>
+                <p><strong>Função:</strong> Dashboard, Gráficos, Análises em Tempo Real</p>
+                <p><strong>Status:</strong> <span id="streamlit-info">Carregando...</span></p>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-start" id="btn-start-streamlit" onclick="startStreamlit()">
+                    ▶️ Iniciar
+                </button>
+                <button class="btn btn-stop" id="btn-stop-streamlit" onclick="stopStreamlit()">
+                    ⏹️ Parar
+                </button>
+                <button class="btn btn-restart" id="btn-restart-streamlit" onclick="restartStreamlit()">
+                    🔄 Reiniciar
+                </button>
+                <button class="btn btn-open" onclick="openStreamlit()">
+                    📈 Abrir Dashboard
+                </button>
+            </div>
+        </div>
+        
+        <div class="server-card">
+            <h3 style="margin-bottom: 15px;">📖 Instruções</h3>
+            <p><strong>Se o Dashboard Streamlit não abrir:</strong></p>
+            <ol style="margin-left: 20px; line-height: 2; color: #666;">
+                <li>Verifique o status acima (deve estar <span style="color: #28a745; font-weight: bold;">🟢 Online</span>)</li>
+                <li>Se estiver <span style="color: #dc3545; font-weight: bold;">🔴 Offline</span>, clique em <strong>"▶️ Iniciar"</strong></li>
+                <li>Aguarde 10-15 segundos para iniciar completamente</li>
+                <li>Clique em <strong>"📈 Abrir Dashboard"</strong></li>
+                <li>Se der erro, clique em <strong>"🔄 Reiniciar"</strong></li>
+            </ol>
+            
+            <p style="margin-top: 15px;"><strong>💡 Dica:</strong> Mantenha ambos os servidores rodando para o sistema funcionar completamente!</p>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('access_token');
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 5000);
+        }
+        
+        // Verificar status dos servidores
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/system/status/', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Django
+                    const djangoStatus = document.getElementById('django-status');
+                    const djangoText = document.getElementById('django-status-text');
+                    if (data.django.running) {
+                        djangoStatus.className = 'status online';
+                        djangoText.textContent = '🟢 Online';
+                        document.getElementById('django-info').textContent = 'Rodando normalmente';
+                    } else {
+                        djangoStatus.className = 'status offline';
+                        djangoText.textContent = '🔴 Offline';
+                        document.getElementById('django-info').textContent = 'Servidor parado';
+                    }
+                    
+                    // Streamlit
+                    const streamlitStatus = document.getElementById('streamlit-status');
+                    const streamlitText = document.getElementById('streamlit-status-text');
+                    if (data.streamlit.running) {
+                        streamlitStatus.className = 'status online';
+                        streamlitText.textContent = '🟢 Online';
+                        document.getElementById('streamlit-info').textContent = 'Rodando normalmente';
+                        document.getElementById('btn-start-streamlit').disabled = true;
+                        document.getElementById('btn-stop-streamlit').disabled = false;
+                        document.getElementById('btn-restart-streamlit').disabled = false;
+                    } else {
+                        streamlitStatus.className = 'status offline';
+                        streamlitText.textContent = '🔴 Offline';
+                        document.getElementById('streamlit-info').textContent = 'Clique em "Iniciar" para começar';
+                        document.getElementById('btn-start-streamlit').disabled = false;
+                        document.getElementById('btn-stop-streamlit').disabled = true;
+                        document.getElementById('btn-restart-streamlit').disabled = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+            }
+        }
+        
+        async function startStreamlit() {
+            showMessage('Iniciando Streamlit... Aguarde 15 segundos...', 'success');
+            
+            try {
+                const response = await fetch('/api/system/streamlit/start/', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    setTimeout(checkStatus, 3000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao iniciar Streamlit', 'error');
+            }
+        }
+        
+        async function stopStreamlit() {
+            if (!confirm('Tem certeza que deseja parar o Dashboard Streamlit?')) return;
+            
+            showMessage('Parando Streamlit...', 'success');
+            
+            try {
+                const response = await fetch('/api/system/streamlit/stop/', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    setTimeout(checkStatus, 2000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao parar Streamlit', 'error');
+            }
+        }
+        
+        async function restartStreamlit() {
+            showMessage('Reiniciando Streamlit... Aguarde 15 segundos...', 'success');
+            
+            try {
+                const response = await fetch('/api/system/streamlit/restart/', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    setTimeout(checkStatus, 5000);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao reiniciar Streamlit', 'error');
+            }
+        }
+        
+        function openStreamlit() {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                window.open(`http://localhost:8501?token=${token}`, '_blank');
+            } else {
+                window.open('http://localhost:8501', '_blank');
+            }
+        }
+        
+        // Verificar status a cada 10 segundos
+        checkStatus();
+        setInterval(checkStatus, 10000);
+    </script>
+</body>
+</html>
+

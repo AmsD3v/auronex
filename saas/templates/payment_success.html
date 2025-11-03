@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confirmado - RoboTrader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            color: #28a745;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .details p {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✅</div>
+        <h1>Pagamento Confirmado!</h1>
+        <p>Seu plano foi ativado com sucesso. Agora você tem acesso a todos os recursos!</p>
+        
+        <div class="details">
+            <p><strong>📧 Email de confirmação:</strong> Enviado para sua caixa de entrada</p>
+            <p><strong>🤖 Bots:</strong> Agora você pode criar e gerenciar seus bots</p>
+            <p><strong>📊 Dashboard:</strong> Acesso completo ao dashboard avançado</p>
+            <p><strong>💳 Cobrança:</strong> Renovação automática mensal</p>
+        </div>
+        
+        <button onclick="goToDashboard()">
+            Ir para o Dashboard 🚀
+        </button>
+        
+        <p style="margin-top: 20px; font-size: 0.9em; color: #999;">
+            Você pode cancelar sua assinatura a qualquer momento no dashboard
+        </p>
+    </div>
+    
+    <script>
+        // Verificar se há token de autenticação
+        const token = localStorage.getItem('access_token');
+        const refreshToken = localStorage.getItem('refresh_token');
+        
+        if (!token) {
+            // Se não tem token, redirecionar para login com mensagem
+            setTimeout(() => {
+                localStorage.setItem('payment_success', 'true');
+                window.location.href = '/login/';
+            }, 3000);
+        }
+        
+        async function refreshAccessToken() {
+            if (!refreshToken) return false;
+            
+            try {
+                const response = await fetch('/api/auth/token/refresh/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: refreshToken })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('access_token', data.access);
+                    console.log('✅ Token atualizado após pagamento');
+                    return true;
+                }
+            } catch (error) {
+                console.error('Erro ao refresh token:', error);
+            }
+            return false;
+        }
+        
+        async function goToDashboard() {
+            // Tentar atualizar token antes de ir para dashboard
+            await refreshAccessToken();
+            
+            // Forçar reload dos dados no dashboard
+            localStorage.setItem('force_reload', 'true');
+            localStorage.setItem('payment_just_completed', 'true');
+            
+            window.location.href = '/dashboard/';
+        }
+        
+        // Auto-redirecionar após 5 segundos se tiver token
+        if (token) {
+            setTimeout(() => {
+                goToDashboard();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+

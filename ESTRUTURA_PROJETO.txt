@@ -1,0 +1,55 @@
+Listagem de caminhos de pasta para o volume SERVER_PW
+O número de série do volume é 1AF7-86E1
+I:.
+|   .gitignore
+|   CHANGELOG.md
+|   env_example.txt
+|   ESTRUTURA_PROJETO.txt
+|   GUIA_RAPIDO.md
+|   INSTALACAO.md
+|   LICENSE
+|   main.py
+|   README.md
+|   requirements.txt
+|   RESUMO_PROJETO.md
+|   
++---bot
+|   |   data_manager.py
+|   |   exchange.py
+|   |   notifier.py
+|   |   risk_management.py
+|   |   __init__.py
+|   |   
+|   +---backtesting
+|   |       engine.py
+|   |       visualizer.py
+|   |       __init__.py
+|   |       
+|   \---strategies
+|           base.py
+|           mean_reversion.py
+|           trend_following.py
+|           __init__.py
+|           
++---config
+|       settings.py
+|       __init__.py
+|       
++---data
+|       .gitkeep
+|       
++---logs
+|       .gitkeep
+|       
++---reports
+|       .gitkeep
+|       
++---scripts
+|       download_data.py
+|       run_backtest.py
+|       test_connection.py
+|       __init__.py
+|       
+\---tests
+        __init__.py
+        

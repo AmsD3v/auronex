@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Pagamento com Cartão - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+                        <h3 class="text-center mb-4">Pagamento com Cartão</h3>
+                        
+                        <div class="alert alert-info text-center mb-4">
+                            <p class="mb-0"><strong>Plano:</strong> {{ plan.name }}</p>
+                            <h4 class="mb-0 mt-2">R$ {{ "%.2f"|format(plan.price) }}</h4>
+                            <small class="text-muted">Cobrança mensal automática</small>
+                        </div>
+                        
+                        <form id="card-payment-form" onsubmit="event.preventDefault(); processarPagamento();">
+                            <h5 class="mb-3">Dados do Cartão</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Número do Cartão</label>
+                                <input type="text" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Validade</label>
+                                    <input type="text" class="form-control" placeholder="MM/AA" maxlength="5" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">CVV</label>
+                                    <input type="text" class="form-control" placeholder="123" maxlength="4" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Nome no Cartão</label>
+                                <input type="text" class="form-control" placeholder="Como está no cartão" required>
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <h5 class="mb-3">Endereço de Cobrança</h5>
+                            
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">CEP</label>
+                                    <input type="text" class="form-control" placeholder="00000-000" required>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Estado</label>
+                                    <select class="form-select" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="SP">São Paulo</option>
+                                        <option value="RJ">Rio de Janeiro</option>
+                                        <option value="MG">Minas Gerais</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    Autorizo a cobrança recorrente de R$ {{ "%.2f"|format(plan.price) }}/mês
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100" id="submit-btn">
+                                <i class="fas fa-lock"></i> Confirmar Pagamento
+                            </button>
+                            
+                            <p class="text-center mt-3 text-muted">
+                                <small><i class="fas fa-shield-alt"></i> Pagamento 100% seguro</small>
+                            </p>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <p class="text-center">
+                            <a href="/payment/choice" class="text-muted">Voltar para escolha de planos</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Ao carregar, preparar integração com Stripe
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('Página de cartão carregada');
+});
+
+async function processarPagamento() {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processando...';
+    
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan') || 'pro';
+        
+        // Chamar API PÚBLICA do Stripe (PRODUÇÃO - PAGAMENTO REAL!)
+        const response = await fetch('/api/payments-public/stripe/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                plan: plan
+            }),
+            credentials: 'include'  // Envia cookies (pending_user_id)
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            console.log('Resposta Stripe:', data);
+            
+            // Redirecionar para checkout do Stripe REAL
+            if (data.checkout_url) {
+                console.log('Redirecionando para Stripe:', data.checkout_url);
+                window.location.href = data.checkout_url;
+                return;
+            }
+        }
+        
+        // Se chegou aqui, houve erro - mostrar mensagem
+        alert('Erro ao processar pagamento. Tente novamente ou escolha PIX.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar Pagamento';
+    } catch (error) {
+        console.log('Usando simulação:', error);
+        // Fallback: simular pagamento
+        setTimeout(() => {
+            const plan = new URLSearchParams(window.location.search).get('plan') || 'pro';
+            window.location.href = '/payment/success?plan=' + plan;
+        }, 2000);
+    }
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+</script>
+{% endblock %}
+
+

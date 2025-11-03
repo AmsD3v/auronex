@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Conta - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-5" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg" style="border-radius: 20px; border: none;">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold">Criar Conta Grátis</h2>
+                            <p class="text-muted">Comece a automatizar seus trades agora</p>
+                        </div>
+                        
+                        {% if error %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                        </div>
+                        {% endif %}
+                        
+                        <form method="POST" action="/register" id="register-form">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label">Nome</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="João">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label">Sobrenome</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="Silva">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" name="email" required placeholder="seu@email.com">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cpf" class="form-label">CPF</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                        <input type="text" class="form-control" id="cpf" name="cpf" required placeholder="000.000.000-00" maxlength="14">
+                                    </div>
+                                    <small class="text-muted">Apenas um cadastro por CPF</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="celular" class="form-label">Celular</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        <input type="text" class="form-control" id="celular" name="celular" required placeholder="(00) 00000-0000" maxlength="15">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Senha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" name="password" required placeholder="Mínimo 6 caracteres" minlength="6">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirme a Senha</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Digite a senha novamente" minlength="6">
+                                </div>
+                                <small id="password-match-message" class="text-muted"></small>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        Concordo com os <a href="/terms" target="_blank" class="text-primary">Termos de Uso</a> e <a href="/privacy" target="_blank" class="text-primary">Política de Privacidade</a>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 mb-3" id="submit-btn">
+                                <i class="fas fa-rocket"></i> Criar Minha Conta
+                            </button>
+                            
+                            <div class="text-center">
+                                <p class="text-muted mb-0">
+                                    Já tem uma conta? <a href="/login" class="fw-bold">Fazer Login</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Formatação automática de CPF
+document.getElementById('cpf').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length <= 11) {
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    
+    e.target.value = value;
+});
+
+// Formatação automática de Celular
+document.getElementById('celular').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length <= 11) {
+        value = value.replace(/^(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+    }
+    
+    e.target.value = value;
+});
+
+// Validação de senha em tempo real
+document.getElementById('confirm_password').addEventListener('input', function(e) {
+    const password = document.getElementById('password').value;
+    const confirm = e.target.value;
+    const message = document.getElementById('password-match-message');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (confirm.length === 0) {
+        message.textContent = '';
+        message.className = 'text-muted';
+        return;
+    }
+    
+    if (password === confirm) {
+        message.textContent = '✓ Senhas conferem';
+        message.className = 'text-success';
+        submitBtn.disabled = false;
+    } else {
+        message.textContent = '✗ Senhas não conferem';
+        message.className = 'text-danger';
+        submitBtn.disabled = true;
+    }
+});
+
+// Validação do formulário
+document.getElementById('register-form').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    
+    if (password !== confirm) {
+        e.preventDefault();
+        alert('As senhas não conferem!');
+        return false;
+    }
+    
+    const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+    if (cpf.length !== 11) {
+        e.preventDefault();
+        alert('CPF inválido! Deve ter 11 dígitos.');
+        return false;
+    }
+    
+    return true;
+});
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,4 @@
+web: gunicorn saas.wsgi --log-file -
+worker: celery -A saas.celery_config worker --loglevel=info
+beat: celery -A saas.celery_config beat --loglevel=info
+

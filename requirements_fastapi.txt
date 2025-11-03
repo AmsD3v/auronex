@@ -1,0 +1,48 @@
+# FastAPI - Backend robusto e rápido
+fastapi==0.104.1
+uvicorn[standard]==0.24.0  # Servidor ASGI (assíncrono)
+pydantic==2.5.0  # Validação de dados
+pydantic-settings==2.1.0
+
+# Database (SQLAlchemy - ORM similar ao Django)
+sqlalchemy==2.0.23
+alembic==1.13.0  # Migrations (como Django migrations)
+databases==0.8.0  # Async database support
+
+# Authentication (JWT)
+python-jose[cryptography]==3.3.0  # JWT tokens
+passlib[argon2]==1.7.4  # Password hashing (Argon2)
+argon2-cffi==23.1.0  # Argon2 backend
+python-multipart==0.0.6  # Form data
+email-validator==2.1.0  # Email validation
+
+# Payment Gateways
+stripe==7.7.0  # Stripe (cartão internacional)
+mercadopago==2.2.1  # MercadoPago (PIX + cartão Brasil)
+
+# Templates (HTML)
+jinja2==3.1.2  # Template engine
+
+# Celery (mesmo do Django - compatível!)
+celery==5.3.4
+redis==5.0.1
+
+# Trading (CCXT - mesmo!)
+ccxt==4.1.65
+
+# Utils
+python-decouple==3.8
+cryptography==41.0.7  # Para criptografar API Keys
+httpx==0.25.2  # HTTP client async
+
+# CORS
+fastapi-cors==0.0.6
+
+# Admin Panel (opcional - criar depois)
+sqladmin==0.16.0  # Admin interface para FastAPI
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+

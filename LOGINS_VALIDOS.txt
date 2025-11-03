@@ -1,0 +1,39 @@
+==============================================
+  CREDENCIAIS VÁLIDAS PARA LOGIN
+  URL: http://localhost:8001/admin/
+==============================================
+
+OPÇÃO 1 (Admin - Backoffice):
+  Username: admin
+  Password: admin123
+  
+  Acesso: TOTAL (vê tudo, gerencia tudo)
+
+----------------------------------------------
+
+OPÇÃO 2 (Usuário normal):
+  Username: trader@robotrader.com
+  Password: trader123
+  
+  Acesso: Apenas dados desse usuário
+  API Keys: Binance (já configurada)
+
+----------------------------------------------
+
+❌ NÃO USE:
+  Email da Binance: seu_email_binance@gmail.com
+  Senha da Binance: sua_senha_binance
+  
+  Isso NÃO vai funcionar! São sistemas diferentes!
+
+----------------------------------------------
+
+✅ DEPOIS DE FAZER LOGIN:
+  1. Vá em "Exchange api keys"
+  2. Veja suas API Keys (mascaradas: ***nmef)
+  3. Crie bots
+  4. Ative bots
+  5. Bots operam usando as API Keys
+
+==============================================
+

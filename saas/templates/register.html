@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - RoboTrader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🤖 RoboTrader</h1>
+            <p>Criar sua conta</p>
+            <div id="planInfo" style="background: #e7f3ff; color: #004085; padding: 15px; border-radius: 8px; margin-top: 20px; display: none;">
+                <strong>📋 Plano Selecionado:</strong> <span id="planName"></span>
+                <br>
+                <small id="planDetails"></small>
+            </div>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="first_name">Nome:</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="last_name">Sobrenome:</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" required maxlength="14" placeholder="000.000.000-00">
+                <small style="color: #666;">Para verificação e segurança</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" required minlength="8">
+                <small style="color: #666;">Mínimo 8 caracteres</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="password_confirm">Confirmar Senha:</label>
+                <input type="password" id="password_confirm" name="password_confirm" required>
+            </div>
+            
+            <button type="submit" id="submitBtn">Criar Conta</button>
+        </form>
+        
+        <div class="divider">ou</div>
+        
+        <div class="links">
+            <p>Já tem uma conta? <a href="/login">Fazer login</a></p>
+            <p style="margin-top: 10px;"><a href="/">← Voltar para home</a></p>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('registerForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageDiv = document.getElementById('message');
+        
+        // Detectar plano da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedPlan = urlParams.get('plan') || 'free';
+        
+        const planDetails = {
+            'free': {
+                name: 'Free (Teste 7 dias)',
+                details: 'Após 7 dias, escolha um plano pago ou sua conta será pausada.',
+                color: '#6c757d'
+            },
+            'pro': {
+                name: 'Pro - R$2/mês 🧪',
+                details: '🧪 VALOR DE TESTE - Renovação automática mensal. Cancele quando quiser.',
+                color: '#667eea'
+            },
+            'premium': {
+                name: 'Premium - R$5/mês 🧪',
+                details: '🧪 VALOR DE TESTE - Renovação automática mensal. Todos os recursos inclusos.',
+                color: '#764ba2'
+            }
+        };
+        
+        // Mostrar plano selecionado
+        const planInfo = planDetails[selectedPlan];
+        document.getElementById('planInfo').style.display = 'block';
+        document.getElementById('planInfo').style.borderLeft = `4px solid ${planInfo.color}`;
+        document.getElementById('planName').textContent = planInfo.name;
+        document.getElementById('planDetails').textContent = planInfo.details;
+        
+        // Formatação de CPF
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validar senhas
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password_confirm').value;
+            
+            if (password !== passwordConfirm) {
+                showMessage('As senhas não coincidem!', 'error');
+                return;
+            }
+            
+            // Desabilitar botão
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Criando conta...';
+            
+            // Dados do formulário
+            const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+            
+            const data = {
+                email: document.getElementById('email').value,
+                password: password,
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                cpf: cpf,
+                plan: selectedPlan
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Salvar token
+                    localStorage.setItem('access_token', result.access);
+                    localStorage.setItem('refresh_token', result.refresh);
+                    
+                    // Se plano pago, redirecionar para ESCOLHA de pagamento
+                    if (selectedPlan === 'pro' || selectedPlan === 'premium') {
+                        showMessage('Conta criada! Escolha a forma de pagamento...', 'success');
+                        
+                        // Redirecionar para página de escolha
+                        setTimeout(() => {
+                            window.location.href = `/payment/choice/?plan=${selectedPlan}`;
+                        }, 1500);
+                    } else {
+                        // Plano free, ir direto para dashboard
+                        showMessage('Conta criada com sucesso! Redirecionando...', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 2000);
+                    }
+                } else {
+                    let errorMsg = '';
+                    if (result.email) {
+                        errorMsg = result.email.join(', ');
+                    } else if (result.cpf) {
+                        errorMsg = result.cpf.join(', ');
+                    } else if (result.password) {
+                        errorMsg = result.password.join(', ');
+                    } else {
+                        errorMsg = 'Erro ao criar conta. Verifique os dados.';
+                    }
+                    showMessage(errorMsg, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Criar Conta';
+                }
+            } catch (error) {
+                showMessage('Erro de conexão. Tente novamente.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Criar Conta';
+            }
+        });
+        
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+        }
+        
+        async function createPaymentSession(plan) {
+            try {
+                const token = localStorage.getItem('access_token');
+                
+                const response = await fetch('/api/payment/create-checkout/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ plan: plan })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Redirecionar para página de pagamento do Stripe
+                    window.location.href = result.checkout_url;
+                } else if (result.setup_required) {
+                    // Stripe não está configurado ainda
+                    showMessage('⚠️ ' + result.message + ' Indo para dashboard...', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 3000);
+                } else {
+                    showMessage('Erro ao processar pagamento. Indo para dashboard...', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                }
+            } catch (error) {
+                showMessage('Erro de conexão. Indo para dashboard...', 'error');
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
+

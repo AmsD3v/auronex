@@ -1,0 +1,40 @@
+/* Destacar campo Extra bots */
+#id_extra_bots {
+    font-size: 24px !important;
+    padding: 15px !important;
+    border: 3px solid #4CAF50 !important;
+    background: #e8f5e9 !important;
+    text-align: center !important;
+    font-weight: bold !important;
+    color: #2E7D32 !important;
+    width: 200px !important;
+}
+
+.field-extra_bots {
+    background: #fff3cd !important;
+    padding: 20px !important;
+    border: 3px dashed #ff9800 !important;
+    border-radius: 10px !important;
+    margin: 20px 0 !important;
+}
+
+.field-extra_bots label {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: #e65100 !important;
+}
+
+.field-extra_bots label:after {
+    content: " ⬅️ DIGITE AQUI QUANTOS BOTS EXTRAS!" !important;
+    color: #d32f2f !important;
+    font-weight: bold !important;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.3; }
+}
+
+
+

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}RoboTrader - Bot de Trading Automatizado de Criptomoedas{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero py-5" style="min-height: 90vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-white">
+                <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInUp">
+                    Trading Automatizado
+                    <span class="d-block" style="color: #FFD700;">Sem Emoção</span>
+                </h1>
+                <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                    Deixe nosso bot operar 24/7 enquanto você dorme. Inteligência artificial + estratégias vencedoras.
+                </p>
+                <div class="d-flex gap-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <a href="/register" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket"></i> Começar Agora - Grátis
+                    </a>
+                    <a href="#features" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-play-circle"></i> Ver Demonstração
+                    </a>
+                </div>
+                
+                <!-- Social Proof -->
+                <div class="mt-5">
+                    <p class="text-white-50 mb-3"><i class="fas fa-users"></i> Junte-se a mais de 1,000+ traders</p>
+                    <div class="d-flex gap-4">
+                        <div>
+                            <h3 class="fw-bold mb-0">87%</h3>
+                            <small class="text-white-50">Taxa de Sucesso</small>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">$2.5M+</h3>
+                            <small class="text-white-50">Negociado</small>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0">24/7</h3>
+                            <small class="text-white-50">Operação</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card bg-white shadow-lg" style="border-radius: 20px;">
+                    <div class="card-body p-4">
+                        <h4 class="text-center mb-4">Performance em Tempo Real</h4>
+                        
+                        <!-- Mock Dashboard -->
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="text-center p-3" style="background: #f8f9fa; border-radius: 10px;">
+                                    <h5 class="text-success mb-0">+15.8%</h5>
+                                    <small class="text-muted">Hoje</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3" style="background: #f8f9fa; border-radius: 10px;">
+                                    <h5 class="text-success mb-0">+47.3%</h5>
+                                    <small class="text-muted">Este Mês</small>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small>Capital Total</small>
+                                            <h4 class="mb-0">$12,450.00</h4>
+                                        </div>
+                                        <i class="fas fa-chart-line fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Trades -->
+                        <h6 class="mt-4 mb-3">Últimas Operações</h6>
+                        <div class="list-group">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>BTC/USDT</strong>
+                                    <small class="d-block text-muted">2 min atrás</small>
+                                </div>
+                                <span class="badge bg-success">+2.5%</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>ETH/USDT</strong>
+                                    <small class="d-block text-muted">15 min atrás</small>
+                                </div>
+                                <span class="badge bg-success">+1.8%</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>SOL/USDT</strong>
+                                    <small class="d-block text-muted">1 hora atrás</small>
+                                </div>
+                                <span class="badge bg-success">+3.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Por Que RoboTrader?</h2>
+            <p class="lead text-muted">Tecnologia de ponta para maximizar seus lucros</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-robot fa-3x" style="color: #667eea;"></i>
+                        </div>
+                        <h5 class="card-title">IA Avançada</h5>
+                        <p class="card-text text-muted">
+                            Algoritmos de machine learning analisam milhares de indicadores em tempo real.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-shield-alt fa-3x" style="color: #764ba2;"></i>
+                        </div>
+                        <h5 class="card-title">100% Seguro</h5>
+                        <p class="card-text text-muted">
+                            Suas API Keys são criptografadas. Nunca acessamos suas credenciais.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-clock fa-3x" style="color: #667eea;"></i>
+                        </div>
+                        <h5 class="card-title">24/7 Operando</h5>
+                        <p class="card-text text-muted">
+                            O bot nunca dorme. Aproveita oportunidades enquanto você descansa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-line fa-3x" style="color: #764ba2;"></i>
+                        </div>
+                        <h5 class="card-title">Múltiplas Estratégias</h5>
+                        <p class="card-text text-muted">
+                            Scalping, Day Trade, Swing Trade. Escolha ou deixe a IA decidir.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-exchange-alt fa-3x" style="color: #667eea;"></i>
+                        </div>
+                        <h5 class="card-title">Múltiplas Exchanges</h5>
+                        <p class="card-text text-muted">
+                            Binance, Bybit, KuCoin e mais. Diversifique suas operações.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-mobile-alt fa-3x" style="color: #764ba2;"></i>
+                        </div>
+                        <h5 class="card-title">Acesso Mobile</h5>
+                        <p class="card-text text-muted">
+                            Monitore e controle de qualquer lugar. Interface responsiva.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container text-center text-white">
+        <h2 class="display-5 fw-bold mb-4">Pronto para Começar?</h2>
+        <p class="lead mb-4">Junte-se a milhares de traders que já automatizaram seus lucros</p>
+        <a href="/register" class="btn btn-light btn-lg px-5">
+            <i class="fas fa-rocket"></i> Criar Conta Grátis
+        </a>
+    </div>
+</section>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

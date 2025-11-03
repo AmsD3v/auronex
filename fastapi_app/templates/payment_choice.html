@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Escolha Seu Plano - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white">Bem-vindo, {{ user.first_name }}!</h1>
+            <p class="lead text-white">Escolha o plano ideal para começar a automatizar seus trades</p>
+        </div>
+        
+        <!-- Planos com estilo padronizado -->
+        <div class="row g-4 justify-content-center mb-5">
+            <!-- FREE (7 dias) -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-lg" style="border-radius: 20px; border: 2px solid #667eea;">
+                    <div class="card-body p-4 bg-white">
+                        <h3 class="card-title text-center mb-4" style="color: #667eea;">Free</h3>
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold">R$ 0</h2>
+                            <p class="text-muted">7 dias de teste</p>
+                        </div>
+                        
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 1 Bot Simultâneo</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 1 Exchange</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Estratégias Básicas</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Suporte por Email</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-times"></i> IA Avançada</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-times"></i> Backtesting</li>
+                        </ul>
+                        
+                        <a href="/payment/confirm-free" class="btn btn-outline-primary w-100 btn-lg" style="border-width: 2px;">
+                            Testar 7 Dias Grátis
+                        </a>
+                        <p class="text-center text-muted mt-2 small">Sem cartão de crédito</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PRO (Mais Popular) -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-lg" style="border-radius: 20px; border: 3px solid #667eea; transform: scale(1.05);">
+                    <div class="badge bg-warning text-dark position-absolute top-0 start-50 translate-middle px-4 py-2">
+                        MAIS POPULAR
+                    </div>
+                    <div class="card-body p-4 bg-white mt-3">
+                        <h3 class="card-title text-center mb-4" style="color: #667eea;">Pro</h3>
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold">R$ 29,90</h2>
+                            <p class="text-muted">por mês</p>
+                        </div>
+                        
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 3 Bots Simultâneos</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Todas as Exchanges</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> IA Avançada</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Backtesting</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Suporte Prioritário</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Relatórios Avançados</li>
+                        </ul>
+                        
+                        <a href="/payment/checkout?plan=pro" class="btn btn-primary w-100 btn-lg">
+                            Assinar Plano Pro
+                        </a>
+                        <p class="text-center text-muted mt-2 small">Renovação mensal automática</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PREMIUM -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-lg" style="border-radius: 20px; border: 2px solid #764ba2;">
+                    <div class="card-body p-4 bg-white">
+                        <h3 class="card-title text-center mb-4" style="color: #764ba2;">Premium</h3>
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold">R$ 99,90</h2>
+                            <p class="text-muted">por mês</p>
+                        </div>
+                        
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 10 Bots Simultâneos</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Todas as Exchanges</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> IA + Machine Learning</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Backtesting Avançado</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Suporte VIP 24/7</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> API Customizada</li>
+                        </ul>
+                        
+                        <a href="/payment/checkout?plan=premium" class="btn btn-primary w-100 btn-lg">
+                            Assinar Plano Premium
+                        </a>
+                        <p class="text-center text-muted mt-2 small">Para traders profissionais</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Garantia -->
+        <div class="text-center mb-5">
+            <div class="card bg-white shadow d-inline-block">
+                <div class="card-body p-4">
+                    <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                    <h5>Garantia de 7 Dias ou Seu Dinheiro de Volta</h5>
+                    <p class="mb-0">Experimente sem riscos. Se não gostar, devolvemos 100%.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h5><i class="fas fa-robot"></i> RoboTrader</h5>
+                <p class="text-muted">Trading automatizado de criptomoedas</p>
+            </div>
+            <div class="col-md-4">
+                <h6>Links Rápidos</h6>
+                <ul class="list-unstyled">
+                    <li><a href="/docs-page" class="text-muted">Documentação</a></li>
+                    <li><a href="/api/docs" class="text-muted">API</a></li>
+                    <li><a href="/pricing" class="text-muted">Planos</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6>Contato</h6>
+                <p class="text-muted">
+                    <i class="fas fa-envelope"></i> support@robotrader.com<br>
+                    <i class="fas fa-globe"></i> www.robotrader.com
+                </p>
+            </div>
+        </div>
+        <hr class="bg-secondary">
+        <div class="text-center text-muted">
+            <small>&copy; 2025 RoboTrader. Todos os direitos reservados.</small>
+        </div>
+    </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}API Keys - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 bg-white shadow-sm" style="min-height: 90vh;">
+                <div class="p-3">
+                    <h5 class="mb-4"><i class="fas fa-user-circle"></i> Minha Conta</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/dashboard">
+                                <i class="fas fa-chart-line"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link active" href="/api-keys-page">
+                                <i class="fas fa-key"></i> API Keys
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/bots-page">
+                                <i class="fas fa-robot"></i> Meus Bots
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/pricing">
+                                <i class="fas fa-arrow-up"></i> Upgrade
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link" href="/docs-page">
+                                <i class="fas fa-book"></i> Documentação
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-danger" href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10">
+                <div class="p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="text-white">Minhas API Keys</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKeyModal">
+                            <i class="fas fa-plus"></i> Adicionar API Key
+                        </button>
+                    </div>
+                    
+                    <!-- Guia Rápido -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Como conseguir API Keys?</h6>
+                        <ol class="mb-0">
+                            <li><strong>Binance:</strong> <a href="https://testnet.binance.vision/" target="_blank">testnet.binance.vision</a> (Testnet) ou <a href="https://www.binance.com/en/my/settings/api-management" target="_blank">binance.com/settings/api</a> (Produção)</li>
+                            <li><strong>Bybit:</strong> <a href="https://testnet.bybit.com/" target="_blank">testnet.bybit.com</a> (Testnet)</li>
+                            <li>Gere suas chaves e cole aqui</li>
+                        </ol>
+                    </div>
+                    
+                    <!-- Lista de API Keys -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fas fa-key"></i> API Keys Cadastradas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="api-keys-list">
+                                <div class="text-center py-5 text-muted">
+                                    <i class="fas fa-key fa-3x mb-3"></i>
+                                    <p>Nenhuma API Key cadastrada ainda.</p>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKeyModal">
+                                        <i class="fas fa-plus"></i> Adicionar Primeira API Key
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Editar API Key -->
+<div class="modal fade" id="editKeyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Editar API Key</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Exchange: <strong id="edit-exchange-name"></strong></p>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="edit-testnet">
+                    <label class="form-check-label" for="edit-testnet">
+                        <i class="fas fa-vial"></i> Modo Testnet
+                    </label>
+                </div>
+                <small class="text-muted d-block mt-2">
+                    Testnet: Dinheiro virtual (seguro para testes)<br>
+                    Produção: Dinheiro real (cuidado!)
+                </small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveKeyEdit()">
+                    <i class="fas fa-save"></i> Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar API Key -->
+<div class="modal fade" id="addKeyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus"></i> Adicionar API Key</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-key-form">
+                    <div class="mb-3">
+                        <label for="exchange" class="form-label">Exchange</label>
+                        <select class="form-select" id="exchange" name="exchange" required>
+                            <option value="">Selecione...</option>
+                            <option value="binance">Binance</option>
+                            <option value="bybit">Bybit</option>
+                            <option value="okx">OKX</option>
+                            <option value="kucoin">KuCoin</option>
+                            <option value="coinbase">Coinbase</option>
+                            <option value="kraken">Kraken</option>
+                            <option value="mercadobitcoin">Mercado Bitcoin 🇧🇷</option>
+                            <option value="brasilbitcoin">Brasil Bitcoin 🇧🇷</option>
+                            <option value="foxbit">Foxbit 🇧🇷</option>
+                            <option value="bitso">Bitso</option>
+                            <option value="novadax">NovaDAX 🇧🇷</option>
+                            <option value="bitfinex">Bitfinex</option>
+                            <option value="gateio">Gate.io</option>
+                            <option value="mexc">MEXC</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="api_key" class="form-label">API Key (Pública)</label>
+                        <input type="text" class="form-control font-monospace" id="api_key" name="api_key" required placeholder="SuaAPIKeyAqui...">
+                        <small class="text-muted">A chave pública da sua exchange</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="secret_key" class="form-label">Secret Key (Privada)</label>
+                        <input type="password" class="form-control font-monospace" id="secret_key" name="secret_key" required placeholder="SuaSecretKeyAqui...">
+                        <small class="text-muted">A chave secreta (nunca compartilhe!)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_testnet" name="is_testnet" checked>
+                            <label class="form-check-label" for="is_testnet">
+                                <i class="fas fa-vial"></i> Testnet (Recomendado para testes)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Importante:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Suas chaves são criptografadas no banco de dados</li>
+                            <li>Use TESTNET para testar sem risco</li>
+                            <li>NUNCA compartilhe suas chaves com ninguém</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-save"></i> Salvar API Key
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Carregar API Keys do backend
+async function loadApiKeys() {
+    try {
+        // Verificar se helper existe
+        if (typeof authenticatedFetch === 'undefined') {
+            console.error('authenticatedFetch não carregado ainda');
+            setTimeout(loadApiKeys, 100);  // Tentar novamente
+            return;
+        }
+        
+        // Usar helper global
+        const response = await authenticatedFetch('/api/api-keys/', {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const keys = await response.json();
+            displayApiKeys(keys);
+        }
+    } catch (error) {
+        console.error('Erro ao carregar API Keys:', error);
+    }
+}
+
+function displayApiKeys(keys) {
+    const container = document.getElementById('api-keys-list');
+    
+    console.log('Exibindo API Keys:', keys.length);
+    
+    if (keys.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Nenhuma API Key cadastrada ainda.</div>';
+        return;
+    }
+    
+    container.innerHTML = keys.map(key => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <h6 class="mb-0">
+                            <i class="fas fa-exchange-alt"></i> ${key.exchange.toUpperCase()}
+                        </h6>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">Criada em:</small><br>
+                        <span>${new Date(key.created_at).toLocaleDateString('pt-BR')}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="badge ${key.is_testnet ? 'bg-warning' : 'bg-success'}">
+                            ${key.is_testnet ? 'Testnet' : 'Produção'}
+                        </span>
+                        <span class="badge ${key.is_active ? 'bg-success' : 'bg-secondary'}">
+                            ${key.is_active ? 'Ativa' : 'Inativa'}
+                        </span>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-sm btn-primary me-2" onclick="editKey(${key.id}, '${key.exchange}', ${key.is_testnet})" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteKey(${key.id})" title="Deletar">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Adicionar API Key
+document.getElementById('add-key-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = {
+        exchange: formData.get('exchange'),
+        api_key: formData.get('api_key'),
+        secret_key: formData.get('secret_key'),
+        is_testnet: formData.get('is_testnet') === 'on',
+        is_active: true
+    };
+    
+    try {
+        // Usar helper global
+        const response = await authenticatedFetch('/api/api-keys/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            alert('API Key salva com sucesso!');
+            bootstrap.Modal.getInstance(document.getElementById('addKeyModal')).hide();
+            e.target.reset();
+            loadApiKeys();
+        } else {
+            const error = await response.json();
+            alert('Erro: ' + (error.detail || 'Erro ao salvar API Key'));
+        }
+    } catch (error) {
+        alert('Erro de conexão: ' + error.message);
+    }
+});
+
+// Deletar API Key
+async function deleteKey(id) {
+    if (!confirm('Deletar esta API Key?')) return;
+    
+    try {
+        const response = await authenticatedFetch(`/api/api-keys/${id}/`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadApiKeys();  // Recarrega sem alert
+        } else {
+            alert('Erro ao deletar');
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Editar API Key
+let keyToEdit = null;
+
+function editKey(keyId, exchange, isTestnet) {
+    keyToEdit = keyId;
+    
+    // Preencher modal
+    document.getElementById('edit-exchange-name').textContent = exchange.toUpperCase();
+    document.getElementById('edit-testnet').checked = isTestnet;
+    
+    // Abrir modal
+    const modal = new bootstrap.Modal(document.getElementById('editKeyModal'));
+    modal.show();
+}
+
+async function saveKeyEdit() {
+    const isTestnet = document.getElementById('edit-testnet').checked;
+    
+    try {
+        const response = await authenticatedFetch(`/api/api-keys/${keyToEdit}/toggle-testnet`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ is_testnet: isTestnet })
+        });
+        
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('editKeyModal')).hide();
+            loadApiKeys();
+        } else {
+            alert('Erro ao atualizar');
+        }
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    }
+}
+
+// Carregar ao iniciar (aguardar helper carregar)
+setTimeout(loadApiKeys, 200);
+</script>
+{% endblock %}
+
+
+
+
+
+
+

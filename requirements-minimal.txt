@@ -1,0 +1,36 @@
+# ========================================
+# RoboTrader - Dependências MÍNIMAS
+# ========================================
+# Use APENAS se tiver muitos problemas com a instalação completa
+# Instale com: pip install -r requirements-minimal.txt
+#
+# ATENÇÃO: Algumas funcionalidades podem não funcionar:
+# - Gráficos podem não ser gerados
+# - Telegram pode não funcionar
+
+# ESSENCIAL - Não remova nada daqui
+ccxt
+pandas
+numpy
+ta
+python-dotenv
+SQLAlchemy
+requests
+rich
+
+# IMPORTANTE - Tente instalar, mas pode pular se der erro
+matplotlib
+python-telegram-bot
+
+# COMPLEMENTARES - Pode instalar depois
+# plotly
+# mplfinance
+# schedule
+# colorlog
+# tabulate
+# pydantic
+# pytz
+# scipy
+# numba
+# backtrader
+

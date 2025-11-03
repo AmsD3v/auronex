@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Planos e Preços - RoboTrader{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Botão Voltar ao Dashboard -->
+        <div class="mb-4">
+            <a href="/dashboard" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+        </div>
+        
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-white">{{ page_title|default("Escolha Seu Plano") }}</h1>
+            <p class="lead text-white-50">
+                {% if plan == "free" %}
+                    Desbloqueie todo o potencial com Pro ou Premium!
+                {% elif plan == "pro" %}
+                    Quer bots ilimitados? Faça upgrade para Premium!
+                {% elif plan == "premium" %}
+                    Você está no melhor plano! Precisa de mais? Fale conosco.
+                {% else %}
+                    Comece grátis. Atualize quando precisar.
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            {% if plan == "premium" %}
+                <!-- Usuário Premium - Formulário de Contato -->
+                <div class="col-lg-6">
+                    <div class="card shadow-lg" style="border-radius: 20px; border: none; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+                        <div class="card-body p-5 text-center text-white">
+                            <i class="fas fa-crown fa-4x mb-4"></i>
+                            <h2 class="mb-3">Você está no Topo!</h2>
+                            <p class="lead mb-4">Plano Premium - Bots 10 Bots</p>
+                            
+                            <p class="mb-4">Precisa de algo ainda mais exclusivo?<br>Planos Enterprise com suporte dedicado!</p>
+                            
+                            <button class="btn btn-dark btn-lg" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                <i class="fas fa-envelope"></i> Falar com Vendas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- FREE -->
+                {% if "free" in available_plans %}
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-lg" style="border-radius: 20px; border: none;">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center mb-4">Free</h3>
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold">R$ 0</h2>
+                            <p class="text-muted">7 dias de teste</p>
+                        </div>
+                        
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 1 Bot Simultâneo</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 1 Exchange</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Estratégias Básicas</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> IA Avançada</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Backtesting</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Suporte por Email</li>
+                        </ul>
+                        
+                        <a href="/register" class="btn btn-primary w-100 btn-lg shadow">
+                            <i class="fas fa-gift"></i> Começar Grátis
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- PRO -->
+            {% if "pro" in available_plans %}
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-lg border-primary" style="border-radius: 20px; border-width: 3px !important;">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <span class="badge bg-primary">MAIS POPULAR</span>
+                        </div>
+                        <h3 class="card-title text-center mb-4">Pro</h3>
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold">R$ 29,90</h2>
+                            <p class="text-muted">por mês</p>
+                        </div>
+                        
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 3 Bots Simultâneos</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Todas as Exchanges</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> IA Avançada</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Backtesting</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Suporte Prioritário</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Relatórios Avançados</li>
+                        </ul>
+                        
+                        <a href="/payment/checkout?plan=pro" class="btn btn-primary w-100 btn-lg shadow">
+                            <i class="fas fa-rocket"></i> {% if plan == "free" %}Upgrade para Pro{% else %}Assinar Pro{% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- PREMIUM -->
+            {% if "premium" in available_plans %}
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-lg" style="border-radius: 20px; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center mb-4">Premium</h3>
+                        <div class="text-center mb-4">
+                            <h2 class="display-4 fw-bold">R$ 99,90</h2>
+                            <p class="text-white-50">por mês</p>
+                        </div>
+                        
+                        <ul class="list-unstyled mb-4">
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> 10 Bots Simultâneos</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Todas as Exchanges</li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i> IA Avançada + ML
+                                <span class="badge bg-warning text-dark ms-2">Em desenvolvimento</span>
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Backtesting Avançado</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> Suporte VIP 24/7</li>
+                            <li class="mb-2"><i class="fas fa-check text-success"></i> API Customizada</li>
+                        </ul>
+                        
+                        <div class="alert alert-info small mb-3">
+                            <i class="fas fa-info-circle"></i> <strong>ML (Machine Learning):</strong> Bot que aprende com seus trades. Coming soon!
+                        </div>
+                        
+                        <a href="/payment/checkout?plan=premium" class="btn btn-primary w-100 btn-lg shadow">
+                            <i class="fas fa-crown"></i> {% if plan == "free" or plan == "pro" %}Upgrade para Premium{% else %}Assinar Premium{% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        
+        <!-- FAQ -->
+        <div class="row mt-5">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow" style="border-radius: 20px; border: none; background: rgba(255,255,255,0.95);">
+                    <div class="card-body p-5">
+                        <h3 class="text-center mb-4">Perguntas Frequentes</h3>
+                        
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        Posso cancelar a qualquer momento?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Sim! Você pode cancelar sua assinatura a qualquer momento sem taxas ou multas.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        Vocês têm acesso ao meu dinheiro?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Não! Você conecta sua conta via API Keys (somente leitura e trade). Nunca podemos sacar seus fundos.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        Qual a diferença entre os planos?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        A principal diferença é o número de bots simultâneos e acesso a recursos avançados como IA e backtesting.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Contato para Premium -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-envelope"></i> Falar com Vendas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Você já está no nosso melhor plano público!</p>
+                <p>Para planos Enterprise customizados, entre em contato:</p>
+                
+                <form id="contact-form">
+                    <div class="mb-3">
+                        <label class="form-label">Seu Nome</label>
+                        <input type="text" class="form-control" value="{% if user %}{{ user.first_name }} {{ user.last_name }}{% endif %}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="contact-email" value="{% if user %}{{ user.email }}{% endif %}" required readonly>
+                        <small class="text-muted">Email da sua conta</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mensagem</label>
+                        <textarea class="form-control" rows="4" required placeholder="Conte-nos suas necessidades..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('contact-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Mensagem enviada! Nossa equipe entrará em contato em breve.');
+    bootstrap.Modal.getInstance(document.getElementById('contactModal')).hide();
+});
+</script>
+{% endblock %}
+
+

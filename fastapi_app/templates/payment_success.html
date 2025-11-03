@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Pagamento Aprovado! - Auronex{% endblock %}
+
+{% block content %}
+<section class="py-5" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg text-center">
+                    <div class="card-body p-5">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle fa-5x text-success"></i>
+                        </div>
+                        
+                        <h1 class="display-5 fw-bold text-success mb-3">Pagamento Confirmado!</h1>
+                        <p class="lead text-muted mb-4">
+                            Seu plano foi ativado com sucesso. Bem-vindo à Auronex!
+                        </p>
+                        
+                        <div class="alert alert-success mb-4">
+                            <i class="fas fa-robot"></i> Seu bot de trading está pronto para uso!
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="/dashboard" class="btn btn-success btn-lg">
+                                <i class="fas fa-chart-line"></i> Acessar Dashboard
+                            </a>
+                            <a href="/api-keys-page" class="btn btn-outline-primary">
+                                <i class="fas fa-key"></i> Configurar API Keys
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// ATIVAR PLANO AUTOMATICAMENTE AO CARREGAR
+(async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const plan = urlParams.get('plan') || 'pro';
+    
+    console.log('🔄 Ativando plano:', plan);
+    
+    try {
+        const response = await fetch('/api/verify-payment/confirm-payment', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ plan: plan }),
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Plano ativado com sucesso!', data);
+            alert(`Plano ${plan.toUpperCase()} ativado! Faça logout e login para ver o badge.`);
+        } else {
+            console.error('❌ Erro ao ativar plano');
+        }
+    } catch (error) {
+        console.error('❌ Erro:', error);
+    }
+})();
+</script>
+{% endblock %}

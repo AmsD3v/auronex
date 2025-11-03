@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Política de Privacidade - Auronex{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <h1 class="mb-4">Política de Privacidade</h1>
+                        <p class="text-muted mb-4">Última atualização: 30 de Outubro de 2025</p>
+                        
+                        <h4 class="mt-4">1. Informações que Coletamos</h4>
+                        <p><strong>Dados Pessoais:</strong></p>
+                        <ul>
+                            <li>Nome completo</li>
+                            <li>Email</li>
+                            <li>CPF</li>
+                            <li>Celular</li>
+                            <li>Endereço IP</li>
+                        </ul>
+                        
+                        <p><strong>Dados de Uso:</strong></p>
+                        <ul>
+                            <li>Configurações de bots</li>
+                            <li>Histórico de trades</li>
+                            <li>Logs de atividade</li>
+                            <li>Preferências do sistema</li>
+                        </ul>
+                        
+                        <p><strong>Dados Financeiros:</strong></p>
+                        <ul>
+                            <li>Informações de pagamento (processadas por MercadoPago/Stripe)</li>
+                            <li>Histórico de assinaturas</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">2. Como Usamos Seus Dados</h4>
+                        <p>Utilizamos suas informações para:</p>
+                        <ul>
+                            <li>Fornecer e melhorar o serviço</li>
+                            <li>Processar pagamentos</li>
+                            <li>Enviar notificações importantes</li>
+                            <li>Suporte técnico</li>
+                            <li>Prevenir fraudes</li>
+                            <li>Cumprir obrigações legais</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">3. Proteção de Dados</h4>
+                        <div class="alert alert-info">
+                            <strong>🔒 Segurança:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Senhas criptografadas com Argon2</li>
+                                <li>API Keys armazenadas com criptografia AES-256</li>
+                                <li>Conexão HTTPS (SSL/TLS)</li>
+                                <li>Backup diário dos dados</li>
+                            </ul>
+                        </div>
+                        
+                        <h4 class="mt-4">4. Compartilhamento de Dados</h4>
+                        <p>NÃO compartilhamos seus dados pessoais com terceiros, EXCETO:</p>
+                        <ul>
+                            <li>MercadoPago/Stripe (para processar pagamentos)</li>
+                            <li>Autoridades legais (quando exigido por lei)</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">5. Cookies</h4>
+                        <p>Utilizamos cookies para:</p>
+                        <ul>
+                            <li>Manter sua sessão ativa</li>
+                            <li>Lembrar suas preferências</li>
+                            <li>Melhorar a experiência do usuário</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">6. Seus Direitos (LGPD)</h4>
+                        <p>Você tem direito de:</p>
+                        <ul>
+                            <li><strong>Acessar</strong> seus dados</li>
+                            <li><strong>Corrigir</strong> informações incorretas</li>
+                            <li><strong>Deletar</strong> sua conta e dados</li>
+                            <li><strong>Exportar</strong> seus dados</li>
+                            <li><strong>Revogar</strong> consentimento</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">7. Retenção de Dados</h4>
+                        <p>Mantemos seus dados enquanto sua conta estiver ativa. Após cancelamento:</p>
+                        <ul>
+                            <li>Dados pessoais: Deletados em 30 dias</li>
+                            <li>Dados financeiros: Mantidos por 5 anos (lei fiscal)</li>
+                            <li>Logs: Anonimizados após 90 dias</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">8. Menores de Idade</h4>
+                        <p>O serviço é destinado a maiores de 18 anos. Não coletamos dados de menores intencionalmente.</p>
+                        
+                        <h4 class="mt-4">9. Alterações nesta Política</h4>
+                        <p>Podemos atualizar esta política. Mudanças significativas serão notificadas por email.</p>
+                        
+                        <h4 class="mt-4">10. Contato</h4>
+                        <p>Dúvidas sobre privacidade? Entre em contato:</p>
+                        <p><i class="fas fa-envelope"></i> privacidade@auronex.com.br</p>
+                        <p><i class="fas fa-phone"></i> (11) 9999-9999</p>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <a href="/register" class="btn btn-primary">Entendi</a>
+                            <a href="/" class="btn btn-outline-secondary ms-2">Voltar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+

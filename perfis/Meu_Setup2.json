@@ -1,0 +1,16 @@
+{
+  "perfil": "\ud83d\udcc8 Day Trader",
+  "freq_dashboard": 5,
+  "freq_bot": 3,
+  "capital_total": 10.0,
+  "moeda": "\ud83d\udcb0 BRL",
+  "symbols": [
+    "ADADOWNUSDT"
+  ],
+  "modo_alocacao": "\u2696\ufe0f Autom\u00e1tico",
+  "alocacao": {
+    "ADADOWNUSDT": 100
+  },
+  "strategy": "mean_reversion",
+  "corretora": "Binance"
+}

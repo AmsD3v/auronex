@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar API Keys - RoboTrader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar h1 {
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .navbar button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        .keys-list {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .key-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .key-item:last-child {
+            border-bottom: none;
+        }
+        
+        .key-info {
+            flex: 1;
+        }
+        
+        .key-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .key-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .status-badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.testnet {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 onclick="window.location.href='/dashboard/'">🤖 RoboTrader</h1>
+        <div class="user-info">
+            <span id="userName"></span>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <div>
+                <h2>🔑 Minhas API Keys</h2>
+                <p>Gerencie suas chaves de acesso às corretoras</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="openStreamlitDashboard()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1em;">
+                    📈 Dashboard
+                </button>
+                <button class="btn-primary" onclick="showAddModal()">+ Adicionar API Key</button>
+            </div>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="keys-list" id="keysList">
+            <div class="empty-state">
+                <h3>Carregando...</h3>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Adicionar API Key -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h2>Adicionar API Key</h2>
+            <form id="addForm">
+                <div class="form-group">
+                    <label>Corretora:</label>
+                    <select id="exchange" required>
+                        <option value="binance">Binance</option>
+                        <option value="bybit">Bybit</option>
+                        <option value="okx">OKX</option>
+                        <option value="kraken">Kraken</option>
+                        <option value="kucoin">KuCoin</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>API Key:</label>
+                    <input type="text" id="api_key" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Secret Key:</label>
+                    <input type="password" id="secret_key" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Passphrase (opcional):</label>
+                    <input type="password" id="passphrase">
+                    <small style="color: #666;">Apenas para OKX e KuCoin</small>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="is_testnet">
+                    <label style="margin: 0;">Usar Testnet (para testes)</label>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Adicionar</button>
+                    <button type="button" onclick="closeAddModal()" style="flex: 1; background: #6c757d; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('access_token');
+        if (!token) window.location.href = '/login';
+        
+        document.getElementById('userName').textContent = localStorage.getItem('user_name') || 'Usuário';
+        
+        let planLimits = null;
+        
+        // Carregar limites do plano
+        async function loadPlanLimits() {
+            try {
+                const response = await fetch('/api/profile/limits/', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    planLimits = data;
+                    
+                    // Atualizar opções de corretora
+                    updateExchangeOptions();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar limites:', error);
+            }
+        }
+        
+        function updateExchangeOptions() {
+            if (!planLimits) return;
+            
+            const exchangeSelect = document.getElementById('exchange');
+            const allExchanges = [
+                {value: 'binance', label: 'Binance'},
+                {value: 'bybit', label: 'Bybit'},
+                {value: 'okx', label: 'OKX'},
+                {value: 'kraken', label: 'Kraken'},
+                {value: 'kucoin', label: 'KuCoin'}
+            ];
+            
+            exchangeSelect.innerHTML = allExchanges
+                .filter(ex => planLimits.limits.allowed_exchanges.includes(ex.value))
+                .map(ex => `<option value="${ex.value}">${ex.label}${planLimits.limits.allowed_exchanges.includes(ex.value) ? '' : ' (Upgrade necessário)'}</option>`)
+                .join('');
+        }
+        
+        loadPlanLimits();
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login';
+        }
+        
+        // Abrir Streamlit
+        function openStreamlitDashboard() {
+            window.open('http://localhost:8501', '_blank');
+        }
+        
+        async function loadAPIKeys() {
+            try {
+                const response = await fetch('/api/api-keys/', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                if (response.ok) {
+                    const keys = await response.json();
+                    displayKeys(keys);
+                } else if (response.status === 401) {
+                    logout();
+                }
+            } catch (error) {
+                showMessage('Erro ao carregar API Keys', 'error');
+            }
+        }
+        
+        function displayKeys(keys) {
+            const list = document.getElementById('keysList');
+            
+            if (keys.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <h3>🔑 Nenhuma API Key cadastrada</h3>
+                        <p>Adicione suas API Keys para conectar às corretoras</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = keys.map(key => `
+                <div class="key-item">
+                    <div class="key-info">
+                        <h3>${key.exchange.toUpperCase()}</h3>
+                        <p>Key: ${key.api_key_masked}</p>
+                        <p style="font-size: 0.85em; color: #999;">Criada em: ${new Date(key.created_at).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <div>
+                        ${key.is_testnet ? '<span class="status-badge testnet">Testnet</span>' : '<span class="status-badge" style="background: #d4edda; color: #155724;">Produção</span>'}
+                        ${key.is_active ? '<span class="status-badge active">Ativa</span>' : '<span class="status-badge" style="background: #f8d7da; color: #721c24;">Inativa</span>'}
+                        <button onclick="toggleTestnet(${key.id}, ${!key.is_testnet})" style="background: #ffc107; color: #000; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-right: 5px;">
+                            ${key.is_testnet ? '🚀 Produção' : '🧪 Testnet'}
+                        </button>
+                        <button class="btn-delete" onclick="deleteKey(${key.id})">Remover</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showAddModal() {
+            document.getElementById('addModal').classList.add('show');
+        }
+        
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('show');
+            document.getElementById('addForm').reset();
+        }
+        
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const passphrase = document.getElementById('passphrase').value.trim();
+            
+            const data = {
+                exchange: document.getElementById('exchange').value,
+                api_key: document.getElementById('api_key').value,
+                secret_key: document.getElementById('secret_key').value,
+                is_testnet: document.getElementById('is_testnet').checked
+            };
+            
+            // Só adicionar passphrase se não estiver vazio
+            if (passphrase) {
+                data.passphrase = passphrase;
+            }
+            
+            try {
+                const response = await fetch('/api/api-keys/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showMessage('API Key adicionada com sucesso!', 'success');
+                    closeAddModal();
+                    loadAPIKeys();
+                } else {
+                    const error = await response.json();
+                    showMessage('Erro: ' + JSON.stringify(error), 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao adicionar API Key', 'error');
+            }
+        });
+        
+        async function toggleTestnet(id, newTestnetValue) {
+            const mode = newTestnetValue ? 'Testnet' : 'Produção';
+            if (!confirm(`Alterar para modo ${mode}?\n\n⚠️ Isso afetará como o bot opera:\n- Testnet: Trades simulados (seguro)\n- Produção: Trades REAIS (use com cuidado!)`)) return;
+            
+            try {
+                const response = await fetch(`/api/api-keys/${id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ is_testnet: newTestnetValue })
+                });
+                
+                if (response.ok) {
+                    showMessage(`Modo alterado para ${mode} com sucesso!`, 'success');
+                    loadAPIKeys();
+                } else {
+                    showMessage('Erro ao alterar modo', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao alterar modo', 'error');
+            }
+        }
+        
+        async function deleteKey(id) {
+            if (!confirm('Tem certeza que deseja remover esta API Key?')) return;
+            
+            try {
+                const response = await fetch(`/api/api-keys/${id}/`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                
+                if (response.ok) {
+                    showMessage('API Key removida!', 'success');
+                    loadAPIKeys();
+                } else {
+                    showMessage('Erro ao remover API Key', 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao remover API Key', 'error');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 5000);
+        }
+        
+        loadAPIKeys();
+    </script>
+</body>
+</html>
+
