@@ -107,6 +107,37 @@ st.markdown("""
         border-right: 1px solid rgba(255,255,255,0.05);
     }
     
+    /* BOTÃO SIDEBAR SEMPRE VISÍVEL */
+    button[kind="header"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        z-index: 999999 !important;
+        background: rgba(100,150,255,0.2) !important;
+        border: 1px solid rgba(100,150,255,0.3) !important;
+        border-radius: 12px !important;
+        padding: 8px 12px !important;
+        color: white !important;
+    }
+    
+    button[kind="header"]:hover {
+        background: rgba(100,150,255,0.4) !important;
+        transform: scale(1.05) !important;
+    }
+    
+    /* Toggle sidebar sempre acessível */
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        position: fixed !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        z-index: 999999 !important;
+    }
+    
     /* Títulos Clean */
     h1 {
         font-size: 2.5rem !important;
