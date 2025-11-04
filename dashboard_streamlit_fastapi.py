@@ -25,7 +25,176 @@ from bot.strategies import MeanReversionStrategy, TrendFollowingStrategy
 from config.settings import Settings
 
 # Config
-st.set_page_config(page_title="Auronex Robô Trader", page_icon="🤖", layout="wide")
+st.set_page_config(
+    page_title="Auronex · Trading Platform",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"  # Sidebar SEMPRE visível após login!
+)
+
+# ESTILO COMPLETO DO PREVIEW (EXATO!)
+st.markdown("""
+<style>
+    /* Reset e Base */
+    .stApp {
+        background: #0a0e1a;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+    
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Container Principal */
+    .main .block-container {
+        padding: 0 !important;
+        max-width: 1400px;
+        margin: 0 auto !important;
+    }
+    
+    /* Esconder TUDO vazio */
+    div:empty {
+        display: none !important;
+    }
+    
+    /* Login Container com Borda */
+    .login-container {
+        background: linear-gradient(135deg, rgba(20,25,45,0.4), rgba(30,35,60,0.4));
+        backdrop-filter: blur(30px);
+        border-radius: 24px;
+        padding: 40px;
+        border: 1px solid rgba(100,150,255,0.2);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    
+    /* Cards Flutuantes */
+    .floating-card {
+        background: linear-gradient(135deg, rgba(20,25,45,0.4), rgba(30,35,60,0.4));
+        backdrop-filter: blur(30px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255,255,255,0.06);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .floating-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 30px 80px rgba(0,100,255,0.2);
+        border-color: rgba(100,150,255,0.3);
+    }
+    
+    /* Métricas Ultra Clean */
+    [data-testid="stMetricValue"] {
+        font-size: 3.5rem !important;
+        font-weight: 300 !important;
+        letter-spacing: -2px;
+        color: #ffffff !important;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: #718096 !important;
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+    }
+    
+    /* Sidebar Minimalista */
+    [data-testid="stSidebar"] {
+        background: rgba(10,15,30,0.98);
+        border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    /* Títulos Clean */
+    h1 {
+        font-size: 2.5rem !important;
+        font-weight: 300 !important;
+        color: #ffffff !important;
+        margin-bottom: 0.5rem !important;
+        letter-spacing: -1px;
+    }
+    
+    h2 {
+        font-size: 1.25rem !important;
+        font-weight: 500 !important;
+        color: #e2e8f0 !important;
+        margin: 2.5rem 0 1.5rem 0 !important;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Tabs Ultra Clean */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 4px;
+        background: transparent;
+        padding: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: transparent;
+        color: #718096;
+        border-bottom: 2px solid transparent;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: transparent !important;
+        color: #ffffff !important;
+        border-bottom-color: #00d9ff !important;
+    }
+    
+    /* Inputs */
+    .stTextInput input {
+        background: rgba(30,35,60,0.4) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important;
+        color: white !important;
+        padding: 12px 16px !important;
+    }
+    
+    .stTextInput input:focus {
+        border-color: rgba(0,217,255,0.5) !important;
+        box-shadow: 0 0 0 3px rgba(0,217,255,0.1) !important;
+    }
+    
+    /* Botões */
+    .stButton button {
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .stButton button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+    }
+    
+    /* Responsivo */
+    @media (max-width: 768px) {
+        .main .block-container {
+            padding: 1rem !important;
+        }
+    }
+</style>
+
+<script>
+// Remover TUDO que está vazio - FORÇA BRUTA
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        document.querySelectorAll('div').forEach(el => {
+            if (el.children.length === 0 && el.textContent.trim() === '') {
+                el.remove();
+            }
+        });
+    }, 500);
+});
+</script>
+""", unsafe_allow_html=True)
 
 # ========================================
 # 🔐 AUTENTICAÇÃO - MULTI-USUÁRIO
@@ -34,47 +203,160 @@ st.set_page_config(page_title="Auronex Robô Trader", page_icon="🤖", layout="
 def check_authentication():
     """Verificar autenticação do usuário"""
     
-    # Carregar token da sessão do navegador (cookies) - SEM mostrar na URL!
-    # Streamlit não suporta cookies nativos, então usamos session_state persistente
-    
-    # Verificar se já está autenticado na sessão
+    # Verificar se já está autenticado
     if 'authenticated' in st.session_state and st.session_state.authenticated:
         return True
     
-    # Pedir token na sidebar
-    st.sidebar.title("🔐 Login Necessário")
-    st.sidebar.warning("⚠️ Para sua segurança, faça login primeiro!")
-    
-    # Opção 1: Login com email/senha
-    with st.sidebar.expander("📧 Login com Email", expanded=True):
-        email = st.text_input("Email:", key="login_email")
-        password = st.text_input("Senha:", type="password", key="login_password")
+    # CSS EXCLUSIVO PARA TELA DE LOGIN
+    st.markdown("""
+    <style>
+        /* Esconder sidebar apenas nesta tela */
+        .login-page [data-testid="stSidebar"] {
+            display: none !important;
+        }
         
-        if st.button("🔓 Entrar"):
+        /* Container sem padding */
+        .main .block-container {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Borda suave no formulário de login */
+        .login-container {
+            background: rgba(30,35,60,0.3);
+            border: 1px solid rgba(100,150,255,0.2);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+    </style>
+    
+    <script>
+        // REMOVER FORÇADAMENTE TODOS ELEMENTOS VAZIOS
+        setTimeout(function() {
+            // Pegar TODOS os divs do container principal
+            const container = document.querySelector('.main .block-container');
+            if (container) {
+                const allDivs = container.querySelectorAll('div');
+                
+                allDivs.forEach(div => {
+                    // Se div está vazia (sem texto, sem filhos visíveis)
+                    if (div.children.length === 0 && div.textContent.trim() === '') {
+                        div.remove();
+                    }
+                    // Se div só tem divs vazias
+                    if (div.children.length > 0) {
+                        const hasContent = Array.from(div.children).some(child => 
+                            child.textContent.trim() !== '' || 
+                            child.tagName === 'INPUT' || 
+                            child.tagName === 'BUTTON'
+                        );
+                        if (!hasContent) {
+                            div.style.display = 'none';
+                            div.style.height = '0';
+                        }
+                    }
+                });
+                
+                // Remover margin/padding dos primeiros 5 elementos
+                for (let i = 0; i < 5; i++) {
+                    if (container.children[i]) {
+                        container.children[i].style.marginTop = '0';
+                        container.children[i].style.paddingTop = '0';
+                    }
+                }
+            }
+        }, 100);
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # TÍTULO COM HOVER - SÓ "AURONEX" SE MOVE!
+    st.markdown("""
+    <style>
+        .auronex-title {
+            text-align: center;
+            padding: 60px 0 50px 0;
+            margin-top: 0 !important;
+        }
+        
+        .auronex-title h1 {
+            font-size: 4rem;
+            font-weight: 300;
+            margin: 0;
+            letter-spacing: -2px;
+            color: #ffffff;
+            display: inline-block;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+        
+        /* HOVER SÓ NO H1! */
+        .auronex-title h1:hover {
+            transform: translateY(-4px);
+            text-shadow: 0 0 30px rgba(0,217,255,0.6), 0 0 60px rgba(0,217,255,0.4);
+            color: #00d9ff;
+        }
+        
+        /* Subtítulo ESTÁTICO */
+        .auronex-subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+            margin-top: 16px;
+            letter-spacing: 1px;
+        }
+    </style>
+    
+    <div class="auronex-title">
+        <h1>Auronex</h1>
+        <p class="auronex-subtitle">Trading Platform · By Auronex Technology</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Formulário centralizado com borda
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.markdown('<div class="login-container">', unsafe_allow_html=True)
+        
+        # Formulário
+        email = st.text_input(
+            "Email", 
+            placeholder="seu@email.com",
+            key="login_email_main",
+            label_visibility="visible"
+        )
+        
+        password = st.text_input(
+            "Senha", 
+            type="password", 
+            placeholder="••••••••",
+            key="login_password_main",
+            label_visibility="visible"
+        )
+        
+        # SEM espaçamento entre senha e botão!
+        
+        if st.button("Entrar", use_container_width=True, type="primary"):
             if not email or not password:
                 st.error("❌ Preencha email e senha!")
             else:
                 try:
-                    st.info(f"Tentando login: {email}")
-                    
+                    # Login SEM mensagens de debug!
                     response = requests.post(
                         'http://localhost:8001/api/streamlit/login',
                         json={'email': email, 'password': password},
                         timeout=10
                     )
                     
-                    st.info(f"Resposta: {response.status_code}")
-                    
                     if response.status_code == 200:
                         data = response.json()
-                        token = data['access_token']
-                        st.session_state.access_token = token
+                        st.session_state.access_token = data['access_token']
                         st.session_state.user_email = email
                         st.session_state.user_name = data.get('user', {}).get('first_name', email.split('@')[0])
                         st.session_state.authenticated = True
                         
-                        st.success("✅ Login bem-sucedido! Aguarde...")
-                        time.sleep(1)
+                        # RERUN IMEDIATO!
                         st.rerun()
                     else:
                         st.error(f"❌ Email ou senha incorretos! (Status: {response.status_code})")
@@ -83,31 +365,19 @@ def check_authentication():
                             st.caption("Mesmos dados do site: http://localhost:8001/login")
                 except Exception as e:
                     st.error(f"❌ Erro de conexão: {str(e)}")
-    
-    # Opção 2: Colar token diretamente
-    with st.sidebar.expander("🔑 Ou cole seu Token"):
-        token_input = st.text_area("Token JWT:", height=100)
         
-        if st.button("🔓 Usar Token"):
-            if token_input and len(token_input) > 50:
-                token = token_input.strip()
-                st.session_state.access_token = token
-                st.session_state.authenticated = True
-                
-                st.success("✅ Token salvo! Aguarde...")
-                time.sleep(1)
-                st.rerun()
-            else:
-                st.error("❌ Token inválido!")
+        # Link alternativo
+        st.markdown("""
+        <div style='text-align: center; margin-top: 30px;'>
+            <p style='color: #4a5568; font-size: 0.85rem;'>
+                Ainda não tem conta? 
+                <a href='http://localhost:8001/register' style='color: #00d9ff; text-decoration: none;'>Criar conta</a>
+            </p>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    st.sidebar.info("💡 Faça login pelo site: http://localhost:8001/login")
-    st.sidebar.info("📖 Depois clique em 'Abrir Dashboard Completo'")
-    
-    # Tela de login simplificada (NUNCA DEVE APARECER QUANDO LOGADO!)
-    st.title("🔒 Dashboard Protegido - Login Necessário")
-    st.warning("⚠️ **IMPORTANTE:** Este dashboard está protegido e individualizado por usuário.")
-    st.info("👈 Faça login na barra lateral para acessar seus dados.")
-    st.caption(f"🐛 Debug: authenticated={st.session_state.get('authenticated', False)}")
+    st.markdown('</div>', unsafe_allow_html=True)  # Fechar login-page
     
     # Parar execução aqui (não mostrar resto do dashboard)
     return False
@@ -422,7 +692,12 @@ else:
 col_titulo, col_moeda = st.columns([4, 1])
 
 with col_titulo:
-    st.title("🤖 Auronex Robô Trader")
+    st.markdown("""
+    <div style='padding: 1rem 0;'>
+        <h1 style='margin: 0; font-size: 2rem; font-weight: 400;'>Auronex Trading</h1>
+        <p style='color: #718096; margin: 0; font-size: 0.9rem;'>Real-time trading platform</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 with col_moeda:
     # SELETOR DE MOEDA (PADRÃO: BRL)
@@ -430,7 +705,8 @@ with col_moeda:
     taxa_conversao = 5.0 if moeda == "💰 BRL" else 1.0
     simbolo_moeda = "R$" if moeda == "💰 BRL" else "$"
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # Buscar bots PRIMEIRO (antes de usar)
 user_bots = get_user_bots()
@@ -469,7 +745,8 @@ with col_btn:
         if st.button("▶️ INICIAR BOT", type="primary", use_container_width=True):
             st.success("Bots iniciados!")
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # ========================================
 # SIDEBAR - CONTROLES E INFO
@@ -1048,7 +1325,8 @@ with col4:
     st.metric("✅ Taxa Sucesso", f"{taxa_sucesso:.1f}%")
     st.caption("Win rate")
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # Barra de status já está no topo (logo após título)
 
@@ -1063,7 +1341,8 @@ if active_bots > 0:
 else:
     st.warning("⚠️ Bot pausado. Inicie para começar a operar.")
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # ========================================
 # TOP 5 PERFORMANCE (2ª POSIÇÃO!)
@@ -1311,7 +1590,8 @@ with tab_corretora:
     except Exception as e:
         st.error(f"Erro: {str(e)[:80]}")
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # ========================================
 # SISTEMA DE ABAS - UM BOT POR ABA
@@ -1454,13 +1734,14 @@ with tabs[0]:
         with col_metric2:
             lucro_convertido = lucro_perda * taxa_conversao
             st.metric(
-                "📊 Lucro/Perda", 
+                "📊 Lucro/Perda",
                 f"{simbolo_moeda} {lucro_convertido:+.2f}",
                 f"{lucro_perda_percent:+.2f}%"
             )
             st.caption("(Desde início)")
         
-        st.markdown("---")
+        # Espaçamento clean
+        st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
         
         col_metric3, col_metric4 = st.columns(2)
         
@@ -1473,14 +1754,16 @@ with tabs[0]:
             st.metric("💵 Capital Inicial", f"{simbolo_moeda} {capital_inicial_conv:.2f}")
             st.caption("(Alocação de Capital)")
         
-        st.markdown("---")
+        # Espaçamento clean
+        st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
         
         if len(selected_symbols) > 0:
             st.markdown("**📊 Cryptos Selecionadas:**")
             for sym in selected_symbols:
                 st.write(f"• {sym}")
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # ========================================
 # ABAS 2+: CADA BOT
@@ -1507,7 +1790,8 @@ for i, bot in enumerate(user_bots):
             st.write(f"**Stop Loss:** {bot.get('stop_loss_percent', 0)}%")
             st.write(f"**Take Profit:** {bot.get('take_profit_percent', 0)}%")
             
-            st.markdown("---")
+            # Espaçamento clean
+            st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
             
             # Controles do bot - COM VALIDAÇÃO
             if bot.get('is_active'):
@@ -1574,7 +1858,8 @@ for i, bot in enumerate(user_bots):
         })
         st.dataframe(trades_exemplo, use_container_width=True, hide_index=True)
 
-st.markdown("---")
+# Espaçamento clean
+st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # Rankings já implementados acima (2ª posição)
 
