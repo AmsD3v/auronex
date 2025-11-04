@@ -98,3 +98,5 @@ results/
 reports/*.html
 reports/*.pdf
 
+"db.sqlite3" 
+"*.sqlite3" 
