@@ -85,7 +85,14 @@ class TradingBot:
             
             db.close()
             
+            # Log detalhado da configuração
             logger.info(f"[OK] Configuração carregada: {self.config['name']}")
+            logger.info(f"[CONFIG] Corretora: {self.config['exchange'].upper()}")
+            logger.info(f"[CONFIG] Moedas: {', '.join(self.config['symbols'])}")
+            logger.info(f"[CONFIG] Estratégia: {self.config['strategy']}")
+            logger.info(f"[CONFIG] Timeframe: {self.config['timeframe']}")
+            logger.info(f"[CONFIG] Stop Loss: {self.config['stop_loss']*100:.1f}%")
+            logger.info(f"[CONFIG] Take Profit: {self.config['take_profit']*100:.1f}%")
             return True
             
         except Exception as e:
@@ -238,7 +245,15 @@ class TradingBot:
             # Analisar com estratégia
             signal = self.strategy.analyze(df)
             
-            logger.info(f"[OK][OK] {symbol}: Sinal={signal['signal']}, Confiança={signal['confidence']:.1f}%")
+            # Log completo com exchange e símbolo
+            logger.info(f"")
+            logger.info(f"{'='*60}")
+            logger.info(f"[ANÁLISE] Corretora: {self.config['exchange'].upper()}")
+            logger.info(f"[ANÁLISE] Par: {symbol}")
+            logger.info(f"[ANÁLISE] Sinal: {signal['signal'].upper()}")
+            logger.info(f"[ANÁLISE] Confiança: {signal['confidence']:.1f}%")
+            logger.info(f"[ANÁLISE] Razão: {signal.get('reason', 'N/A')}")
+            logger.info(f"{'='*60}")
             
             # Se já tem posição aberta, verificar saída
             if symbol in self.portfolio_manager.positions:
@@ -271,6 +286,9 @@ class TradingBot:
             # Calcular tamanho da posição
             position_data = self.risk_manager.calculate_position_size(symbol)
             
+            print(f"[DEBUG] position_data keys: {list(position_data.keys())}")
+            print(f"[DEBUG] position_data: {position_data}")
+            
             if position_data['quantity'] == 0:
                 logger.warning(f"[OK][OK] Quantidade calculada = 0 para {symbol}")
                 return
@@ -292,7 +310,17 @@ class TradingBot:
                 return
             
             # EXECUTAR ORDEM REAL
-            logger.info(f"[OK][OK] COMPRANDO {symbol}: {position_data['quantity']} @ ${current_price:.2f}")
+            # Log detalhado da compra
+            logger.info(f"")
+            logger.info(f"{'🟢'*30}")
+            logger.info(f"[COMPRA] Corretora: {self.config['exchange'].upper()}")
+            logger.info(f"[COMPRA] Par: {symbol}")
+            logger.info(f"[COMPRA] Quantidade: {position_data['quantity']}")
+            logger.info(f"[COMPRA] Preço: ${current_price:.2f}")
+            logger.info(f"[COMPRA] Total: ${position_data['quantity'] * current_price:.2f}")
+            logger.info(f"[COMPRA] Stop Loss: ${position_data['stop_loss']:.2f}")
+            logger.info(f"[COMPRA] Take Profit: ${position_data['take_profit']:.2f}")
+            logger.info(f"{'🟢'*30}")
             
             order = self.exchange.place_order(
                 symbol=symbol,
@@ -337,7 +365,16 @@ class TradingBot:
                 return
             
             # EXECUTAR VENDA REAL
-            logger.info(f"[OK][OK] VENDENDO {symbol}: {position['quantity']} @ ${exit_price:.2f}")
+            # Log detalhado da venda
+            logger.info(f"")
+            logger.info(f"{'🔴'*30}")
+            logger.info(f"[VENDA] Corretora: {self.config['exchange'].upper()}")
+            logger.info(f"[VENDA] Par: {symbol}")
+            logger.info(f"[VENDA] Quantidade: {position['quantity']}")
+            logger.info(f"[VENDA] Preço Entrada: ${position['entry_price']:.2f}")
+            logger.info(f"[VENDA] Preço Saída: ${exit_price:.2f}")
+            logger.info(f"[VENDA] Razão: {reason}")
+            logger.info(f"{'🔴'*30}")
             
             order = self.exchange.place_order(
                 symbol=symbol,
@@ -423,7 +460,15 @@ class TradingBot:
     
     def run(self):
         """Loop principal do bot"""
-        logger.info(f"[OK][OK] Iniciando bot {self.config['name']}...")
+        logger.info(f"")
+        logger.info(f"{'='*70}")
+        logger.info(f"[INICIO] BOT: {self.config['name']}")
+        logger.info(f"[INICIO] CORRETORA: {self.config['exchange'].upper()}")
+        logger.info(f"[INICIO] MOEDAS: {', '.join(self.config['symbols'])}")
+        logger.info(f"[INICIO] ESTRATÉGIA: {self.config['strategy']}")
+        logger.info(f"{'='*70}")
+        logger.info(f"")
+        
         self.is_running = True
         
         iteration = 0

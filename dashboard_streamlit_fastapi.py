@@ -1396,58 +1396,80 @@ tab_hoje, tab_semana, tab_mes, tab_virais, tab_corretora = st.tabs(["🔥 Hoje",
 
 with tab_hoje:
     # TOP 5 do dia
-    try:
-        # Verificar se tem exchange configurada
-        if not user_keys or len(user_keys) == 0:
-            st.info("💡 Configure uma API Key para ver TOP 5 em tempo real!")
-            st.stop()
-        
-        top5_exchange = get_exchange_for_user(exchange_name.capitalize())
-        
-        if top5_exchange:
-            # Símbolos baseados na exchange
-            if pair_suffix == 'BRL':
-                symbols = ['BTC/BRL', 'ETH/BRL', 'USDT/BRL', 'SOL/BRL', 'XRP/BRL']
-            else:
-                symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT',
-                          'ADA/USDT', 'DOGE/USDT', 'MATIC/USDT', 'DOT/USDT', 'AVAX/USDT',
-                          'LINK/USDT', 'ATOM/USDT', 'LTC/USDT', 'UNI/USDT', 'APT/USDT']
+    # user_keys já foi carregado no início (linha ~272)
+    
+    if not user_keys or len(user_keys) == 0:
+        st.info("💡 Configure uma API Key para ver TOP 5 em tempo real!")
+    else:
+        try:
+            # Usar primeira key E descriptografar
+            primeira_key = user_keys[0]
+            exch_name = primeira_key.get('exchange', 'binance').lower()
+            
+            # DESCRIPTOGRAFAR manualmente
+            from fastapi_app.utils.encryption import decrypt_data
+            
+            print(f"[TOP 5] Chaves disponíveis: {list(primeira_key.keys())}")
+            
+            # Buscar chaves criptografadas
+            api_key_enc = primeira_key.get('api_key_encrypted', '')
+            api_secret_enc = primeira_key.get('secret_key_encrypted', '')
+            
+            # Descriptografar
+            api_key_dec = decrypt_data(api_key_enc)
+            api_secret_dec = decrypt_data(api_secret_enc)
+            
+            print(f"[TOP 5] API Key descriptografada: {api_key_dec[:10]}...")
+            
+            # Criar exchange
+            from bot.exchange import BinanceExchange
+            
+            top5_exchange = BinanceExchange(
+                api_key=api_key_dec,
+                api_secret=api_secret_dec,
+                testnet=primeira_key.get('is_testnet', False)
+            )
+                
+            # Símbolos
+            symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT']
             
             tickers = []
             for sym in symbols:
                 try:
-                    t = top5_exchange.fetch_ticker(sym)
-                    var = t.get('percentage', 0) or 0
-                    preco = (t.get('last', 0) or 0) * taxa_conversao
+                    ticker = top5_exchange.fetch_ticker(sym)
+                    var = ticker.get('percentage', 0) or 0
+                    preco = (ticker.get('last', 0) or 0) * taxa_conversao
                     
                     tickers.append({
                         'Cripto': sym.split('/')[0],
                         'Var': var,
                         'Variação 24h': f"{var:+.2f}%",
-                        'Preço': f"{simbolo_moeda} {preco:,.4f}"
+                        'Preço': f"{simbolo_moeda} {preco:,.2f}"
                     })
-                except:
-                    pass
+                except Exception as e:
+                    print(f"[TOP 5] Erro {sym}: {e}")
+                    continue
             
-            # TOP 5 (pega 5 mesmo se negativos)
-            top5 = sorted(tickers, key=lambda x: x['Var'], reverse=True)[:5]
-            
-            # Formatar
-            resultado = []
-            for i, item in enumerate(top5):
-                resultado.append({
-                    '🏆': f"#{i+1}",
-                    'Cripto': item['Cripto'],
-                    'Variação 24h': item['Variação 24h'],
-                    'Preço': item['Preço']
-                })
-            
-            st.dataframe(pd.DataFrame(resultado), use_container_width=True, hide_index=True)
-            st.caption(f"✅ {exchange_name.upper()}")
-        else:
-            st.warning(f"Configure API Key para {exchange_name.upper()}")
-    except Exception as e:
-        st.error(f"Erro: {str(e)[:80]}")
+            # TOP 5 (ordenar)
+            if len(tickers) > 0:
+                top5 = sorted(tickers, key=lambda x: x['Var'], reverse=True)[:5]
+                
+                resultado = []
+                for i, item in enumerate(top5):
+                    resultado.append({
+                        '🏆': f"#{i+1}",
+                        'Cripto': item['Cripto'],
+                        'Variação 24h': item['Variação 24h'],
+                        'Preço': item['Preço']
+                    })
+                
+                df_top5 = pd.DataFrame(resultado)
+                st.dataframe(df_top5, use_container_width=True, hide_index=True)
+            else:
+                st.warning("⚠️ Aguarde... Carregando dados")
+                
+        except Exception as ex:
+            st.error(f"Erro: {str(ex)[:100]}")
 
 with tab_semana:
     # Semana (estimativa x3)
@@ -1697,7 +1719,7 @@ with tabs[0]:
                     text=f"Alocação de Capital",
                     font=dict(size=14)
                 ),
-                height=230,  # 50% maior que 155px
+                height=345,  # 50% maior que 230px
                 margin=dict(l=5, r=5, t=30, b=5),
                 showlegend=False
             )
@@ -1876,7 +1898,7 @@ for i, bot in enumerate(user_bots):
                     # Chamar API toggle
                     nova_acao = not bot_ativo_now
                     
-                    resp = requests.post(
+                    resp = requests.patch(
                         f'http://localhost:8001/api/bots/{bot["id"]}/toggle',
                         headers={'Authorization': f'Bearer {st.session_state.access_token}'},
                         json={'is_active': nova_acao},
