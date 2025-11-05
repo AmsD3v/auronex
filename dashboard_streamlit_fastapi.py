@@ -29,7 +29,7 @@ st.set_page_config(
     page_title="Auronex · Trading Platform",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded"  # Sidebar SEMPRE visível após login!
+    initial_sidebar_state="expanded"  # Sidebar ABERTA por padrão
 )
 
 # ESTILO COMPLETO DO PREVIEW (EXATO!)
@@ -217,50 +217,7 @@ window.addEventListener('load', function() {
     }, 500);
 });
 
-// SIDEBAR E BOTÃO SEMPRE VISÍVEIS - FORÇA BRUTA!
-function forceSidebarButton() {
-    // Se NÃO está na tela de login
-    if (!document.querySelector('.login-page')) {
-        
-        // FORÇAR sidebar visível
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebar.style.display = 'block';
-            sidebar.style.visibility = 'visible';
-            sidebar.style.opacity = '1';
-        }
-        
-        // Procurar TODOS os seletores possíveis de botão
-        const selectors = [
-            'button[kind="header"]',
-            '[data-testid="collapsedControl"]',
-            'button[data-testid="baseButton-header"]',
-            'button[aria-label*="sidebar"]',
-            'button[title*="sidebar"]',
-            'button[class*="viewerBadge"]',
-            '[class*="collapsedControl"]',
-            'section[data-testid="stSidebar"] ~ button',
-            'button svg[data-testid="stIconChevronLeft"]',
-            'button svg[data-testid="stIconChevronRight"]'
-        ];
-        
-        selectors.forEach(selector => {
-            const btns = document.querySelectorAll(selector);
-            btns.forEach(btn => {
-                btn.style.cssText = `
-                    display: block !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    pointer-events: auto !important;
-                `;
-            });
-        });
-    }
-}
-
-// Executar continuamente
-forceSidebarButton();
-setInterval(forceSidebarButton, 100);
+// Apenas esconde elementos vazios (mantém simples)
 </script>
 """, unsafe_allow_html=True)
 
@@ -275,21 +232,11 @@ def check_authentication():
     if 'authenticated' in st.session_state and st.session_state.authenticated:
         return True
     
-    # CSS EXCLUSIVO PARA TELA DE LOGIN  
+    # TELA DE LOGIN SEM SIDEBAR - USA st.stop() ANTES
+    # NÃO usa CSS para esconder!
     st.markdown("""
     <style>
-        /* Esconder sidebar APENAS quando dentro de .login-page */
-        .login-page [data-testid="stSidebar"] {
-            display: none !important;
-        }
-        
-        /* FORÇAR sidebar visível fora de login-page! */
-        body:not(.login-page) [data-testid="stSidebar"] {
-            display: block !important;
-            visibility: visible !important;
-        }
-        
-        /* Container sem padding */
+        /* Container login sem padding */
         .main .block-container {
             padding: 0 !important;
             margin: 0 !important;
@@ -1331,28 +1278,25 @@ with col_cards:
     # CARDS COM GLOW HOVER - CSS INLINE PARA FUNCIONAR!
     st.markdown("""
     <style>
-    /* Cards com efeito glow */
-    div.glow-card {
+    /* Cards com efeito glow - APLICADO A ELEMENT-CONTAINER! */
+    .element-container:has(div.glow-card),
+    div[data-testid="column"]:has(div.glow-card) > div {
         background: linear-gradient(135deg, rgba(20,25,45,0.4), rgba(30,35,60,0.4)) !important;
         backdrop-filter: blur(30px) !important;
         border-radius: 20px !important;
-        padding: 1.5rem !important;
+        padding: 1.2rem !important;
         border: 1px solid rgba(255,255,255,0.06) !important;
         box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         cursor: default;
     }
     
-    div.glow-card:hover {
+    .element-container:has(div.glow-card):hover,
+    div[data-testid="column"]:has(div.glow-card) > div:hover {
         transform: translateY(-4px) !important;
-        box-shadow: 0 16px 40px rgba(0,100,255,0.25) !important;
-        border-color: rgba(100,150,255,0.3) !important;
-        background: linear-gradient(135deg, rgba(25,30,60,0.5), rgba(35,40,70,0.5)) !important;
-    }
-    
-    /* Forçar efeito nos containers do Streamlit */
-    [data-testid="stVerticalBlock"] > div > div.glow-card {
-        display: block !important;
+        box-shadow: 0 16px 40px rgba(0,100,255,0.3), 0 0 60px rgba(0,100,255,0.2) !important;
+        border-color: rgba(100,150,255,0.4) !important;
+        background: linear-gradient(135deg, rgba(25,30,60,0.6), rgba(35,40,70,0.6)) !important;
     }
     </style>
     """, unsafe_allow_html=True)
