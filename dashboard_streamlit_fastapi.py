@@ -1773,14 +1773,21 @@ with tabs[0]:
         
         # Métricas alinhadas
         # Métricas menores e compactas
-        # Aplicar CSS diretamente nas métricas específicas
+        # CSS com ID único para sobrescrever global
         st.markdown("""
         <style>
-        /* Métricas do portfólio - valores menores */
-        [data-testid="stVerticalBlock"] [data-testid="stMetricValue"] {
+        /* Métricas do portfólio - valores MENORES */
+        #portfolio-metricas [data-testid="stMetricValue"] {
             font-size: 1.2rem !important;
+            font-weight: 400 !important;
+        }
+        
+        #portfolio-metricas [data-testid="stMetricLabel"] {
+            font-size: 0.7rem !important;
         }
         </style>
+        
+        <div id="portfolio-metricas">
         """, unsafe_allow_html=True)
         
         col_metric1, col_metric2 = st.columns(2)
@@ -1811,7 +1818,7 @@ with tabs[0]:
         st.metric("💵 Capital Inicial", f"{simbolo_moeda} {capital_inicial_conv:.2f}")
         st.caption("(Alocação de Capital)")
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div></div>', unsafe_allow_html=True)  # Fechar portfolio-metricas E div wrapper
         
         # Espaçamento clean
         st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
