@@ -1324,95 +1324,106 @@ st.sidebar.markdown("[👨‍💼 Admin](http://localhost:8001/admin/)")
 # user_bots e active_bots já carregados no topo
 
 # KPIs Gerais
-# CARDS COM GLOW HOVER
-st.markdown("""
-<style>
-.glow-card {
-    background: linear-gradient(135deg, rgba(20,25,45,0.4), rgba(30,35,60,0.4));
-    backdrop-filter: blur(30px);
-    border-radius: 20px;
-    padding: 1.5rem;
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+# Centralizar cards principais
+col_space1, col_cards, col_space2 = st.columns([0.5, 10, 0.5])
 
-.glow-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0,100,255,0.25);
-    border-color: rgba(100,150,255,0.3);
-    background: linear-gradient(135deg, rgba(25,30,60,0.5), rgba(35,40,70,0.5));
-}
-</style>
-""", unsafe_allow_html=True)
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-    st.metric("🤖 Total de Bots", total_bots, f"{active_bots} ativos")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-    saldo_kpi = capital_total * taxa_conversao if capital_total > 0 else 0
-    st.metric("💰 Saldo Total", f"{simbolo_moeda} {saldo_kpi:.2f}", "+5.2%")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col3:
-    st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-    # Buscar trades REAIS da API + Status dos bots
-    trades_hoje = 0
-    bots_operando = 0
+with col_cards:
+    # CARDS COM GLOW HOVER - CSS INLINE PARA FUNCIONAR!
+    st.markdown("""
+    <style>
+    /* Cards com efeito glow */
+    div.glow-card {
+        background: linear-gradient(135deg, rgba(20,25,45,0.4), rgba(30,35,60,0.4)) !important;
+        backdrop-filter: blur(30px) !important;
+        border-radius: 20px !important;
+        padding: 1.5rem !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        cursor: default;
+    }
     
-    try:
-        if 'access_token' in st.session_state:
-            # Trades hoje
-            resp = requests.get(
-                'http://localhost:8001/api/trades/today',
-                headers={'Authorization': f'Bearer {st.session_state.access_token}'},
-                timeout=5
-            )
-            if resp.status_code == 200:
-                trades_data = resp.json()
-                trades_hoje = trades_data.get('count', 0)
-            
-            # Status dos bots
-            resp_monitor = requests.get(
-                'http://localhost:8001/api/bot-monitor/all',
-                headers={'Authorization': f'Bearer {st.session_state.access_token}'},
-                timeout=5
-            )
-            if resp_monitor.status_code == 200:
-                monitor_data = resp_monitor.json()
-                bots_operando = sum(1 for b in monitor_data.get('bots', []) if b.get('total_trades', 0) > 0)
-    except:
-        pass
+    div.glow-card:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 16px 40px rgba(0,100,255,0.25) !important;
+        border-color: rgba(100,150,255,0.3) !important;
+        background: linear-gradient(135deg, rgba(25,30,60,0.5), rgba(35,40,70,0.5)) !important;
+    }
     
-    st.metric("📈 Trades Hoje", trades_hoje)
-    st.caption(f"🤖 {bots_operando} bots operando")
-    st.markdown('</div>', unsafe_allow_html=True)
+    /* Forçar efeito nos containers do Streamlit */
+    [data-testid="stVerticalBlock"] > div > div.glow-card {
+        display: block !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3, col4 = st.columns(4)
 
-with col4:
-    st.markdown('<div class="glow-card">', unsafe_allow_html=True)
-    # Taxa de sucesso (win rate)
-    taxa_sucesso = 0
-    try:
-        if 'access_token' in st.session_state:
-            resp = requests.get(
-                'http://localhost:8001/api/trades/stats',
-                headers={'Authorization': f'Bearer {st.session_state.access_token}'},
-                timeout=5
-            )
-            if resp.status_code == 200:
-                stats = resp.json()
-                taxa_sucesso = stats.get('win_rate', 0)
-    except:
-        pass
+    with col1:
+        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
+        st.metric("🤖 Total de Bots", total_bots, f"{active_bots} ativos")
+        st.markdown('</div>', unsafe_allow_html=True)
     
-    st.metric("✅ Taxa Sucesso", f"{taxa_sucesso:.1f}%")
-    st.caption("Win rate")
-    st.markdown('</div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
+        saldo_kpi = capital_total * taxa_conversao if capital_total > 0 else 0
+        st.metric("💰 Saldo Total", f"{simbolo_moeda} {saldo_kpi:.2f}", "+5.2%")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
+        # Buscar trades REAIS da API + Status dos bots
+        trades_hoje = 0
+        bots_operando = 0
+        
+        try:
+            if 'access_token' in st.session_state:
+                # Trades hoje
+                resp = requests.get(
+                    'http://localhost:8001/api/trades/today',
+                    headers={'Authorization': f'Bearer {st.session_state.access_token}'},
+                    timeout=5
+                )
+                if resp.status_code == 200:
+                    trades_data = resp.json()
+                    trades_hoje = trades_data.get('count', 0)
+                
+                # Status dos bots
+                resp_monitor = requests.get(
+                    'http://localhost:8001/api/bot-monitor/all',
+                    headers={'Authorization': f'Bearer {st.session_state.access_token}'},
+                    timeout=5
+                )
+                if resp_monitor.status_code == 200:
+                    monitor_data = resp_monitor.json()
+                    bots_operando = sum(1 for b in monitor_data.get('bots', []) if b.get('total_trades', 0) > 0)
+        except:
+            pass
+        
+        st.metric("📈 Trades Hoje", trades_hoje)
+        st.caption(f"🤖 {bots_operando} bots operando")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
+        # Taxa de sucesso (win rate)
+        taxa_sucesso = 0
+        try:
+            if 'access_token' in st.session_state:
+                resp = requests.get(
+                    'http://localhost:8001/api/trades/stats',
+                    headers={'Authorization': f'Bearer {st.session_state.access_token}'},
+                    timeout=5
+                )
+                if resp.status_code == 200:
+                    stats = resp.json()
+                    taxa_sucesso = stats.get('win_rate', 0)
+        except:
+            pass
+        
+        st.metric("✅ Taxa Sucesso", f"{taxa_sucesso:.1f}%")
+        st.caption("Win rate")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # Espaçamento clean
 st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
