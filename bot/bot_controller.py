@@ -109,27 +109,32 @@ class BotController:
             return {'running': False}
     
     def sync_with_database(self):
-        """Sincroniza bots ativos com banco de dados"""
+        """Sincroniza bots ativos com banco de dados - SÓ INICIA SE USUÁRIO ATIVOU!"""
         try:
             db = SessionLocal()
             
-            # Buscar todos os bots ativos no banco
+            # Buscar APENAS bots marcados como ATIVOS no banco
+            # is_active = True significa que USUÁRIO clicou em START!
             active_in_db = db.query(BotConfiguration).filter(
                 BotConfiguration.is_active == True
             ).all()
             
+            print(f"[BOT CONTROLLER] Bots marcados como ativos no banco: {len(active_in_db)}")
+            for bot in active_in_db:
+                print(f"  - Bot {bot.id}: {bot.name} ({bot.exchange})")
+            
             active_ids = {b.id for b in active_in_db}
             
-            # Parar bots que foram desativados no banco
+            # Parar bots que foram desativados
             for bot_id in list(self.active_bots.keys()):
                 if bot_id not in active_ids:
-                    logger.info(f"Bot {bot_id} foi desativado no banco - parando...")
+                    logger.info(f"Bot {bot_id} foi DESATIVADO pelo usuario - parando...")
                     self.stop_bot(bot_id)
             
-            # Iniciar bots que foram ativados no banco
+            # Iniciar APENAS bots que usuário ATIVOU explicitamente
             for bot in active_in_db:
                 if bot.id not in self.active_bots:
-                    logger.info(f"Bot {bot.id} foi ativado no banco - iniciando...")
+                    logger.info(f"Bot {bot.id} foi ATIVADO pelo usuario - iniciando...")
                     self.start_bot(bot.id)
             
             db.close()

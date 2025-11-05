@@ -217,34 +217,36 @@ window.addEventListener('load', function() {
     }, 500);
 });
 
-// FORÇAR BOTÃO SIDEBAR SEMPRE VISÍVEL - TODOS OS SELETORES!
+// SIDEBAR E BOTÃO SEMPRE VISÍVEIS APÓS LOGIN!
 setInterval(function() {
-    // Procurar TODOS os possíveis botões
-    const buttons = document.querySelectorAll(`
-        button[kind="header"],
-        [data-testid="collapsedControl"],
-        button[data-testid="baseButton-header"],
-        button[aria-label*="navigation"],
-        section[data-testid="stSidebar"] + div button,
-        [class*="collapsedControl"]
-    `);
-    
-    buttons.forEach(btn => {
-        if (btn) {
-            btn.style.display = 'block';
-            btn.style.visibility = 'visible';
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'auto';
-            
-            // Se é botão colapsado (>>)
-            if (btn.getAttribute('data-testid') === 'collapsedControl') {
-                btn.style.position = 'fixed';
-                btn.style.top = '0.5rem';
-                btn.style.left = '0.5rem';
-                btn.style.zIndex = '999999';
-            }
+    // Se NÃO está na tela de login
+    if (!document.querySelector('.login-page')) {
+        
+        // FORÇAR sidebar visível
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) {
+            sidebar.style.display = 'block';
+            sidebar.style.visibility = 'visible';
         }
-    });
+        
+        // FORÇAR TODOS botões visíveis
+        const buttons = document.querySelectorAll(`
+            button[kind="header"],
+            [data-testid="collapsedControl"],
+            button[data-testid="baseButton-header"],
+            button[aria-label*="sidebar"],
+            button[title*="sidebar"]
+        `);
+        
+        buttons.forEach(btn => {
+            if (btn) {
+                btn.style.display = 'block !important';
+                btn.style.visibility = 'visible !important';
+                btn.style.opacity = '1 !important';
+                btn.style.pointerEvents = 'auto';
+            }
+        });
+    }
 }, 200);
 </script>
 """, unsafe_allow_html=True)
@@ -260,12 +262,18 @@ def check_authentication():
     if 'authenticated' in st.session_state and st.session_state.authenticated:
         return True
     
-    # CSS EXCLUSIVO PARA TELA DE LOGIN
+    # CSS EXCLUSIVO PARA TELA DE LOGIN  
     st.markdown("""
     <style>
-        /* Esconder sidebar apenas nesta tela */
+        /* Esconder sidebar APENAS quando dentro de .login-page */
         .login-page [data-testid="stSidebar"] {
             display: none !important;
+        }
+        
+        /* FORÇAR sidebar visível fora de login-page! */
+        body:not(.login-page) [data-testid="stSidebar"] {
+            display: block !important;
+            visibility: visible !important;
         }
         
         /* Container sem padding */
@@ -793,12 +801,8 @@ with col_refresh:
     st.metric("🔄 Refresh", "5s")
 
 with col_btn:
-    if active_bots > 0:
-        if st.button("⏸️ PARAR BOT", type="primary", use_container_width=True):
-            st.success("Bots pausados!")
-    else:
-        if st.button("▶️ INICIAR BOT", type="primary", use_container_width=True):
-            st.success("Bots iniciados!")
+    # Botões removidos - controle individual nas abas dos bots!
+    st.caption("Use abas dos bots para controle individual")
 
 # Espaçamento clean
 st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
@@ -1848,11 +1852,47 @@ for i, bot in enumerate(user_bots):
             # Espaçamento clean
             st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
             
-            # Controles do bot - COM VALIDAÇÃO
-            if bot.get('is_active'):
-                if st.button("⏸️ Pausar Bot", key=f"pause_{bot['id']}", use_container_width=True):
-                    st.success("✅ Bot pausado!")
+            # TOGGLE BOT - INICIA/PARA VIA API
+            bot_ativo_now = bot.get('is_active', False)
+            
+            # Texto e cor do botão
+            if bot_ativo_now:
+                texto_btn = "⏸️ Parar Bot"
+                tipo_btn = "secondary"
             else:
+                texto_btn = "▶️ Iniciar Bot"
+                tipo_btn = "primary"
+            
+            # Botão toggle
+            if st.button(texto_btn, key=f"toggle_{bot['id']}", use_container_width=True, type=tipo_btn):
+                try:
+                    # Chamar API toggle
+                    nova_acao = not bot_ativo_now
+                    
+                    resp = requests.post(
+                        f'http://localhost:8001/api/bots/{bot["id"]}/toggle',
+                        headers={'Authorization': f'Bearer {st.session_state.access_token}'},
+                        json={'is_active': nova_acao},
+                        timeout=10
+                    )
+                    
+                    if resp.status_code == 200:
+                        if nova_acao:
+                            st.success(f"✅ Bot {bot['name']} INICIADO! Operará em 10 segundos.")
+                            st.info("🤖 Bot Controller detectará automaticamente e iniciará operação!")
+                        else:
+                            st.warning(f"⏸️ Bot {bot['name']} PARADO! Parará em 10 segundos.")
+                        
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        erro = resp.json()
+                        st.error(f"Erro: {erro.get('detail', 'Erro desconhecido')}")
+                except Exception as e:
+                    st.error(f"Erro ao comunicar com API: {str(e)[:100]}")
+            
+            # Validação de saldo (aviso)
+            if not bot_ativo_now:
                 # Verificar se tem saldo antes de iniciar
                 bot_exchange = bot.get('exchange', 'binance').lower()
                 
