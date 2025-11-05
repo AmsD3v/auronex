@@ -18,30 +18,47 @@ def get_current_user_from_cookie(request: Request, db: Session) -> User:
     Usado em páginas HTML
     """
     
+    # DEBUG
+    print(f"[AUTH] Verificando autenticacao...")
+    print(f"[AUTH] Cookies disponiveis: {list(request.cookies.keys())}")
+    
     # Pegar token do cookie
     token = request.cookies.get("access_token")
     
-    if not token:
+    if token:
+        print(f"[AUTH] Token encontrado: {token[:50]}...")
+    else:
+        print("[AUTH] Nenhum token no cookie!")
         return None
     
     # Remover "Bearer " se existir
     if token.startswith("Bearer "):
         token = token.replace("Bearer ", "")
+        print("[AUTH] Removido prefixo Bearer")
     
     try:
         # Decodificar token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("user_id")
         
+        print(f"[AUTH] Token valido! user_id: {user_id}")
+        
         if user_id is None:
+            print("[AUTH] ERRO: user_id None no payload!")
             return None
         
         # Buscar usuário no banco
         user = db.query(User).filter(User.id == user_id).first()
         
+        if user:
+            print(f"[AUTH] Usuario autenticado: {user.email}")
+        else:
+            print(f"[AUTH] ERRO: Usuario {user_id} nao encontrado!")
+        
         return user
         
-    except JWTError:
+    except JWTError as e:
+        print(f"[AUTH] ERRO JWT: {e}")
         return None
 
 def require_auth(request: Request, db: Session):

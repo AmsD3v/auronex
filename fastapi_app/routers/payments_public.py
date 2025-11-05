@@ -63,9 +63,9 @@ async def create_mercadopago_checkout_public(request: Request, db: Session = Dep
                 "email": user.email
             },
             "back_urls": {
-                "success": f"http://localhost:8001/payment/success?plan={plan}",
-                "failure": f"http://localhost:8001/payment/cancelled?plan={plan}",
-                "pending": f"http://localhost:8001/payment/success?plan={plan}"
+                "success": f"https://auronex.com.br/payment/success?plan={plan}",
+                "failure": f"https://auronex.com.br/payment/cancelled?plan={plan}",
+                "pending": f"https://auronex.com.br/payment/success?plan={plan}"
             },
             "external_reference": f"user_{user.id}_plan_{plan}"
             # Sem auto_return (localhost não suporta)
@@ -129,8 +129,8 @@ async def create_stripe_checkout_public(request: Request, db: Session = Depends(
                 'quantity': 1,
             }],
             mode='subscription',
-            success_url=f'http://localhost:8001/payment/success?plan={plan}&session_id={{CHECKOUT_SESSION_ID}}',
-            cancel_url='http://localhost:8001/payment/cancelled',
+            success_url=f'https://auronex.com.br/payment/success?plan={plan}&session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url='https://auronex.com.br/payment/cancelled',
             metadata={
                 'user_id': user.id,
                 'plan': plan

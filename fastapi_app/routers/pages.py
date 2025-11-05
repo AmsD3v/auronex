@@ -146,23 +146,27 @@ async def register_submit(
             print(f"Info: Subscription não criada: {e}")
             db.rollback()  # Limpar erro
         
-        # FLUXO CORRETO: LOGAR O USUÁRIO IMEDIATAMENTE!
-        # Criar token JWT
+        # FLUXO CORRETO: LOGAR E REDIRECIONAR PARA ESCOLHA DE PLANO!
         access_token = create_access_token(data={"user_id": user.id, "email": user.email})
         
-        print(f"✅ Cadastro: Token criado para {user.email}")
+        print(f"✅ Cadastro completo: {user.email}")
+        print(f"✅ Token criado: {access_token[:20]}...")
         
-        # Redirecionar para escolha de plano (JÁ LOGADO!)
+        # Redirecionar para ESCOLHA DE PLANO (já logado!)
         response = RedirectResponse(url="/payment/choice", status_code=303)
+        
+        # Setar cookie com token (usuário logado automaticamente!)
         response.set_cookie(
             key="access_token",
             value=f"Bearer {access_token}",
             httponly=False,  # JavaScript precisa ler!
-            max_age=86400,
-            samesite="lax"
+            max_age=86400,  # 24 horas
+            path="/",  # Disponível em todo site
+            samesite="lax",
+            secure=False  # Funciona HTTP e HTTPS
         )
         
-        print(f"✅ Cadastro: Cookie setado!")
+        print(f"✅ Cookie setado! Redirecionando para /payment/choice")
         
         return response
         
@@ -521,9 +525,19 @@ async def checkout_page(request: Request, plan: str = "pro", db: Session = Depen
     # CRÍTICO: Verificar se está logado!
     user = get_current_user_from_cookie(request, db)
     
+    print(f"[CHECKOUT] User logado: {user is not None}")
+    if user:
+        print(f"[CHECKOUT] Email: {user.email}")
+    
     if not user:
-        # Se não está logado, redireciona para login
-        return RedirectResponse(url=f"/login?next=/payment/checkout?plan={plan}", status_code=303)
+        # Se não está logado, mostrar mensagem amigável
+        return templates.TemplateResponse("info_message.html", {
+            "request": request,
+            "title": "Login Necessário",
+            "message": "Você precisa estar logado para acessar o checkout!",
+            "button_text": "Fazer Login",
+            "button_url": f"/login?next=/payment/checkout?plan={plan}"
+        })
     
     plans = {
         "free": {"name": "Free", "price": 0},

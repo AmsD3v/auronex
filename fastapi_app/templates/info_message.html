@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg" style="border-radius: 20px; border: none;">
+                    <div class="card-body p-5 text-center">
+                        <i class="fas fa-info-circle fa-4x mb-4 text-primary"></i>
+                        <h2 class="mb-4">{{ title }}</h2>
+                        <p class="lead mb-4">{{ message }}</p>
+                        <a href="{{ button_url }}" class="btn btn-primary btn-lg">
+                            {{ button_text }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

@@ -58,6 +58,8 @@ async function pagarComMercadoPago() {
     try {
         const plan = new URLSearchParams(window.location.search).get('plan') || 'pro';
         
+        console.log('[MercadoPago] Plano:', plan);
+        
         // Chamar API MercadoPago Checkout Pro
         const response = await fetch('/api/payments-public/mercadopago/checkout', {
             method: 'POST',
@@ -66,19 +68,29 @@ async function pagarComMercadoPago() {
             credentials: 'include'
         });
         
+        console.log('[MercadoPago] Status:', response.status);
+        
         if (response.ok) {
             const data = await response.json();
+            console.log('[MercadoPago] Resposta:', data);
+            
             if (data.checkout_url) {
-                // Redirecionar para Checkout Pro do MercadoPago
+                console.log('[MercadoPago] Redirecionando:', data.checkout_url);
                 window.location.href = data.checkout_url;
                 return;
+            } else {
+                alert('Erro: Resposta sem checkout_url. Detalhes no console (F12).');
             }
+        } else {
+            const error = await response.json();
+            console.error('[MercadoPago] Erro:', error);
+            alert('Erro: ' + (error.detail || 'Erro desconhecido. Veja console (F12)'));
         }
         
-        alert('Erro ao processar. Tente novamente.');
         btn.innerHTML = originalText;
     } catch (error) {
-        alert('Erro de conexão.');
+        console.error('[MercadoPago] Exception:', error);
+        alert('Erro de conexão: ' + error.message);
         btn.innerHTML = originalText;
     }
 }
@@ -91,7 +103,9 @@ async function pagarComCartao() {
     try {
         const plan = new URLSearchParams(window.location.search).get('plan') || 'pro';
         
-        // Chamar API Stripe e ir DIRETO para checkout.stripe.com
+        console.log('[Stripe] Plano:', plan);
+        
+        // Chamar API Stripe
         const response = await fetch('/api/payments-public/stripe/checkout', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -99,19 +113,29 @@ async function pagarComCartao() {
             credentials: 'include'
         });
         
+        console.log('[Stripe] Status:', response.status);
+        
         if (response.ok) {
             const data = await response.json();
+            console.log('[Stripe] Resposta:', data);
+            
             if (data.checkout_url) {
-                // Redirecionar DIRETO para Stripe (SEM página intermediária)
+                console.log('[Stripe] Redirecionando:', data.checkout_url);
                 window.location.href = data.checkout_url;
                 return;
+            } else {
+                alert('Erro: Resposta sem checkout_url. Detalhes no console (F12).');
             }
+        } else {
+            const error = await response.json();
+            console.error('[Stripe] Erro:', error);
+            alert('Erro: ' + (error.detail || 'Erro desconhecido. Veja console (F12)'));
         }
         
-        alert('Erro ao processar. Tente PIX.');
         btn.innerHTML = originalText;
     } catch (error) {
-        alert('Erro de conexão. Tente novamente.');
+        console.error('[Stripe] Exception:', error);
+        alert('Erro de conexão: ' + error.message);
         btn.innerHTML = originalText;
     }
 }

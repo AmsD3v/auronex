@@ -107,44 +107,27 @@ st.markdown("""
         border-right: 1px solid rgba(255,255,255,0.05);
     }
     
-    /* BOTÃO SIDEBAR - SEMPRE VISÍVEL E ACESSÍVEL! */
+    /* BOTÃO NATIVO STREAMLIT - SEMPRE VISÍVEL! */
     button[kind="header"],
     [data-testid="collapsedControl"],
-    [data-testid="stSidebarCollapsedControl"],
-    button[aria-label*="sidebar"],
-    button[title*="sidebar"] {
+    button[data-testid="baseButton-header"] {
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        position: fixed !important;
-        top: 1rem !important;
-        left: 1rem !important;
         z-index: 999999 !important;
-        background: linear-gradient(135deg, rgba(100,150,255,0.3), rgba(120,170,255,0.3)) !important;
-        border: 1px solid rgba(100,150,255,0.5) !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
-        color: white !important;
-        box-shadow: 0 4px 15px rgba(100,150,255,0.3) !important;
-        backdrop-filter: blur(10px) !important;
-        cursor: pointer !important;
-        width: auto !important;
-        height: auto !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
     }
     
-    button[kind="header"]:hover,
-    [data-testid="collapsedControl"]:hover {
-        background: linear-gradient(135deg, rgba(100,150,255,0.5), rgba(120,170,255,0.5)) !important;
-        transform: scale(1.1) !important;
-        box-shadow: 0 6px 20px rgba(100,150,255,0.5) !important;
-    }
-    
-    /* Garantir que botão nunca suma */
-    [data-testid="stSidebarNav"],
-    section[data-testid="stSidebar"] ~ button {
+    /* Sidebar aberta - botão na posição normal */
+    section[data-testid="stSidebar"][aria-expanded="true"] ~ div button[kind="header"],
+    section[data-testid="stSidebar"]:not([aria-expanded="false"]) ~ div button[kind="header"] {
         display: block !important;
+    }
+    
+    /* Sidebar fechada - botão deve ficar visível */
+    [data-testid="collapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     /* Títulos Clean */
@@ -234,68 +217,35 @@ window.addEventListener('load', function() {
     }, 500);
 });
 
-// BOTÃO SIDEBAR CUSTOMIZADO - SEMPRE VISÍVEL E MUDA DIREÇÃO!
-let sidebarVisible = true;
-
-function createCustomSidebarButton() {
-    // Remover botão antigo se existir
-    const oldBtn = document.getElementById('custom-sidebar-toggle');
-    if (oldBtn) oldBtn.remove();
+// FORÇAR BOTÃO SIDEBAR SEMPRE VISÍVEL - TODOS OS SELETORES!
+setInterval(function() {
+    // Procurar TODOS os possíveis botões
+    const buttons = document.querySelectorAll(`
+        button[kind="header"],
+        [data-testid="collapsedControl"],
+        button[data-testid="baseButton-header"],
+        button[aria-label*="navigation"],
+        section[data-testid="stSidebar"] + div button,
+        [class*="collapsedControl"]
+    `);
     
-    // Criar botão customizado
-    const btn = document.createElement('button');
-    btn.id = 'custom-sidebar-toggle';
-    btn.innerHTML = sidebarVisible ? '« ' : '» ';
-    btn.style.cssText = `
-        position: fixed;
-        top: 1rem;
-        left: ${sidebarVisible ? '18rem' : '1rem'};
-        z-index: 999999;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border: 2px solid rgba(255,255,255,0.3);
-        border-radius: 12px;
-        padding: 10px 14px;
-        color: white;
-        font-weight: 700;
-        font-size: 1.2rem;
-        cursor: pointer;
-        box-shadow: 0 4px 20px rgba(102,126,234,0.5);
-        transition: all 0.3s ease;
-    `;
-    
-    btn.onmouseover = () => {
-        btn.style.transform = 'scale(1.1)';
-        btn.style.boxShadow = '0 6px 30px rgba(102,126,234,0.7)';
-    };
-    
-    btn.onmouseout = () => {
-        btn.style.transform = 'scale(1)';
-        btn.style.boxShadow = '0 4px 20px rgba(102,126,234,0.5)';
-    };
-    
-    btn.onclick = () => {
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) {
-            sidebarVisible = !sidebarVisible;
+    buttons.forEach(btn => {
+        if (btn) {
+            btn.style.display = 'block';
+            btn.style.visibility = 'visible';
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
             
-            if (sidebarVisible) {
-                sidebar.style.display = 'block';
-                btn.innerHTML = '« ';
-                btn.style.left = '18rem';
-            } else {
-                sidebar.style.display = 'none';
-                btn.innerHTML = '» ';
-                btn.style.left = '1rem';
+            // Se é botão colapsado (>>)
+            if (btn.getAttribute('data-testid') === 'collapsedControl') {
+                btn.style.position = 'fixed';
+                btn.style.top = '0.5rem';
+                btn.style.left = '0.5rem';
+                btn.style.zIndex = '999999';
             }
         }
-    };
-    
-    document.body.appendChild(btn);
-}
-
-// Criar botão ao carregar e manter atualizado
-createCustomSidebarButton();
-setInterval(createCustomSidebarButton, 2000);
+    });
+}, 200);
 </script>
 """, unsafe_allow_html=True)
 
@@ -791,39 +741,7 @@ else:
     except:
         config_salva = {}
 
-# BOTÃO SIDEBAR CUSTOMIZADO (SEMPRE VISÍVEL!)
-st.markdown("""
-<button onclick="toggleSidebar()" style="
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 999999;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 12px;
-    padding: 12px 16px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(102,126,234,0.5);
-    transition: all 0.3s;
-">
-    ☰ Menu
-</button>
-
-<script>
-function toggleSidebar() {
-    const sidebar = document.querySelector('[data-testid="stSidebar"]');
-    if (sidebar) {
-        if (sidebar.style.display === 'none') {
-            sidebar.style.display = 'block';
-        } else {
-            sidebar.style.display = 'none';
-        }
-    }
-}
-</script>
-""", unsafe_allow_html=True)
+# Botão sidebar nativo - sem customização extra aqui
 
 # Header com seletor de moeda
 col_titulo, col_moeda = st.columns([4, 1])

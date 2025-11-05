@@ -60,7 +60,7 @@ async function generatePix() {
         }
         
         // Criar pagamento via MercadoPago
-        const response = await fetch('http://localhost:8001/api/payments/mercadopago/create-payment', {
+        const response = await fetch('/api/payments/mercadopago/create-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

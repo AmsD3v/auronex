@@ -35,10 +35,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8501",  # Dashboard
+        "http://localhost:8501",
         "http://127.0.0.1:8501",
-        "http://localhost:3000",  # Frontend futuro
-        "*"  # Permitir todos (desenvolvimento)
+        "http://localhost:8001",
+        "https://auronex.com.br",
+        "https://www.auronex.com.br",
+        "https://app.auronex.com.br",
+        "*"  # Permitir todos
     ],
     allow_credentials=True,
     allow_methods=["*"],
