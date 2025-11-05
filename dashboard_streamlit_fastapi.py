@@ -764,8 +764,8 @@ else:
 
 # Botão sidebar nativo - sem customização extra aqui
 
-# Header com seletor de moeda
-col_titulo, col_moeda = st.columns([4, 1])
+# Header clean - Título, Moeda e Hora
+col_titulo, col_moeda, col_hora = st.columns([3, 1, 1])
 
 with col_titulo:
     st.markdown("""
@@ -776,13 +776,22 @@ with col_titulo:
     """, unsafe_allow_html=True)
 
 with col_moeda:
-    # SELETOR DE MOEDA (PADRÃO: BRL)
+    # SELETOR DE MOEDA
     moeda = st.selectbox("💱", ["💰 BRL", "💵 USD"], index=0, label_visibility="collapsed")
     taxa_conversao = 5.0 if moeda == "💰 BRL" else 1.0
     simbolo_moeda = "R$" if moeda == "💰 BRL" else "$"
 
+with col_hora:
+    # Hora atual
+    st.markdown(f"""
+    <div style='text-align: right; padding: 1rem 0;'>
+        <div style='font-size: 1.5rem; font-weight: 300; color: #ffffff;'>{datetime.now().strftime('%H:%M:%S')}</div>
+        <div style='font-size: 0.75rem; color: #718096;'>Atualiza a cada 5s</div>
+    </div>
+    """, unsafe_allow_html=True)
+
 # Espaçamento clean
-st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 # Buscar bots PRIMEIRO (antes de usar)
 user_bots = get_user_bots()
@@ -791,27 +800,9 @@ if len(user_bots) == 0:
     st.info("ℹ️ Você ainda não tem bots criados. Crie em: http://localhost:8001/bots-page")
     st.stop()
 
-# Calcular active_bots
+# Calcular active_bots (para usar nas métricas principais mais abaixo)
 total_bots = len(user_bots)
 active_bots = sum(1 for bot in user_bots if bot.get('is_active', False))
-
-# ========================================
-# BARRA DE STATUS NO TOPO
-# ========================================
-
-col_hora, col_bots, col_refresh = st.columns([2, 2, 2])
-
-with col_hora:
-    st.markdown(f"### ⏰ {datetime.now().strftime('%H:%M:%S')}")
-
-with col_bots:
-    st.metric("🤖 Bots", f"{active_bots}/{total_bots}", "ativos")
-
-with col_refresh:
-    st.metric("🔄 Atualização", "5s")
-
-# Espaçamento clean
-st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
 # ========================================
 # SIDEBAR - CONTROLES E INFO
