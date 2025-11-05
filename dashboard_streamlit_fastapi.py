@@ -1661,8 +1661,8 @@ with tabs[0]:
     
     st.markdown("### 💼 Portfólio Consolidado")
     
-    # Gráfico menor (40% do espaço) + Info (60%)
-    col_pizza, col_info = st.columns([0.4, 0.6])
+    # Gráfico maior (50%) + Info compacta (50%) - Balanceado!
+    col_pizza, col_info = st.columns([1, 1])
     
     with col_pizza:
         # Gráfico de pizza - SEMPRE MOSTRAR
@@ -1697,7 +1697,7 @@ with tabs[0]:
                     text=f"Alocação de Capital",
                     font=dict(size=14)
                 ),
-                height=155,  # Tamanho ajustado
+                height=230,  # 50% maior que 155px
                 margin=dict(l=5, r=5, t=30, b=5),
                 showlegend=False
             )
@@ -1809,16 +1809,10 @@ with tabs[0]:
         # Espaçamento clean
         st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
         
-        col_metric3, col_metric4 = st.columns(2)
-        
-        with col_metric3:
-            st.metric("🤖 Bots Ativos", f"{active_bots}")
-            st.caption(f"Total: {total_bots} bots")
-        
-        with col_metric4:
-            capital_inicial_conv = capital_inicial_portfolio * taxa_conversao
-            st.metric("💵 Capital Inicial", f"{simbolo_moeda} {capital_inicial_conv:.2f}")
-            st.caption("(Alocação de Capital)")
+        # Capital Inicial (sem Bots Ativos - redundante!)
+        capital_inicial_conv = capital_inicial_portfolio * taxa_conversao
+        st.metric("💵 Capital Inicial", f"{simbolo_moeda} {capital_inicial_conv:.2f}")
+        st.caption("(Alocação de Capital)")
         
         st.markdown('</div>', unsafe_allow_html=True)
         
