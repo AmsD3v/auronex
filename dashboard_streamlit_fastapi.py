@@ -43,7 +43,6 @@ st.markdown("""
     
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
     
     /* Container Principal */
     .main .block-container {
@@ -101,29 +100,16 @@ st.markdown("""
         margin-bottom: 8px;
     }
     
-    /* Sidebar Minimalista */
+    /* Sidebar SEMPRE Visível */
     [data-testid="stSidebar"] {
-        background: rgba(10,15,30,0.98);
-        border-right: 1px solid rgba(255,255,255,0.05);
-    }
-    
-    /* BOTÃO NATIVO STREAMLIT - SEMPRE VISÍVEL! */
-    button[kind="header"],
-    [data-testid="collapsedControl"],
-    button[data-testid="baseButton-header"] {
         display: block !important;
         visibility: visible !important;
-        opacity: 1 !important;
-        z-index: 999999 !important;
+        background: rgba(10,15,30,0.98) !important;
+        border-right: 1px solid rgba(255,255,255,0.05) !important;
     }
     
-    /* Sidebar aberta - botão na posição normal */
-    section[data-testid="stSidebar"][aria-expanded="true"] ~ div button[kind="header"],
-    section[data-testid="stSidebar"]:not([aria-expanded="false"]) ~ div button[kind="header"] {
-        display: block !important;
-    }
-    
-    /* Sidebar fechada - botão deve ficar visível */
+    /* Botões sidebar SEMPRE visíveis */
+    button[kind="header"],
     [data-testid="collapsedControl"] {
         display: block !important;
         visibility: visible !important;
@@ -232,12 +218,17 @@ def check_authentication():
     if 'authenticated' in st.session_state and st.session_state.authenticated:
         return True
     
-    # TELA DE LOGIN SEM SIDEBAR - USA st.stop() ANTES
-    # NÃO usa CSS para esconder!
+    # TELA DE LOGIN - CSS ISOLADO APENAS PARA ESTA FUNÇÃO
+    # Usa st.stop() então não afeta dashboard!
     st.markdown("""
     <style>
+        /* Esconder sidebar APENAS na tela de login */
+        .login-screen [data-testid="stSidebar"] {
+            display: none !important;
+        }
+        
         /* Container login sem padding */
-        .main .block-container {
+        .login-screen .main .block-container {
             padding: 0 !important;
             margin: 0 !important;
         }
@@ -398,9 +389,8 @@ def check_authentication():
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True)  # Fechar login-page
-    
     # Parar execução aqui (não mostrar resto do dashboard)
+    # CSS acima SÓ afeta esta função!
     return False
 
 def refresh_token_if_expired():
@@ -451,6 +441,34 @@ def get_user_api_keys():
 # VERIFICAR AUTENTICAÇÃO
 if not check_authentication():
     st.stop()
+
+# FORÇAR SIDEBAR VISÍVEL APÓS AUTENTICAÇÃO (JavaScript garantido!)
+st.markdown("""
+<script>
+// FORÇA SIDEBAR E BOTÃO APÓS LOGIN!
+setTimeout(function() {
+    const sidebar = document.querySelector('[data-testid="stSidebar"]');
+    if (sidebar) {
+        sidebar.style.display = 'block';
+        sidebar.style.visibility = 'visible';
+        sidebar.style.opacity = '1';
+    }
+    
+    // Todos os botões de sidebar
+    document.querySelectorAll('button[kind="header"], [data-testid="collapsedControl"]').forEach(btn => {
+        btn.style.display = 'block';
+        btn.style.visibility = 'visible';
+        btn.style.opacity = '1';
+    });
+}, 500);
+
+// Repetir a cada segundo (garantia)
+setInterval(function() {
+    const sidebar = document.querySelector('[data-testid="stSidebar"]');
+    if (sidebar) sidebar.style.display = 'block';
+}, 1000);
+</script>
+""", unsafe_allow_html=True)
 
 # ========================================
 # BUSCAR BOTS DO USUÁRIO
@@ -1275,28 +1293,32 @@ st.sidebar.markdown("[👨‍💼 Admin](http://localhost:8001/admin/)")
 col_space1, col_cards, col_space2 = st.columns([0.5, 10, 0.5])
 
 with col_cards:
-    # CARDS COM GLOW HOVER - CSS INLINE PARA FUNCIONAR!
+    # CARDS COM GLOW - APLICAR NOS CONTAINERS DO STREAMLIT!
     st.markdown("""
     <style>
-    /* Cards com efeito glow - APLICADO A ELEMENT-CONTAINER! */
-    .element-container:has(div.glow-card),
-    div[data-testid="column"]:has(div.glow-card) > div {
+    /* Aplicar glow nas colunas das métricas principais */
+    div[data-testid="column"]:nth-child(1) > div,
+    div[data-testid="column"]:nth-child(2) > div,
+    div[data-testid="column"]:nth-child(3) > div,
+    div[data-testid="column"]:nth-child(4) > div {
         background: linear-gradient(135deg, rgba(20,25,45,0.4), rgba(30,35,60,0.4)) !important;
         backdrop-filter: blur(30px) !important;
         border-radius: 20px !important;
-        padding: 1.2rem !important;
+        padding: 1.5rem !important;
         border: 1px solid rgba(255,255,255,0.06) !important;
         box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        cursor: default;
+        text-align: center !important;
     }
     
-    .element-container:has(div.glow-card):hover,
-    div[data-testid="column"]:has(div.glow-card) > div:hover {
-        transform: translateY(-4px) !important;
-        box-shadow: 0 16px 40px rgba(0,100,255,0.3), 0 0 60px rgba(0,100,255,0.2) !important;
-        border-color: rgba(100,150,255,0.4) !important;
-        background: linear-gradient(135deg, rgba(25,30,60,0.6), rgba(35,40,70,0.6)) !important;
+    div[data-testid="column"]:nth-child(1) > div:hover,
+    div[data-testid="column"]:nth-child(2) > div:hover,
+    div[data-testid="column"]:nth-child(3) > div:hover,
+    div[data-testid="column"]:nth-child(4) > div:hover {
+        transform: translateY(-6px) !important;
+        box-shadow: 0 20px 50px rgba(0,100,255,0.4), 0 0 80px rgba(0,150,255,0.3) !important;
+        border-color: rgba(100,150,255,0.5) !important;
+        background: linear-gradient(135deg, rgba(30,40,70,0.6), rgba(40,50,80,0.6)) !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1304,18 +1326,13 @@ with col_cards:
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
         st.metric("🤖 Total de Bots", total_bots, f"{active_bots} ativos")
-        st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
         saldo_kpi = capital_total * taxa_conversao if capital_total > 0 else 0
         st.metric("💰 Saldo Total", f"{simbolo_moeda} {saldo_kpi:.2f}", "+5.2%")
-        st.markdown('</div>', unsafe_allow_html=True)
     
     with col3:
-        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
         # Buscar trades REAIS da API + Status dos bots
         trades_hoje = 0
         bots_operando = 0
@@ -1346,10 +1363,8 @@ with col_cards:
         
         st.metric("📈 Trades Hoje", trades_hoje)
         st.caption(f"🤖 {bots_operando} bots operando")
-        st.markdown('</div>', unsafe_allow_html=True)
     
     with col4:
-        st.markdown('<div class="glow-card">', unsafe_allow_html=True)
         # Taxa de sucesso (win rate)
         taxa_sucesso = 0
         try:
@@ -1367,7 +1382,6 @@ with col_cards:
         
         st.metric("✅ Taxa Sucesso", f"{taxa_sucesso:.1f}%")
         st.caption("Win rate")
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # Espaçamento clean
 st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
