@@ -217,8 +217,8 @@ window.addEventListener('load', function() {
     }, 500);
 });
 
-// SIDEBAR E BOTÃO SEMPRE VISÍVEIS APÓS LOGIN!
-setInterval(function() {
+// SIDEBAR E BOTÃO SEMPRE VISÍVEIS - FORÇA BRUTA!
+function forceSidebarButton() {
     // Se NÃO está na tela de login
     if (!document.querySelector('.login-page')) {
         
@@ -227,27 +227,40 @@ setInterval(function() {
         if (sidebar) {
             sidebar.style.display = 'block';
             sidebar.style.visibility = 'visible';
+            sidebar.style.opacity = '1';
         }
         
-        // FORÇAR TODOS botões visíveis
-        const buttons = document.querySelectorAll(`
-            button[kind="header"],
-            [data-testid="collapsedControl"],
-            button[data-testid="baseButton-header"],
-            button[aria-label*="sidebar"],
-            button[title*="sidebar"]
-        `);
+        // Procurar TODOS os seletores possíveis de botão
+        const selectors = [
+            'button[kind="header"]',
+            '[data-testid="collapsedControl"]',
+            'button[data-testid="baseButton-header"]',
+            'button[aria-label*="sidebar"]',
+            'button[title*="sidebar"]',
+            'button[class*="viewerBadge"]',
+            '[class*="collapsedControl"]',
+            'section[data-testid="stSidebar"] ~ button',
+            'button svg[data-testid="stIconChevronLeft"]',
+            'button svg[data-testid="stIconChevronRight"]'
+        ];
         
-        buttons.forEach(btn => {
-            if (btn) {
-                btn.style.display = 'block !important';
-                btn.style.visibility = 'visible !important';
-                btn.style.opacity = '1 !important';
-                btn.style.pointerEvents = 'auto';
-            }
+        selectors.forEach(selector => {
+            const btns = document.querySelectorAll(selector);
+            btns.forEach(btn => {
+                btn.style.cssText = `
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    pointer-events: auto !important;
+                `;
+            });
         });
     }
-}, 200);
+}
+
+// Executar continuamente
+forceSidebarButton();
+setInterval(forceSidebarButton, 100);
 </script>
 """, unsafe_allow_html=True)
 
@@ -786,23 +799,16 @@ active_bots = sum(1 for bot in user_bots if bot.get('is_active', False))
 # BARRA DE STATUS NO TOPO
 # ========================================
 
-col_hora, col_status, col_refresh, col_btn = st.columns([2, 2, 1, 2])
+col_hora, col_bots, col_refresh = st.columns([2, 2, 2])
 
 with col_hora:
     st.markdown(f"### ⏰ {datetime.now().strftime('%H:%M:%S')}")
 
-with col_status:
-    if active_bots > 0:
-        st.success(f"🟢 BOT ATIVO ({active_bots}/{total_bots})")
-    else:
-        st.error("🔴 BOT PARADO")
+with col_bots:
+    st.metric("🤖 Bots", f"{active_bots}/{total_bots}", "ativos")
 
 with col_refresh:
-    st.metric("🔄 Refresh", "5s")
-
-with col_btn:
-    # Botões removidos - controle individual nas abas dos bots!
-    st.caption("Use abas dos bots para controle individual")
+    st.metric("🔄 Atualização", "5s")
 
 # Espaçamento clean
 st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
