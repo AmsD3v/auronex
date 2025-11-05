@@ -1386,22 +1386,6 @@ with col_cards:
 # Espaçamento clean
 st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
 
-# Barra de status já está no topo (logo após título)
-
-# ========================================
-# OPERAÇÕES RECENTES
-# ========================================
-
-st.subheader("📺 Operações Recentes")
-
-if active_bots > 0:
-    st.info("⏳ Nenhuma operação realizada ainda. Bot procurando oportunidades...")
-else:
-    st.warning("⚠️ Bot pausado. Inicie para começar a operar.")
-
-# Espaçamento clean
-st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
-
 # ========================================
 # TOP 5 PERFORMANCE (2ª POSIÇÃO!)
 # ========================================
@@ -1413,6 +1397,11 @@ tab_hoje, tab_semana, tab_mes, tab_virais, tab_corretora = st.tabs(["🔥 Hoje",
 with tab_hoje:
     # TOP 5 do dia
     try:
+        # Verificar se tem exchange configurada
+        if not user_keys or len(user_keys) == 0:
+            st.info("💡 Configure uma API Key para ver TOP 5 em tempo real!")
+            st.stop()
+        
         top5_exchange = get_exchange_for_user(exchange_name.capitalize())
         
         if top5_exchange:
@@ -1698,14 +1687,19 @@ with tabs[0]:
             fig = go.Figure(data=[go.Pie(
                 labels=labels,
                 values=values,
-                hole=0.3,
+                hole=0.4,
                 textinfo='label+percent',
+                textfont=dict(size=11),
                 marker=dict(colors=px.colors.qualitative.Set3)
             )])
             fig.update_layout(
-                title=f"Alocação de Capital ({capital_mode.split()[1]})",
-                height=280,  # 40% menor (era 350, agora 280)
-                margin=dict(l=10, r=10, t=35, b=10)
+                title=dict(
+                    text=f"Alocação de Capital",
+                    font=dict(size=14)
+                ),
+                height=155,  # Tamanho ajustado
+                margin=dict(l=5, r=5, t=30, b=5),
+                showlegend=False
             )
             st.plotly_chart(fig, use_container_width=True)
         else:
@@ -1778,11 +1772,25 @@ with tabs[0]:
         lucro_perda_percent = 0
         
         # Métricas alinhadas
+        # Métricas menores e compactas
+        st.markdown("""
+        <style>
+        .portfolio-metrics [data-testid="stMetricValue"] {
+            font-size: 0.9rem !important;
+        }
+        .portfolio-metrics [data-testid="stMetricLabel"] {
+            font-size: 0.7rem !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="portfolio-metrics">', unsafe_allow_html=True)
+        
         col_metric1, col_metric2 = st.columns(2)
         
         with col_metric1:
             saldo_convertido = saldo_total_corretoras * taxa_conversao
-            st.metric("💰 Saldo das Corretoras", f"{simbolo_moeda} {saldo_convertido:.2f}")
+            st.metric("💰 Saldo Corretoras", f"{simbolo_moeda} {saldo_convertido:.2f}")
             
             # Mostrar detalhes de cada exchange
             for exch, valor in exchanges_com_saldo.items():
@@ -1811,6 +1819,8 @@ with tabs[0]:
             capital_inicial_conv = capital_inicial_portfolio * taxa_conversao
             st.metric("💵 Capital Inicial", f"{simbolo_moeda} {capital_inicial_conv:.2f}")
             st.caption("(Alocação de Capital)")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # Espaçamento clean
         st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
