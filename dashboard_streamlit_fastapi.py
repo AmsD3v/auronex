@@ -1773,18 +1773,15 @@ with tabs[0]:
         
         # Métricas alinhadas
         # Métricas menores e compactas
+        # Aplicar CSS diretamente nas métricas específicas
         st.markdown("""
         <style>
-        .portfolio-metrics [data-testid="stMetricValue"] {
-            font-size: 0.9rem !important;
-        }
-        .portfolio-metrics [data-testid="stMetricLabel"] {
-            font-size: 0.7rem !important;
+        /* Métricas do portfólio - valores menores */
+        [data-testid="stVerticalBlock"] [data-testid="stMetricValue"] {
+            font-size: 1.2rem !important;
         }
         </style>
         """, unsafe_allow_html=True)
-        
-        st.markdown('<div class="portfolio-metrics">', unsafe_allow_html=True)
         
         col_metric1, col_metric2 = st.columns(2)
         
