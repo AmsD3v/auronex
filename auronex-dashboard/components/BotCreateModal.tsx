@@ -118,6 +118,13 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
       return
     }
 
+    // ✅ NOVO: Converter velocidade
+    const speedMap = {
+      ultra: 5,
+      hunter: 3,
+      scalper: 1,
+    }
+
     // Criar bot
     createMutation.mutate({
       name: name.trim(),
@@ -130,6 +137,8 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
       take_profit_percent: takeProfit,
       is_testnet: isTestnet,
       is_active: false,
+      analysis_interval: speedMap[botSpeed],  // ✅ NOVO!
+      hunter_mode: botSpeed !== 'ultra',  // ✅ NOVO!
     })
   }
 
