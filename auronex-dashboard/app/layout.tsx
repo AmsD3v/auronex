@@ -1,29 +1,18 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { Toaster } from 'sonner'
 
 const inter = Inter({ 
   subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
   title: 'Auronex · Trading Platform',
-  description: 'Bot trader profissional de criptomoedas com IA',
-  keywords: ['bot trader', 'criptomoedas', 'trading', 'bitcoin', 'ethereum'],
-  authors: [{ name: 'Auronex Technology' }],
-  icons: {
-    icon: '/favicon.ico',
-  },
+  description: 'Professional trading bot platform - Trade cryptocurrencies automatically',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 }
 
 export default function RootLayout({
@@ -32,19 +21,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className={`${inter.className} antialiased`}>
+    <html lang="pt-BR" className={inter.className}>
+      <body suppressHydrationWarning>
         <Providers>
           {children}
           <Toaster 
-            position="top-right" 
+            position="top-right"
             richColors
-            expand={false}
-            duration={4000}
+            closeButton
           />
         </Providers>
       </body>
     </html>
   )
 }
-

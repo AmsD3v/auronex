@@ -1,14 +1,16 @@
 """
-Módulo de estratégias de trading
+Estratégias de Trading
 """
 
 from .base import BaseStrategy
-from .trend_following import TrendFollowingStrategy
 from .mean_reversion import MeanReversionStrategy
+from .trend_following import TrendFollowingStrategy
+from .micro_hunter import MicroHunterStrategy, ScalpingStrategy
 
 __all__ = [
     'BaseStrategy',
-    'TrendFollowingStrategy',
     'MeanReversionStrategy',
+    'TrendFollowingStrategy',
+    'MicroHunterStrategy',
+    'ScalpingStrategy',
 ]
-
