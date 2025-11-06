@@ -26,8 +26,8 @@ REM ========================================
 echo 1️⃣  Iniciando FastAPI + Bot Controller...
 echo.
 
-REM Abrir em nova janela PowerShell (usando Python do venv diretamente!)
-start "FastAPI + Bot Controller" powershell -NoExit -Command "cd I:\Robo; Write-Host '========================================' -ForegroundColor Cyan; Write-Host '  FASTAPI + BOT CONTROLLER' -ForegroundColor Cyan; Write-Host '========================================' -ForegroundColor Cyan; Write-Host ''; I:\Robo\venv\Scripts\python.exe -m uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001 --reload"
+REM Abrir FastAPI + Bot em CMD SEPARADO
+start "FastAPI + Bot Controller" cmd /k "cd /d I:\Robo && echo ======================================== && echo   FASTAPI + BOT CONTROLLER && echo ======================================== && echo. && .\venv\Scripts\python.exe -m uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001 --reload"
 
 REM Aguardar FastAPI iniciar
 timeout /t 10 /nobreak >nul
@@ -39,8 +39,8 @@ REM ========================================
 echo 2️⃣  Iniciando Streamlit Dashboard...
 echo.
 
-REM Abrir em nova janela PowerShell (usando Streamlit do venv diretamente!)
-start "Streamlit Dashboard" powershell -NoExit -Command "cd I:\Robo; Write-Host '========================================' -ForegroundColor Green; Write-Host '  STREAMLIT DASHBOARD' -ForegroundColor Green; Write-Host '========================================' -ForegroundColor Green; Write-Host ''; I:\Robo\venv\Scripts\streamlit.exe run dashboard_streamlit_fastapi.py --server.port 8501"
+REM Abrir Streamlit em CMD SEPARADO
+start "Streamlit Dashboard" cmd /k "cd /d I:\Robo && echo ======================================== && echo   STREAMLIT DASHBOARD && echo ======================================== && echo. && .\venv\Scripts\streamlit.exe run dashboard_streamlit_fastapi.py --server.port 8501"
 
 REM Aguardar Streamlit iniciar
 timeout /t 15 /nobreak >nul

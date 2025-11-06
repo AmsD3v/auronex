@@ -20,10 +20,10 @@ router = APIRouter(prefix="/api/payments-public", tags=["pagamentos-publicos"])
 MERCADOPAGO_ACCESS_TOKEN = "APP_USR-7940373206085562-102818-e0b751adbf15c2d81e094a3dc01b0cef-2953317711"
 STRIPE_SECRET_KEY = "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"
 
-# Planos (VALORES REAIS DE PRODUÇÃO!)
+# Planos (VALORES REAIS DE PRODUÇÃO!) - ATUALIZADOS 06/11/2025
 PLANS = {
-    "pro": {"name": "Pro", "price": 29.90, "currency": "BRL"},
-    "premium": {"name": "Premium", "price": 99.90, "currency": "BRL"}
+    "pro": {"name": "Pro", "price": 29.90, "currency": "BRL", "bots_limit": 3, "cryptos_limit": 2},  # ✅ Mantém R$ 29,90
+    "premium": {"name": "Premium", "price": 59.90, "currency": "BRL", "bots_limit": 5, "cryptos_limit": 3}  # ✅ R$ 59,90 (era 99,90)
 }
 
 @router.post("/mercadopago/checkout")

@@ -1,0 +1,488 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { X, Plus, Loader2 } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { botsApi, exchangeApi, apiKeysApi } from '@/lib/api'
+import { toast } from 'sonner'
+import { motion, AnimatePresence } from 'framer-motion'
+import { EXCHANGES, TIMEFRAMES, STRATEGIES } from '@/lib/constants'
+import { useTradingStore } from '@/stores/tradingStore'
+
+interface BotCreateModalProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+/**
+ * Modal de Criação de Bot
+ * ✅ Seleção de exchange por bot
+ * ✅ Múltiplas cryptos (filtradas por exchange)
+ * ✅ Validação de limites por plano
+ */
+export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
+  const queryClient = useQueryClient()
+  const { limits } = useTradingStore()
+
+  // Form state
+  const [name, setName] = useState('')
+  const [exchange, setExchange] = useState('binance')
+  const [symbols, setSymbols] = useState<string[]>([])
+  const [strategy, setStrategy] = useState('mean_reversion')
+  const [timeframe, setTimeframe] = useState('15m')
+  const [capital, setCapital] = useState(1000)
+  const [stopLoss, setStopLoss] = useState(2.0)
+  const [takeProfit, setTakeProfit] = useState(4.0)
+  const [isTestnet, setIsTestnet] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')  // ✅ Busca de cryptos
+
+  // Buscar API Keys do usuário
+  const { data: apiKeys } = useQuery({
+    queryKey: ['api-keys'],
+    queryFn: apiKeysApi.getAll,
+    enabled: isOpen,
+  })
+
+  // Buscar símbolos disponíveis da exchange selecionada
+  const { data: availableSymbols, isLoading: loadingSymbols } = useQuery({
+    queryKey: ['symbols', exchange],
+    queryFn: () => exchangeApi.getSymbols(exchange),
+    enabled: isOpen && !!exchange,
+  })
+
+  // Reset form ao fechar
+  useEffect(() => {
+    if (!isOpen) {
+      setName('')
+      setExchange('binance')
+      setSymbols([])
+      setStrategy('mean_reversion')
+      setTimeframe('15m')
+      setCapital(1000)
+      setStopLoss(2.0)
+      setTakeProfit(4.0)
+      setIsTestnet(true)
+    }
+  }, [isOpen])
+
+  // Mutation para criar bot
+  const createMutation = useMutation({
+    mutationFn: (data: any) => botsApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bots'] })
+      toast.success('Bot criado com sucesso!')
+      onClose()
+    },
+    onError: (error: any) => {
+      toast.error(`Erro: ${error.response?.data?.detail || error.message}`)
+    },
+  })
+
+  // Verificar se usuário tem API Key para a exchange selecionada
+  const hasAPIKeyForExchange = apiKeys?.some(
+    (key) => key.exchange.toLowerCase() === exchange.toLowerCase() && key.is_active
+  )
+
+  // Limites do plano
+  const maxSymbols = limits?.max_symbols_per_bot || 1
+  const canCreateBot = limits?.can_create_bot ?? true
+
+  // Handle submit
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Validações
+    if (!name.trim()) {
+      toast.error('Digite um nome para o bot')
+      return
+    }
+
+    if (symbols.length === 0) {
+      toast.error('Selecione pelo menos 1 criptomoeda')
+      return
+    }
+
+    if (symbols.length > maxSymbols) {
+      toast.error(`Seu plano permite no máximo ${maxSymbols} cryptos por bot`)
+      return
+    }
+
+    if (capital <= 0) {
+      toast.error('Capital deve ser maior que 0')
+      return
+    }
+
+    if (!hasAPIKeyForExchange) {
+      toast.error(`Configure uma API Key para ${exchange.toUpperCase()} primeiro!`)
+      return
+    }
+
+    // Criar bot
+    createMutation.mutate({
+      name: name.trim(),
+      exchange: exchange.toLowerCase(),
+      symbols,
+      strategy,
+      timeframe,
+      capital,
+      stop_loss_percent: stopLoss,
+      take_profit_percent: takeProfit,
+      is_testnet: isTestnet,
+      is_active: false,
+    })
+  }
+
+  // Handle symbol toggle
+  const toggleSymbol = (symbol: string) => {
+    if (symbols.includes(symbol)) {
+      setSymbols(symbols.filter((s) => s !== symbol))
+    } else {
+      if (symbols.length >= maxSymbols) {
+        toast.warning(`Limite de ${maxSymbols} cryptos atingido (Plano ${limits?.plan.toUpperCase()})`)
+        return
+      }
+      setSymbols([...symbols, symbol])
+    }
+  }
+
+  // Filtrar cryptos pela busca
+  const filteredSymbols = availableSymbols?.filter((symbol) =>
+    symbol.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || []
+
+  if (!isOpen) return null
+
+  return (
+    <AnimatePresence>
+      <div 
+        role="dialog"
+        aria-modal="true"
+        className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+        style={{ zIndex: 99999, position: 'fixed' }}
+      >
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="modal-backdrop absolute inset-0 bg-black/90 backdrop-blur-md"
+          style={{ zIndex: 99998, position: 'fixed' }}
+        />
+
+        {/* Modal - ENTERPRISE (altura maior, botões sempre visíveis) */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="relative w-full max-w-4xl h-[95vh] overflow-hidden"
+          style={{ zIndex: 99999 }}
+        >
+          <div className="card h-full flex flex-col p-8">
+            {/* Header */}
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-white">
+                  Criar Novo Bot
+                </h2>
+                <p className="mt-1 text-sm text-gray-400">
+                  Configure um bot de trading para operar automaticamente
+                </p>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="rounded-lg p-2 text-gray-400 hover:bg-dark-700 hover:text-white transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Limite de bots */}
+            {!canCreateBot && (
+              <div className="mb-6 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+                <p className="text-sm text-yellow-500">
+                  ⚠️ Você atingiu o limite de {limits?.max_bots} bots do plano {limits?.plan.toUpperCase()}.
+                  Faça upgrade para criar mais bots!
+                </p>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              {/* Conteúdo scrollable */}
+              <div className="flex-1 overflow-y-auto space-y-6 pr-2">
+              {/* Nome */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-300">
+                  Nome do Bot *
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ex: Bot Trader 1"
+                  className="input"
+                  required
+                />
+              </div>
+
+              {/* Exchange */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-300">
+                  Exchange *
+                </label>
+                <select
+                  value={exchange}
+                  onChange={(e) => {
+                    setExchange(e.target.value)
+                    setSymbols([]) // Limpar símbolos ao mudar exchange
+                  }}
+                  className="input"
+                  required
+                >
+                  {EXCHANGES.map((ex) => (
+                    <option key={ex.value} value={ex.value}>
+                      {ex.icon} {ex.label}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Verificar se tem API Key */}
+                {!hasAPIKeyForExchange && (
+                  <p className="mt-2 text-xs text-yellow-500">
+                    ⚠️ Configure uma API Key para {exchange.toUpperCase()} em{' '}
+                    <a
+                      href="http://localhost:8001/api-keys-page"
+                      target="_blank"
+                      className="underline"
+                    >
+                      API Keys
+                    </a>
+                  </p>
+                )}
+              </div>
+
+              {/* Criptomoedas */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-300">
+                  Criptomoedas * (Máx: {maxSymbols})
+                </label>
+                <p className="mb-3 text-xs text-gray-500">
+                  {symbols.length} de {maxSymbols} selecionadas
+                  {symbols.length >= maxSymbols && (
+                    <span className="ml-2 text-yellow-500">
+                      · Limite atingido (Plano {limits?.plan.toUpperCase()})
+                    </span>
+                  )}
+                </p>
+
+                {loadingSymbols ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-accent-500" />
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-white/10 bg-dark-800/40 p-4">
+                    {/* Campo de Busca - ENTERPRISE! */}
+                    <div className="mb-3">
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="🔍 Buscar criptomoeda... (ex: BTC, ETH, SOL)"
+                        className="input text-sm w-full"
+                      />
+                    </div>
+
+                    {/* Contador de resultados */}
+                    <div className="mb-3 text-xs text-gray-400">
+                      {filteredSymbols.length} de {availableSymbols?.length || 0} cryptos em {exchange.toUpperCase()}
+                    </div>
+
+                    <div className="max-h-60 overflow-y-auto">
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                        {filteredSymbols.length === 0 ? (
+                          <div className="col-span-full py-8 text-center text-sm text-gray-500">
+                            {searchTerm ? `Nenhuma crypto encontrada para &quot;${searchTerm}&quot;` : 'Nenhuma crypto disponível'}
+                          </div>
+                        ) : (
+                          filteredSymbols.map((symbol) => {
+                            const isSelected = symbols.includes(symbol)
+                            const symbolName = symbol.split('/')[0]
+
+                            return (
+                              <button
+                                key={symbol}
+                                type="button"
+                                onClick={() => toggleSymbol(symbol)}
+                                className={`rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+                                  isSelected
+                                    ? 'border-accent-500 bg-accent-500/20 text-accent-500 shadow-lg shadow-accent-500/30'
+                                    : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-accent-500/50 hover:text-white'
+                                }`}
+                              >
+                                {symbolName}
+                              </button>
+                            )
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Info helper */}
+                    {searchTerm && filteredSymbols.length > 0 && (
+                      <p className="mt-2 text-xs text-gray-500">
+                        ✅ {filteredSymbols.length} resultados para &quot;{searchTerm}&quot;
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Grid: Strategy + Timeframe */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* Estratégia */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Estratégia *
+                  </label>
+                  <select
+                    value={strategy}
+                    onChange={(e) => setStrategy(e.target.value)}
+                    className="input"
+                    required
+                  >
+                    {STRATEGIES.map((strat) => (
+                      <option key={strat.value} value={strat.value}>
+                        {strat.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    {STRATEGIES.find((s) => s.value === strategy)?.description}
+                  </p>
+                </div>
+
+                {/* Timeframe */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Timeframe *
+                  </label>
+                  <select
+                    value={timeframe}
+                    onChange={(e) => setTimeframe(e.target.value)}
+                    className="input"
+                    required
+                  >
+                    {TIMEFRAMES.map((tf) => (
+                      <option key={tf.value} value={tf.value}>
+                        {tf.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Grid: Capital + Stop Loss + Take Profit */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Capital (USD) *
+                  </label>
+                  <input
+                    type="number"
+                    value={capital}
+                    onChange={(e) => setCapital(parseFloat(e.target.value))}
+                    min={10}
+                    step={10}
+                    className="input"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Stop Loss (%) *
+                  </label>
+                  <input
+                    type="number"
+                    value={stopLoss}
+                    onChange={(e) => setStopLoss(parseFloat(e.target.value))}
+                    min={0.5}
+                    max={20}
+                    step={0.5}
+                    className="input"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Take Profit (%) *
+                  </label>
+                  <input
+                    type="number"
+                    value={takeProfit}
+                    onChange={(e) => setTakeProfit(parseFloat(e.target.value))}
+                    min={1}
+                    max={50}
+                    step={0.5}
+                    className="input"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Testnet */}
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isTestnet}
+                    onChange={(e) => setIsTestnet(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-600 bg-dark-700 text-accent-500 focus:ring-2 focus:ring-accent-500/50"
+                  />
+                  <span className="text-sm text-gray-300">
+                    Usar Testnet (recomendado para testes)
+                  </span>
+                </label>
+              </div>
+              </div>
+
+              {/* Botões - FIXOS NO FIM (sempre visíveis!) */}
+              <div className="flex justify-end gap-3 border-t border-white/10 pt-6 mt-6 bg-dark-800">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="btn-secondary"
+                  disabled={createMutation.isPending}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={createMutation.isPending || !canCreateBot}
+                >
+                  {createMutation.isPending ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Criando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Plus className="h-5 w-5" />
+                      Criar Bot
+                    </span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  )
+}
+

@@ -35,11 +35,11 @@ STRIPE_PUBLISHABLE_KEY = "pk_live_51SN37vRjxbCNnFAQ14aGnoYQd5YElcrVB4hKXa98M42R0
 print("⚠️ ATENÇÃO: Chaves de PRODUÇÃO configuradas!")
 print("⚠️ Pagamentos REAIS serão processados!")
 
-# Planos disponíveis (VALORES DE TESTE BAIXOS!)
+# Planos disponíveis - VALORES REAIS ATUALIZADOS 06/11/2025
 PLANS = {
-    "free": {"name": "Free", "price": 0, "currency": "BRL", "bots_limit": 1, "duration": "7 dias"},
-    "pro": {"name": "Pro", "price": 1.00, "currency": "BRL", "bots_limit": 3, "duration": "mensal"},
-    "premium": {"name": "Premium", "price": 5.00, "currency": "BRL", "bots_limit": 10, "duration": "mensal"}
+    "free": {"name": "Free", "price": 0, "currency": "BRL", "bots_limit": 1, "cryptos_limit": 1, "duration": "3 dias"},  # ✅ 3 dias
+    "pro": {"name": "Pro", "price": 29.90, "currency": "BRL", "bots_limit": 3, "cryptos_limit": 2, "duration": "mensal"},  # ✅ 3 bots, 2 cryptos
+    "premium": {"name": "Premium", "price": 59.90, "currency": "BRL", "bots_limit": 5, "cryptos_limit": 3, "duration": "mensal"}  # ✅ 5 bots, 3 cryptos, R$ 59,90
 }
 
 # ========================================

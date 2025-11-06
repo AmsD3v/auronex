@@ -1,0 +1,38 @@
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║   🚀 EXECUTE ESTE SCRIPT AGORA:                            ║
+║                                                            ║
+║   REINICIAR_TUDO_LIMPO.bat                                 ║
+║                                                            ║
+║   O que faz:                                               ║
+║   1. Para tudo (Node.js + Python)                          ║
+║   2. Limpa cache do React (.next)                          ║
+║   3. Configura .env.local corretamente                     ║
+║   4. Inicia Backend (porta 8001)                           ║
+║   5. Inicia React (porta 3000)                             ║
+║   6. Abre navegador automaticamente                        ║
+║                                                            ║
+║   Aguarde ~30 segundos e teste!                            ║
+║                                                            ║
+╠════════════════════════════════════════════════════════════╣
+║                                                            ║
+║   ✅ CORREÇÕES APLICADAS:                                  ║
+║                                                            ║
+║   1. URLs configuradas:                                    ║
+║      localhost:8001 → auronex.com.br                       ║
+║      localhost:3000/dashboard → api.auronex.com.br         ║
+║      localhost:3000 → app.auronex.com.br                   ║
+║      localhost:8001/admin → admin.auronex.com.br           ║
+║                                                            ║
+║   2. Modal z-index 99999 (SEMPRE visível)                  ║
+║   3. Botões fixos no fim                                   ║
+║   4. 14 corretoras                                         ║
+║   5. Busca de cryptos (400+)                               ║
+║   6. Limites: 4/5 bots                                     ║
+║   7. Erro de sintaxe corrigido                             ║
+║   8. Cache limpo                                           ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+
+EXECUTE:  REINICIAR_TUDO_LIMPO.bat
+

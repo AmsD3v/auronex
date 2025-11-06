@@ -34,7 +34,7 @@ def list_bots(
         ).order_by(Subscription.id.desc()).first()
         
         plan = subscription.plan if subscription else "free"
-        limits = {"free": 1, "pro": 3, "premium": 10}
+        limits = {"free": 1, "pro": 3, "premium": 5}  # ✅ Atualizado: PRO=3, PREMIUM=5
         max_bots = limits.get(plan, 1)
         
         # Simples e rápido
@@ -89,7 +89,7 @@ def create_bot(
         ).order_by(Subscription.id.desc()).first()
         
         plan = subscription.plan if subscription else "free"
-        limits = {"free": 1, "pro": 3, "premium": 10}
+        limits = {"free": 1, "pro": 3, "premium": 5}  # ✅ Atualizado: PRO=3, PREMIUM=5
         max_bots = limits.get(plan, 1)
         
         existing_bots_query = db.query(BotConfiguration).filter(

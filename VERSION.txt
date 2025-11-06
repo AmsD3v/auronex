@@ -1,1 +1,1 @@
-!BASE!-A!ALPHA_NUM! 
+ECHO está desativado.

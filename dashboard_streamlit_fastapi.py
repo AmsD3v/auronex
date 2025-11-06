@@ -544,7 +544,11 @@ if plan_limits:
     
     st.sidebar.success(f"✅ {st.session_state.get('user_email', 'Usuário')}")
     st.sidebar.info(f"**{plan_display}**")
-    st.sidebar.caption(f"🤖 Bots permitidos: {max_bots}")
+    st.sidebar.caption(f"🤖 Bots: {max_bots} simultâneos")
+    
+    # Mostrar limite de cryptos
+    max_symbols = plan_limits.get('max_symbols_per_bot', 1)
+    st.sidebar.caption(f"💎 Cryptos: {max_symbols} por bot")
     st.sidebar.caption(f"{modo}")
 else:
     st.sidebar.success(f"✅ {st.session_state.get('user_email', 'Usuário')}")
@@ -924,7 +928,7 @@ st.sidebar.markdown("---")
 # ========================================
 # 1. SALDO REAL DA CORRETORA
 # ========================================
-st.sidebar.markdown("### 💰 Saldo Real")
+st.sidebar.markdown("### 💰 Saldo Corretora")
 
 # exchange_name JÁ foi definido nas linhas 430 ou 442
 # NÃO redefinir aqui!
@@ -970,7 +974,7 @@ try:
         # Mostrar saldo
         if usdt_balance > 0:
             saldo_convertido = usdt_balance * taxa_conversao
-            st.sidebar.metric("💵 Saldo Real", f"{simbolo_moeda} {saldo_convertido:.2f}")
+            st.sidebar.metric("💵 Saldo Disponível", f"{simbolo_moeda} {saldo_convertido:.2f}")
         else:
             st.sidebar.warning("⚠️ Saldo: $0.00")
     else:
@@ -1041,11 +1045,36 @@ try:
                 
                 initial_selection = [s for s in defaults if s in pairs_sorted]
             
+            # LIMITAR SELEÇÃO POR PLANO COM VALIDAÇÃO IMEDIATA!
+            max_symbols = plan_limits.get('max_symbols_per_bot', 1) if plan_limits else 1
+            
+            # Verificar seleção anterior
+            prev_selection = st.session_state.get(save_key, initial_selection)
+            
+            # Contador visual
+            num_selecionadas = len(prev_selection)
+            if num_selecionadas >= max_symbols:
+                st.sidebar.warning(f"⚠️ Limite atingido: {num_selecionadas}/{max_symbols} cryptos")
+                st.sidebar.info("💡 Remova uma para adicionar outra")
+            else:
+                st.sidebar.info(f"💎 {num_selecionadas}/{max_symbols} cryptos selecionadas")
+            
+            # SEMPRE mostrar multiselect (Streamlit não permite desabilitar)
             selected_symbols = st.sidebar.multiselect(
                 "Escolha:",
                 pairs_sorted,
-                default=initial_selection
+                default=prev_selection[:max_symbols]  # Garantir limite no default
             )
+            
+            # VALIDAÇÃO IMEDIATA - Corta se excedeu
+            if len(selected_symbols) > max_symbols:
+                st.sidebar.error(f"❌ Máximo {max_symbols} cryptos! Cortando extras...")
+                selected_symbols = selected_symbols[:max_symbols]
+                
+                # Forçar rerun para atualizar visual
+                st.session_state[save_key] = selected_symbols
+                time.sleep(0.5)
+                st.rerun()
             
             # SALVAR escolha localmente
             st.session_state[save_key] = selected_symbols
@@ -1395,40 +1424,62 @@ st.subheader("🏆 TOP 5 - Performance")
 tab_hoje, tab_semana, tab_mes, tab_virais, tab_corretora = st.tabs(["🔥 Hoje", "📆 Semana", "📊 Mês", "💥 Virais", "🏦 Corretora"])
 
 with tab_hoje:
-    # TOP 5 do dia
-    # user_keys já foi carregado no início (linha ~272)
+    # TOP 5 do dia - COM DEBUG COMPLETO
+    
+    # Debug
+    st.caption(f"Debug: user_keys = {len(user_keys) if user_keys else 0}")
     
     if not user_keys or len(user_keys) == 0:
-        st.info("💡 Configure uma API Key para ver TOP 5 em tempo real!")
+        st.info("💡 Configure uma API Key para ver TOP 5!")
+        st.caption("Vá em: http://localhost:8001/api-keys")
     else:
         try:
             # Usar primeira key E descriptografar
             primeira_key = user_keys[0]
             exch_name = primeira_key.get('exchange', 'binance').lower()
             
-            # DESCRIPTOGRAFAR manualmente
-            from fastapi_app.utils.encryption import decrypt_data
-            
+            # API Keys - Tentar várias formas
             print(f"[TOP 5] Chaves disponíveis: {list(primeira_key.keys())}")
             
-            # Buscar chaves criptografadas
-            api_key_enc = primeira_key.get('api_key_encrypted', '')
-            api_secret_enc = primeira_key.get('secret_key_encrypted', '')
+            # Tentar campo descriptografado primeiro (se API já descriptografou)
+            api_key_dec = primeira_key.get('api_key_decrypted')
+            api_secret_dec = primeira_key.get('api_secret_decrypted')
             
-            # Descriptografar
-            api_key_dec = decrypt_data(api_key_enc)
-            api_secret_dec = decrypt_data(api_secret_enc)
+            # Se não tem, descriptografar manualmente
+            if not api_key_dec or not api_secret_dec:
+                from fastapi_app.utils.encryption import decrypt_data
+                
+                api_key_enc = primeira_key.get('api_key_encrypted', '')
+                api_secret_enc = primeira_key.get('secret_key_encrypted', '')
+                
+                if api_key_enc and api_secret_enc:
+                    api_key_dec = decrypt_data(api_key_enc)
+                    api_secret_dec = decrypt_data(api_secret_enc)
+                else:
+                    # Última tentativa - campos diretos
+                    api_key_dec = primeira_key.get('api_key', '')
+                    api_secret_dec = primeira_key.get('api_secret', '')
             
-            print(f"[TOP 5] API Key descriptografada: {api_key_dec[:10]}...")
+            print(f"[TOP 5] API Key OK: {bool(api_key_dec)}")
             
-            # Criar exchange
-            from bot.exchange import BinanceExchange
+            # Criar exchange usando CCXT diretamente
+            import ccxt
             
-            top5_exchange = BinanceExchange(
-                api_key=api_key_dec,
-                api_secret=api_secret_dec,
-                testnet=primeira_key.get('is_testnet', False)
-            )
+            if primeira_key.get('is_testnet', False):
+                top5_exchange = ccxt.binance({
+                    'apiKey': api_key_dec,
+                    'secret': api_secret_dec,
+                    'enableRateLimit': True,
+                    'options': {'defaultType': 'spot'}
+                })
+                top5_exchange.set_sandbox_mode(True)
+            else:
+                top5_exchange = ccxt.binance({
+                    'apiKey': api_key_dec,
+                    'secret': api_secret_dec,
+                    'enableRateLimit': True,
+                    'options': {'defaultType': 'spot'}
+                })
                 
             # Símbolos
             symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'XRP/USDT']
@@ -1469,7 +1520,13 @@ with tab_hoje:
                 st.warning("⚠️ Aguarde... Carregando dados")
                 
         except Exception as ex:
-            st.error(f"Erro: {str(ex)[:100]}")
+            st.error("❌ Erro ao buscar TOP 5:")
+            st.code(f"Erro: {str(ex)}")
+            
+            # Traceback completo
+            import traceback
+            tb = traceback.format_exc()
+            st.code(tb[:1000])
 
 with tab_semana:
     # Semana (estimativa x3)

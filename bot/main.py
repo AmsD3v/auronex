@@ -300,6 +300,11 @@ class TradingBot:
             stop_loss = self.risk_manager.calculate_stop_loss(current_price, 'buy')
             take_profit = self.risk_manager.calculate_take_profit(current_price, 'buy')
             
+            # ADICIONAR ao position_data (CORREÇÃO DO ERRO!)
+            position_data['stop_loss'] = stop_loss
+            position_data['take_profit'] = take_profit
+            position_data['entry_price'] = current_price
+            
             # Validar ordem
             is_valid, msg = self.risk_manager.validate_order(
                 'buy', symbol, position_data['quantity'], current_price
@@ -318,8 +323,8 @@ class TradingBot:
             logger.info(f"[COMPRA] Quantidade: {position_data['quantity']}")
             logger.info(f"[COMPRA] Preço: ${current_price:.2f}")
             logger.info(f"[COMPRA] Total: ${position_data['quantity'] * current_price:.2f}")
-            logger.info(f"[COMPRA] Stop Loss: ${position_data['stop_loss']:.2f}")
-            logger.info(f"[COMPRA] Take Profit: ${position_data['take_profit']:.2f}")
+            logger.info(f"[COMPRA] Stop Loss: ${stop_loss:.2f} ({self.config['stop_loss']*100:.1f}%)")
+            logger.info(f"[COMPRA] Take Profit: ${take_profit:.2f} ({self.config['take_profit']*100:.1f}%)")
             logger.info(f"{'🟢'*30}")
             
             order = self.exchange.place_order(

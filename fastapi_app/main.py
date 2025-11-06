@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .database import engine, Base
-from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config
+from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config, profile_limits, exchange
 from .models_payment import Subscription, Payment as PaymentModel  # Import para criar tabelas
 
 # Configurar templates e arquivos estáticos
@@ -104,7 +104,10 @@ app.include_router(bots_update_symbols.router)
 app.include_router(bots_update_config.router)
 app.include_router(bot_monitor.router)
 app.include_router(trades.router)
+
+app.include_router(profile_limits.router)
 app.include_router(trades_stats.router)
+app.include_router(exchange.router)
 app.include_router(payments.router)
 app.include_router(payments_public.router)  # Pagamentos públicos (PRODUÇÃO)
 app.include_router(payment_check.router)  # Verificação automática
