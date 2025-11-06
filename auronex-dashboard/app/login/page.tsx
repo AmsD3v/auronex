@@ -75,7 +75,7 @@ export default function LoginPage() {
 
     if (success) {
       toast.success('Login realizado com sucesso!')
-      router.push('/dashboard')
+      router.push('/')  // ✅ Raiz (não /dashboard)
     } else {
       toast.error('Email ou senha incorretos!')
     }
@@ -217,7 +217,7 @@ export default function LoginPage() {
           <div className="text-center text-sm text-gray-400">
             Ainda não tem conta?{' '}
             <a
-              href="http://localhost:8001/register"
+              href="/register"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-accent-500 hover:text-accent-400 transition-colors"
@@ -244,7 +244,7 @@ export default function LoginPage() {
             </a>
             <span>•</span>
             <a
-              href="http://localhost:8001/admin/"
+              href="/admin/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-400 transition-colors"
