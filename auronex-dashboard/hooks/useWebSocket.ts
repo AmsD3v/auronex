@@ -1,11 +1,14 @@
 /**
- * Hook de WebSocket
- * Conexão em tempo real com servidor
+ * Hook de WebSocket - DESABILITADO
+ * Causa popup de autorização de rede local (ruim para confiança!)
+ * Usar React Query com polling é suficiente
  */
 
 import { useEffect, useState, useCallback } from 'react'
-import { io, Socket } from 'socket.io-client'
+// import { io, Socket } from 'socket.io-client'  // ❌ REMOVIDO
 import type { WebSocketMessage } from '@/types'
+
+type Socket = any // Placeholder
 
 interface UseWebSocketOptions {
   url?: string
@@ -37,6 +40,11 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
   const [lastMessage, setLastMessage] = useState<WebSocketMessage | null>(null)
 
   useEffect(() => {
+    // ❌ WebSocket DESABILITADO (causa popup de autorização!)
+    // React Query com polling (1-5s) é suficiente para tempo real
+    return
+    
+    /*
     if (!autoConnect) return
 
     // Conectar ao WebSocket
@@ -46,6 +54,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       reconnectionDelay: 1000,
       reconnectionAttempts: 10,
     })
+    */
 
     // Event: Connect
     newSocket.on('connect', () => {

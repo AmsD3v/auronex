@@ -136,15 +136,18 @@ sleep 1
 # 5. INSTALAR DEPENDÊNCIAS REACT
 # ========================================
 
-echo -e "${YELLOW}[5/9] Instalando dependências React...${NC}"
+echo -e "${YELLOW}[5/9] Instalando dependências React (TODAS - para build)...${NC}"
 
 cd auronex-dashboard
 
-# Instalar node_modules
-npm ci --production
+# Deletar node_modules antigo (se houver)
+rm -rf node_modules .next 2>/dev/null
+
+# Instalar TODAS dependências (incluindo dev - necessário para build!)
+npm install
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ Dependências React instaladas${NC}"
+    echo -e "${GREEN}✅ Dependências React instaladas (incluindo Tailwind, TypeScript, etc)${NC}"
 else
     echo -e "${RED}❌ Erro ao instalar dependências${NC}"
     exit 1
