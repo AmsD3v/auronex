@@ -35,6 +35,7 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
   const [takeProfit, setTakeProfit] = useState(4.0)
   const [isTestnet, setIsTestnet] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')  // ✅ Busca de cryptos
+  const [botSpeed, setBotSpeed] = useState<'ultra' | 'hunter' | 'scalper'>('ultra')  // ✅ NOVO: Velocidade
 
   // Buscar API Keys do usuário
   const { data: apiKeys } = useQuery({
@@ -337,6 +338,75 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
                     )}
                   </div>
                 )}
+              </div>
+
+              {/* VELOCIDADE DO BOT - NOVO! ⭐ */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-300">
+                  ⚡ Velocidade do Bot *
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setBotSpeed('ultra')}
+                    className={`
+                      rounded-lg border px-4 py-3 text-sm font-medium transition-all
+                      ${botSpeed === 'ultra' 
+                        ? 'border-accent-500 bg-accent-500/20 text-accent-500 shadow-lg shadow-accent-500/30' 
+                        : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-accent-500/50'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg mb-1">📈</div>
+                      <div className="font-semibold">Ultra Rápido</div>
+                      <div className="text-xs opacity-75">5 seg</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBotSpeed('hunter')}
+                    className={`
+                      rounded-lg border px-4 py-3 text-sm font-medium transition-all
+                      ${botSpeed === 'hunter' 
+                        ? 'border-yellow-500 bg-yellow-500/20 text-yellow-500 shadow-lg shadow-yellow-500/30' 
+                        : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-yellow-500/50'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg mb-1">🎯</div>
+                      <div className="font-semibold">Caçador</div>
+                      <div className="text-xs opacity-75">3 seg</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBotSpeed('scalper')}
+                    className={`
+                      rounded-lg border px-4 py-3 text-sm font-medium transition-all
+                      ${botSpeed === 'scalper' 
+                        ? 'border-red-500 bg-red-500/20 text-red-500 shadow-lg shadow-red-500/30' 
+                        : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-red-500/50'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg mb-1">⚡</div>
+                      <div className="font-semibold">Scalper</div>
+                      <div className="text-xs opacity-75">1 seg</div>
+                    </div>
+                  </button>
+                </div>
+                <div className="mt-2 rounded-lg bg-dark-800/50 p-3 border border-white/5">
+                  <p className="text-xs text-gray-400">
+                    {botSpeed === 'ultra' && '✅ Recomendado para iniciantes · 10-20 trades/dia'}
+                    {botSpeed === 'hunter' && '🎯 Caça micro oscilações 0.3-1% · 20-40 trades/dia'}
+                    {botSpeed === 'scalper' && '⚡ Máxima velocidade · 50-100+ trades/dia'}
+                  </p>
+                </div>
               </div>
 
               {/* Grid: Strategy + Timeframe */}

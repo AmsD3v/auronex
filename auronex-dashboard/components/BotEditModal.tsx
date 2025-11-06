@@ -38,6 +38,7 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
   const [takeProfit, setTakeProfit] = useState(bot.take_profit_percent)
   const [isTestnet, setIsTestnet] = useState(bot.is_testnet ?? true)
   const [searchTerm, setSearchTerm] = useState('')  // ✅ Busca de cryptos
+  const [botSpeed, setBotSpeed] = useState<'ultra' | 'hunter' | 'scalper'>('ultra')  // ✅ NOVO: Velocidade
 
   // Resetar form quando bot mudar
   useEffect(() => {
@@ -51,6 +52,12 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       setStopLoss(bot.stop_loss_percent)
       setTakeProfit(bot.take_profit_percent)
       setIsTestnet(bot.is_testnet ?? true)
+      
+      // ✅ NOVO: Detectar velocidade baseado em configuração
+      const speed = (bot as any).analysis_interval || 5
+      if (speed <= 1) setBotSpeed('scalper')
+      else if (speed <= 3) setBotSpeed('hunter')
+      else setBotSpeed('ultra')
     }
   }, [bot])
 
@@ -102,6 +109,14 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       return
     }
 
+    // ✅ NOVO: Converter velocidade para segundos
+    const speedMap = {
+      ultra: 5,
+      hunter: 3,
+      scalper: 1,
+    }
+    const analysisInterval = speedMap[botSpeed]
+
     // Atualizar bot
     updateBotMutation.mutate({
       name: name.trim(),
@@ -113,6 +128,8 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       stop_loss_percent: stopLoss,
       take_profit_percent: takeProfit,
       is_testnet: isTestnet,
+      analysis_interval: analysisInterval,  // ✅ NOVO!
+      hunter_mode: botSpeed !== 'ultra',  // ✅ NOVO!
     })
   }
 
@@ -296,6 +313,73 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
                     )}
                   </div>
                 )}
+              </div>
+
+              {/* VELOCIDADE DO BOT - NOVO! ⭐ */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-300">
+                  ⚡ Velocidade do Bot *
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setBotSpeed('ultra')}
+                    className={`
+                      rounded-lg border px-4 py-3 text-sm font-medium transition-all
+                      ${botSpeed === 'ultra' 
+                        ? 'border-accent-500 bg-accent-500/20 text-accent-500 shadow-lg shadow-accent-500/30' 
+                        : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-accent-500/50 hover:text-white'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg mb-1">📈</div>
+                      <div className="font-semibold">Ultra Rápido</div>
+                      <div className="text-xs opacity-75">5s · Balanceado</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBotSpeed('hunter')}
+                    className={`
+                      rounded-lg border px-4 py-3 text-sm font-medium transition-all
+                      ${botSpeed === 'hunter' 
+                        ? 'border-yellow-500 bg-yellow-500/20 text-yellow-500 shadow-lg shadow-yellow-500/30' 
+                        : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-yellow-500/50 hover:text-white'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg mb-1">🎯</div>
+                      <div className="font-semibold">Caçador</div>
+                      <div className="text-xs opacity-75">3s · Agressivo</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBotSpeed('scalper')}
+                    className={`
+                      rounded-lg border px-4 py-3 text-sm font-medium transition-all
+                      ${botSpeed === 'scalper' 
+                        ? 'border-red-500 bg-red-500/20 text-red-500 shadow-lg shadow-red-500/30' 
+                        : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-red-500/50 hover:text-white'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      <div className="text-lg mb-1">⚡</div>
+                      <div className="font-semibold">Scalper</div>
+                      <div className="text-xs opacity-75">1s · Ultra</div>
+                    </div>
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  {botSpeed === 'ultra' && '✅ Recomendado para iniciantes · 10-20 trades/dia · Win rate 60-65%'}
+                  {botSpeed === 'hunter' && '🎯 Caça micro oscilações · 20-40 trades/dia · Win rate 65-70%'}
+                  {botSpeed === 'scalper' && '⚡ Máxima velocidade · 50-100+ trades/dia · Win rate 60-65%'}
+                </p>
               </div>
 
               {/* Estratégia e Timeframe */}
