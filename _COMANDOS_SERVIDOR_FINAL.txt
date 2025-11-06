@@ -1,0 +1,51 @@
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║   COMANDOS FINAIS NO SERVIDOR (COPIE E COLE)               ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+
+cd /home/serverhome/auronex
+
+git stash
+
+git pull origin main
+
+git checkout stash -- db.sqlite3 2>/dev/null
+
+git stash drop 2>/dev/null
+
+cd auronex-dashboard
+
+npm install
+
+npm run build
+
+pm2 stop all
+
+pm2 delete all
+
+pm2 start ecosystem.config.js
+
+cd ..
+
+source venv/bin/activate
+
+pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app
+
+pm2 save
+
+pm2 status
+
+
+════════════════════════════════════════════════════════════
+
+DEPOIS ACESSE:
+
+https://app.auronex.com.br/
+
+✅ SEM /dashboard
+✅ SEM popup!
+✅ Funcionando!
+
+════════════════════════════════════════════════════════════
+
