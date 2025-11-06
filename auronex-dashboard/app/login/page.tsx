@@ -42,7 +42,7 @@ export default function LoginPage() {
   // Redirecionar se já está autenticado
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard')
+      router.push('/')  // ✅ Raiz (não /dashboard)
     }
   }, [isAuthenticated, router])
 
