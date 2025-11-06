@@ -47,6 +47,9 @@ export interface Bot {
   created_at: string
   updated_at: string
   user_id: number
+  // ✅ NOVO: Velocidade do bot
+  analysis_interval?: number
+  hunter_mode?: boolean
 }
 
 export interface BotConfig {
