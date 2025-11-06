@@ -111,7 +111,7 @@ echo ============================================================
 echo   ✅ DEPLOY CONCLUIDO!
 echo ============================================================
 echo.
-echo   Codigo enviado para: https://github.com/seu-usuario/robo
+echo   Codigo enviado para: https://github.com/AmsD3v/auronex
 echo.
 echo   PROXIMOS PASSOS NO SERVIDOR:
 echo.
@@ -138,7 +138,7 @@ echo   Ultimo commit:
 git log -1 --oneline
 
 echo.
-echo   URL do repositorio: https://github.com/seu-usuario/robo
+echo   URL do repositorio: https://github.com/AmsD3v/auronex.git
 echo.
 
 pause
