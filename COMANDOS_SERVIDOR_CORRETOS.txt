@@ -1,0 +1,64 @@
+════════════════════════════════════════════════════════════
+ COMANDOS CORRETOS PARA O SERVIDOR
+════════════════════════════════════════════════════════════
+
+cd /home/serverhome/auronex
+
+# 1. Pull mudanças
+git stash
+git pull origin main
+
+# 2. Criar .env.production
+cd auronex-dashboard
+cat > .env.production << 'EOF'
+NEXT_PUBLIC_API_URL=https://auronex.com.br
+NODE_ENV=production
+NEXT_TELEMETRY_DISABLED=1
+EOF
+
+# 3. Instalar e buildar
+npm install
+npm run build
+
+# 4. Parar tudo
+pm2 stop all
+pm2 delete all
+
+# 5. Iniciar FastAPI
+cd ..
+source venv/bin/activate
+pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app
+
+# 6. Iniciar React
+cd auronex-dashboard
+pm2 start ecosystem.config.js
+
+# 7. Salvar
+pm2 save
+
+# 8. Status
+pm2 status
+
+════════════════════════════════════════════════════════════
+
+RESULTADO ESPERADO:
+
+┌────┬───────────────────┬─────────┬──────┐
+│ id │ name              │ status  │ port │
+├────┼───────────────────┼─────────┼──────┤
+│ 0  │ fastapi-app       │ online  │ 8001 │
+│ 1  │ auronex-dashboard │ online  │ 8501 │
+└────┴───────────────────┴─────────┴──────┘
+
+════════════════════════════════════════════════════════════
+
+DEPOIS ACESSE:
+https://app.auronex.com.br/
+
+✅ Login funciona
+✅ Mostra nome do usuário
+✅ Conectado ao FastAPI
+✅ Tudo funciona!
+
+════════════════════════════════════════════════════════════
+
