@@ -97,19 +97,29 @@ def get_balance(
             if brl > 0:
                 usdt = brl / 5.0  # Conversão aproximada
         
-        # Calcular total em USD
-        # (Aqui poderíamos buscar preço de BTC, ETH, BNB, mas por simplicidade usamos USDT)
-        total_usd = usdt + (btc * 0) + (eth * 0) + (bnb * 0)  # Simplificado
+        # Acumular saldo desta exchange
+        total_usdt += usdt
+        total_btc += btc
+        total_eth += eth
+        total_bnb += bnb
+        exchanges_consultadas.append(exchange_name.upper())
         
-        return {
-            "usdt": round(usdt, 2),
-            "btc": round(btc, 8),
-            "eth": round(eth, 6),
-            "bnb": round(bnb, 4),
-            "total_usd": round(total_usd, 2),
-            "exchange": api_key.exchange.upper(),
-            "is_testnet": api_key.is_testnet
-        }
+        print(f"[Balance] {exchange_name.upper()}: ${usdt:.2f} USDT")
+    
+    # Total em USD (simplificado - apenas USDT)
+    total_usd = total_usdt
+    
+    print(f"[Balance Total] ${total_usd:.2f} USD de {len(exchanges_consultadas)} exchange(s)")
+    
+    return {
+        "usdt": round(total_usdt, 2),
+        "btc": round(total_btc, 8),
+        "eth": round(total_eth, 6),
+        "bnb": round(total_bnb, 4),
+        "total_usd": round(total_usd, 2),
+        "exchange": ", ".join(exchanges_consultadas) if exchanges_consultadas else "none",
+        "is_testnet": True  # Assumir testnet
+    }
         
     except HTTPException:
         raise

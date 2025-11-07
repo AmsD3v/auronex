@@ -88,7 +88,7 @@ export const authApi = {
    * Login do usuário
    */
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>('/streamlit/login', {
+    const response = await api.post<LoginResponse>('/auth/login', {  // ✅ CORRIGIDO!
       email,
       password,
     })
@@ -126,7 +126,11 @@ export const botsApi = {
    * Buscar todos os bots do usuário
    */
   getAll: async (): Promise<Bot[]> => {
-    const response = await api.get<{ bots: Bot[]; total: number }>('/bots/')
+    const response = await api.get<{ bots: Bot[]; total: number } | Bot[]>('/bots/')
+    // ✅ Aceitar ambos formatos
+    if (Array.isArray(response.data)) {
+      return response.data
+    }
     return response.data.bots || []
   },
 

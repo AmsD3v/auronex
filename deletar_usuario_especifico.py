@@ -62,3 +62,4 @@ db.close()
 
 print(f"\n[OK] Usuario {email} DELETADO COMPLETAMENTE!")
 
+

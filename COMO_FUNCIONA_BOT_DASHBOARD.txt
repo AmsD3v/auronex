@@ -105,3 +105,4 @@ Cliente no Dashboard → Play → Bot inicia automaticamente!
 
 ════════════════════════════════════════════════════════════
 
+
