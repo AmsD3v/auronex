@@ -44,10 +44,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
-    # ✅ REGISTRAR SESSÃO
-    if 'user_id' in data:
-        from .middleware_session import register_session
-        register_session(data['user_id'], encoded_jwt)
+    # ✅ SESSÃO - DESATIVADO temporariamente
+    # if 'user_id' in data:
+    #     from .middleware_session import register_session
+    #     register_session(data['user_id'], encoded_jwt)
     
     return encoded_jwt
 
@@ -82,13 +82,13 @@ def get_current_user(
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Usuário inativo")
     
-    # ✅ VERIFICAR SESSÃO ÚNICA
-    from .middleware_session import is_session_valid
-    if not is_session_valid(user.id, token):
-        raise HTTPException(
-            status_code=401,
-            detail="Sessão inválida. Você fez login em outro lugar.",
-        )
+    # ✅ SESSÃO ÚNICA - DESATIVADO temporariamente (causava problemas)
+    # from .middleware_session import is_session_valid
+    # if not is_session_valid(user.id, token):
+    #     raise HTTPException(
+    #         status_code=401,
+    #         detail="Sessão inválida. Você fez login em outro lugar.",
+    #     )
     
     return user
 

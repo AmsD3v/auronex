@@ -62,14 +62,18 @@ def list_bots(
         
         print(f"✅ Listando {len(result)} bots do usuário {current_user.id} (Plano: {plan}, Limite: {max_bots})")
         
-        # SEMPRE retornar formato: {bots: [...], info: {...}}
-        return {
+        # Retornar com info (bots-page espera isso)
+        response = {
             "bots": result,
             "total": len(result),
             "limit": max_bots,
             "plan": plan,
             "can_create": len(result) < max_bots
         }
+        
+        print(f"[LIST BOTS] Retornando {len(result)} bots para usuário {current_user.id}")
+        
+        return response
         
     except Exception as e:
         print(f"❌ Erro ao listar bots: {str(e)}")
