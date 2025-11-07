@@ -26,12 +26,20 @@ const EXCHANGES = [
 export function Top5Performance() {
   const [activeCategory, setActiveCategory] = useState<Category>('hoje')
   const [searchExchange, setSearchExchange] = useState('binance')
-  const { currency } = useTradingStore()  // ✅ PEGAR MOEDA SELECIONADA
+  const { currency } = useTradingStore()
   
-  // ✅ Conversão e símbolo
-  const cotacao = 5.0
-  const converter = (valor: number) => currency === 'BRL' ? valor * cotacao : valor
-  const simbolo = currency === 'BRL' ? 'R$' : '$'
+  // ✅ Conversão BRL
+  const COTACAO = 5.0
+  const formatPrice = (priceUSD: number) => {
+    const value = currency === 'BRL' ? priceUSD * COTACAO : priceUSD
+    const symbol = currency === 'BRL' ? 'R$' : '$'
+    const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
+    
+    return `${symbol} ${value.toLocaleString(locale, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: priceUSD < 1 ? 8 : 2
+    })}`
+  }
 
   // Dados por categoria
   const dataByCategory: Record<Category, Top5Coin[]> = {
@@ -196,10 +204,7 @@ export function Top5Performance() {
             {/* Preço + Variação */}
             <div className="text-right">
               <p className="text-white font-medium text-sm">
-                {simbolo} {converter(coin.price).toLocaleString(currency === 'BRL' ? 'pt-BR' : 'en-US', { 
-                  minimumFractionDigits: 2, 
-                  maximumFractionDigits: coin.price < 1 ? 8 : 2 
-                })}
+                {formatPrice(coin.price)}
               </p>
               <div className="flex items-center gap-1">
                 {((activeCategory === 'semana' ? coin.change_7d : 

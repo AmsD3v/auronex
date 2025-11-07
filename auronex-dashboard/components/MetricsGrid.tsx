@@ -28,10 +28,6 @@ export function MetricsGrid({
   winRate,
   currency = 'BRL',
 }: MetricsGridProps) {
-  // ✅ CONVERTER balance para moeda selecionada
-  const cotacao = 5.0
-  const balanceConverted = currency === 'BRL' ? balance * cotacao : balance
-  
   const metrics = [
     {
       label: 'Total de Bots',
@@ -42,7 +38,7 @@ export function MetricsGrid({
     },
     {
       label: 'Saldo Total',
-      value: formatCurrency(balanceConverted, currency),
+      value: formatCurrency(balance, currency),  // ✅ Direto (formatCurrency já converte!)
       subtitle: '+5.2%',
       icon: '💰',
       color: 'green',
