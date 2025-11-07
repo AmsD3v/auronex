@@ -10,18 +10,32 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Formata número como moeda
+ * Formata número como moeda COM CONVERSÃO
+ * Recebe valor em USD, converte para BRL se necessário
  */
 export function formatCurrency(
-  value: number,
-  currency: 'USD' | 'BRL' = 'USD'
+  valueUSD: number,
+  currency: 'USD' | 'BRL' = 'BRL'
 ): string {
-  return new Intl.NumberFormat('en-US', {
+  const COTACAO = 5.0  // 1 USD = R$ 5.00
+  
+  if (currency === 'BRL') {
+    const valorBRL = valueUSD * COTACAO  // ✅ CONVERTER!
+    return valorBRL.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
+  
+  // USD (sem conversão)
+  return valueUSD.toLocaleString('en-US', {
     style: 'currency',
-    currency,
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value)
+  })
 }
 
 /**

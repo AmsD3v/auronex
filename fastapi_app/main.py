@@ -108,6 +108,7 @@ app.include_router(trades.router)
 app.include_router(profile_limits.router)
 app.include_router(trades_stats.router)
 app.include_router(exchange.router)
+# app.include_router(capital_validation.router)  # TODO: Importar módulo primeiro
 app.include_router(payments.router)
 app.include_router(payments_public.router)  # Pagamentos públicos (PRODUÇÃO)
 app.include_router(payment_check.router)  # Verificação automática

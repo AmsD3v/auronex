@@ -1,0 +1,34 @@
+════════════════════════════════════════════════════════════
+ URGENTE - APLICAR NO SERVIDOR AGORA!
+════════════════════════════════════════════════════════════
+
+PROBLEMAS CORRIGIDOS:
+✅ Sessão única desativada (estava causando erros)
+✅ bots-page corrigida
+✅ Conversão BRL/USD em TODOS lugares
+✅ Top 5 Performance com conversão
+
+════════════════════════════════════════════════════════════
+
+NO SERVIDOR (SSH):
+
+cd /home/serverhome/auronex
+./ATUALIZAR_SERVIDOR.sh
+
+Aguarde ~5-8 minutos
+
+════════════════════════════════════════════════════════════
+
+DEPOIS:
+- Fechar TODOS navegadores
+- Abrir de novo
+- Fazer login
+- Testar tudo
+
+✅ Erros vão sumir
+✅ Conversão BRL/USD vai funcionar
+✅ bots-page vai funcionar
+
+════════════════════════════════════════════════════════════
+
+

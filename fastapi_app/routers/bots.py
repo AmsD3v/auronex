@@ -112,14 +112,14 @@ def create_bot(
                 detail=f"Limite de bots atingido! Plano {plan.upper()}: {max_bots} bot(s)."
             )
         
-        # 2. VALIDAR CAPITAL DISPONÍVEL
+        # 2. VALIDAR CAPITAL DISPONÍVEL vs CAPITAL JÁ ALOCADO
         api_key = db.query(ExchangeAPIKey).filter(
             ExchangeAPIKey.user_id == current_user.id,
             ExchangeAPIKey.exchange == bot_data.exchange.lower(),
             ExchangeAPIKey.is_active == True
         ).first()
         
-        if api_key:
+        if api_key and bot_data.capital and bot_data.capital > 0:
             try:
                 from ..utils.encryption import decrypt_data
                 import ccxt
@@ -140,19 +140,31 @@ def create_bot(
                 balance = exchange.fetch_balance()
                 saldo_usdt = balance.get('free', {}).get('USDT', 0) or balance.get('USDT', {}).get('free', 0) or 0
                 
-                # Capital já alocado em outros bots DESTA exchange
-                capital_alocado = sum(
-                    float(b.capital) for b in existing_bots_query.all() 
-                    if b.exchange == bot_data.exchange.lower()
+                # ✅ Capital já alocado em TODOS os bots (qualquer exchange)
+                capital_alocado_total = sum(
+                    float(b.capital) for b in existing_bots_query.all()
+                    if b.capital
                 )
                 
-                capital_disponivel = saldo_usdt - capital_alocado
+                # ✅ Saldo disponível = Saldo da exchange - Capital JÁ alocado nela
+                capital_alocado_nesta_exchange = sum(
+                    float(b.capital) for b in existing_bots_query.all()
+                    if b.exchange == bot_data.exchange.lower() and b.capital
+                )
                 
-                # BLOQUEAR se capital solicitado > disponível
+                capital_disponivel = saldo_usdt - capital_alocado_nesta_exchange
+                
+                # ✅ BLOQUEAR se ultrapassar
                 if bot_data.capital > capital_disponivel:
                     raise HTTPException(
                         status_code=400,
-                        detail=f"Capital insuficiente! Disponível: ${capital_disponivel:.2f} (Saldo: ${saldo_usdt:.2f} - Já alocado: ${capital_alocado:.2f})"
+                        detail=(
+                            f"⚠️ Capital insuficiente na {bot_data.exchange.upper()}!\n\n"
+                            f"Saldo: ${saldo_usdt:.2f}\n"
+                            f"Já alocado: ${capital_alocado_nesta_exchange:.2f}\n"
+                            f"Disponível: ${capital_disponivel:.2f}\n\n"
+                            f"Você está tentando alocar: ${float(bot_data.capital):.2f}"
+                        )
                     )
                 
                 print(f"✅ Validação: ${bot_data.capital} <= ${capital_disponivel:.2f}")
