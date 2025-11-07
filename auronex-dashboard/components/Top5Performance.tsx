@@ -193,24 +193,24 @@ export function Top5Performance() {
                 ${coin.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}
               </p>
               <div className="flex items-center gap-1">
-                {(activeCategory === 'semana' ? coin.change_7d : 
-                  activeCategory === 'mes' ? coin.change_30d : 
-                  coin.change_24h) >= 0 ? (
+                {((activeCategory === 'semana' ? coin.change_7d : 
+                   activeCategory === 'mes' ? coin.change_30d : 
+                   coin.change_24h) || 0) >= 0 ? (
                   <>
                     <TrendingUp className="h-3 w-3 text-profit-500" />
                     <span className="text-xs font-semibold text-profit-500">
-                      +{(activeCategory === 'semana' ? coin.change_7d : 
-                         activeCategory === 'mes' ? coin.change_30d : 
-                         coin.change_24h)?.toFixed(2)}%
+                      +{((activeCategory === 'semana' ? coin.change_7d : 
+                          activeCategory === 'mes' ? coin.change_30d : 
+                          coin.change_24h) || 0).toFixed(2)}%
                     </span>
                   </>
                 ) : (
                   <>
                     <TrendingDown className="h-3 w-3 text-loss-500" />
                     <span className="text-xs font-semibold text-loss-500">
-                      {(activeCategory === 'semana' ? coin.change_7d : 
-                        activeCategory === 'mes' ? coin.change_30d : 
-                        coin.change_24h)?.toFixed(2)}%
+                      {((activeCategory === 'semana' ? coin.change_7d : 
+                         activeCategory === 'mes' ? coin.change_30d : 
+                         coin.change_24h) || 0).toFixed(2)}%
                     </span>
                   </>
                 )}

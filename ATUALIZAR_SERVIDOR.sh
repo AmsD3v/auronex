@@ -3,7 +3,7 @@
 # AURONEX - ATUALIZAR SERVIDOR (1 CLIQUE!)
 # ========================================
 # Baixa código do GitHub e reinicia serviços
-# Autor: Claude Sonnet 4.5
+# VERSÃO REACT (substitui Streamlit)
 
 clear
 
@@ -35,9 +35,13 @@ echo ""
 echo "  - Parando FastAPI..."
 sudo pkill -f "uvicorn fastapi_app.main"
 
-# Parar Streamlit
-echo "  - Parando Streamlit..."
+# Parar Streamlit ANTIGO (substituir por React)
+echo "  - Parando Streamlit antigo..."
 sudo pkill -f "streamlit run dashboard"
+
+# Parar React (se estiver rodando)
+echo "  - Parando React..."
+sudo pkill -f "next start"
 
 # Parar Cloudflare Tunnel
 echo "  - Parando Cloudflare Tunnel..."
@@ -69,6 +73,8 @@ tar -czf ~/backups/$BACKUP_NAME \
     --exclude='.git' \
     --exclude='*.pyc' \
     --exclude='*.log' \
+    --exclude='node_modules' \
+    --exclude='.next' \
     .
 
 echo "  ✅ Backup criado: ~/backups/$BACKUP_NAME"
@@ -105,10 +111,10 @@ echo "  ✅ Código atualizado!"
 echo ""
 
 # ========================================
-# 4. ATUALIZAR DEPENDÊNCIAS (SE NECESSÁRIO)
+# 4. ATUALIZAR DEPENDÊNCIAS PYTHON
 # ========================================
 
-echo "4️⃣  Verificando dependências..."
+echo "4️⃣  Verificando dependências Python..."
 echo ""
 
 # Ativar venv
@@ -126,28 +132,69 @@ fi
 echo ""
 
 # ========================================
-# 5. REINICIAR SERVIÇOS
+# 5. ATUALIZAR DEPENDÊNCIAS REACT
 # ========================================
 
-echo "5️⃣  Reiniciando serviços..."
+echo "5️⃣  Instalando dependências React..."
+echo ""
+
+cd auronex-dashboard
+
+if [ ! -d "node_modules" ]; then
+    echo "  Primeira instalação..."
+    npm install
+else
+    echo "  Atualizando..."
+    npm install
+fi
+
+echo "  ✅ Deps React OK!"
+echo ""
+
+# ========================================
+# 6. BUILD REACT
+# ========================================
+
+echo "6️⃣  Compilando React (produção)..."
+echo ""
+
+npm run build
+
+if [ $? -eq 0 ]; then
+    echo "  ✅ Build React OK!"
+else
+    echo "  ❌ Build falhou!"
+    exit 1
+fi
+
+cd ..
+echo ""
+
+# ========================================
+# 7. REINICIAR SERVIÇOS
+# ========================================
+
+echo "7️⃣  Reiniciando serviços..."
 echo ""
 
 # Aguardar portas liberarem
 sleep 2
 
 # FastAPI em background (nohup)
-echo "  - Iniciando FastAPI..."
+echo "  - Iniciando FastAPI (porta 8001)..."
 nohup python -m uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001 > logs/fastapi.log 2>&1 &
 FASTAPI_PID=$!
 echo "    PID: $FASTAPI_PID"
 
 sleep 5
 
-# Streamlit em background
-echo "  - Iniciando Streamlit..."
-nohup streamlit run dashboard_streamlit_fastapi.py --server.port 8501 --server.address 0.0.0.0 --server.headless true > logs/streamlit.log 2>&1 &
-STREAMLIT_PID=$!
-echo "    PID: $STREAMLIT_PID"
+# ✅ REACT ao invés de Streamlit! (porta 8501)
+echo "  - Iniciando Dashboard React (porta 8501)..."
+cd auronex-dashboard
+nohup npm start > ../logs/react.log 2>&1 &
+REACT_PID=$!
+echo "    PID: $REACT_PID"
+cd ..
 
 sleep 3
 
@@ -164,10 +211,10 @@ echo ""
 sleep 5
 
 # ========================================
-# 6. VERIFICAR STATUS
+# 8. VERIFICAR STATUS
 # ========================================
 
-echo "6️⃣  Verificando status dos serviços..."
+echo "8️⃣  Verificando status dos serviços..."
 echo ""
 
 # FastAPI
@@ -177,11 +224,11 @@ else
     echo "  ❌ FastAPI: ERRO"
 fi
 
-# Streamlit
+# React (porta 8501 - mesma do Streamlit!)
 if netstat -tlnp 2>/dev/null | grep -q 8501; then
-    echo "  ✅ Streamlit: RODANDO (porta 8501)"
+    echo "  ✅ Dashboard React: RODANDO (porta 8501)"
 else
-    echo "  ❌ Streamlit: ERRO"
+    echo "  ❌ Dashboard React: ERRO"
 fi
 
 # Cloudflare Tunnel
@@ -194,7 +241,7 @@ fi
 echo ""
 
 # ========================================
-# 7. INFORMAÇÕES FINAIS
+# 9. INFORMAÇÕES FINAIS
 # ========================================
 
 echo "========================================"
@@ -211,12 +258,12 @@ echo ""
 echo "📊 MONITORAR LOGS:"
 echo ""
 echo "  FastAPI:   tail -f logs/fastapi.log"
-echo "  Streamlit: tail -f logs/streamlit.log"
+echo "  React:     tail -f logs/react.log"
 echo "  Tunnel:    tail -f logs/tunnel.log"
 echo ""
 echo "🔄 PARAR SERVIÇOS:"
 echo ""
-echo "  kill $FASTAPI_PID $STREAMLIT_PID $TUNNEL_PID"
+echo "  kill $FASTAPI_PID $REACT_PID $TUNNEL_PID"
 echo ""
 echo "========================================"
 echo "  Sistema operacional!"
@@ -225,9 +272,8 @@ echo ""
 
 # Salvar PIDs em arquivo
 echo "FASTAPI_PID=$FASTAPI_PID" > /tmp/auronex_pids.txt
-echo "STREAMLIT_PID=$STREAMLIT_PID" >> /tmp/auronex_pids.txt
+echo "REACT_PID=$REACT_PID" >> /tmp/auronex_pids.txt
 echo "TUNNEL_PID=$TUNNEL_PID" >> /tmp/auronex_pids.txt
 
 echo "PIDs salvos em: /tmp/auronex_pids.txt"
 echo ""
-

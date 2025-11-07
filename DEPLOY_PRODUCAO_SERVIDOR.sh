@@ -1,17 +1,13 @@
 #!/bin/bash
 # ====================================
-# DEPLOY PRODUÇÃO - 4 Terminais
-# FastAPI + React + Bot + Tunnel
+# DEPLOY PRODUÇÃO COMPLETO
+# Git pull + Build + Inicia serviços + Tunnel
 # ====================================
 
 PROJETO="/home/serverhome/auronex"
-cd "$PROJETO"
+TUNNEL_NAME="auronex"  # ✅ Nome do seu tunnel
 
-# Cores
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+cd "$PROJETO"
 
 echo "============================================================"
 echo "  DEPLOY PRODUÇÃO - AURONEX"
@@ -19,74 +15,138 @@ echo "============================================================"
 echo ""
 
 # 1. Atualizar banco
-echo -e "${YELLOW}[1/8] Atualizando banco...${NC}"
-sqlite3 db.sqlite3 "ALTER TABLE bot_configuration ADD COLUMN analysis_interval INTEGER DEFAULT 5;" 2>/dev/null
-sqlite3 db.sqlite3 "ALTER TABLE bot_configuration ADD COLUMN hunter_mode BOOLEAN DEFAULT 0;" 2>/dev/null
-echo -e "${GREEN}✅ Banco atualizado${NC}"
+echo "[1/9] Atualizando banco..."
+sqlite3 db.sqlite3 "ALTER TABLE bot_configurations ADD COLUMN analysis_interval INTEGER DEFAULT 5;" 2>/dev/null
+sqlite3 db.sqlite3 "ALTER TABLE bot_configurations ADD COLUMN hunter_mode BOOLEAN DEFAULT 0;" 2>/dev/null
+echo "✅ Banco OK"
 
 # 2. Git pull
-echo -e "${YELLOW}[2/8] Pull do GitHub...${NC}"
+echo "[2/9] Pull do GitHub..."
 git stash
 git pull origin main
 git checkout stash -- db.sqlite3 2>/dev/null
 git stash drop 2>/dev/null
-echo -e "${GREEN}✅ Código atualizado${NC}"
+echo "✅ Código atualizado"
 
-# 3. npm install
-echo -e "${YELLOW}[3/8] Instalando deps React...${NC}"
+# 3. Deps Python
+echo "[3/9] Deps Python..."
+source venv/bin/activate
+pip install -r requirements.txt --quiet --upgrade
+echo "✅ Python OK"
+
+# 4. Deps React
+echo "[4/9] Deps React..."
 cd auronex-dashboard
 npm install
-echo -e "${GREEN}✅ Deps instaladas${NC}"
+echo "✅ React deps OK"
 
-# 4. Build
-echo -e "${YELLOW}[4/8] Build React...${NC}"
+# 5. Build React
+echo "[5/9] Build React..."
 npm run build
 if [ $? -ne 0 ]; then
-    echo -e "${RED}❌ Build falhou!${NC}"
+    echo "❌ Build falhou!"
     exit 1
 fi
-echo -e "${GREEN}✅ Build OK${NC}"
+echo "✅ Build OK"
 
 cd ..
 
-# 5. Parar serviços
-echo -e "${YELLOW}[5/8] Parando serviços...${NC}"
-pm2 stop all
-pm2 delete all
-echo -e "${GREEN}✅ Serviços parados${NC}"
+# 6. Parar serviços
+echo "[6/9] Parando serviços..."
+pm2 stop all 2>/dev/null
+pm2 delete all 2>/dev/null
+# Parar tunnel também
+sudo systemctl stop cloudflared 2>/dev/null
+sudo pkill -f "cloudflared tunnel" 2>/dev/null
+echo "✅ Serviços parados"
 
-# 6. Iniciar FastAPI
-echo -e "${YELLOW}[6/8] FastAPI (porta 8001)...${NC}"
-source venv/bin/activate
+sleep 3
+
+# 7. Iniciar FastAPI
+echo "[7/9] FastAPI (porta 8001)..."
 pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app
-sleep 2
+sleep 3
+echo "✅ FastAPI iniciado"
 
-# 7. Iniciar React
-echo -e "${YELLOW}[7/8] React (porta 8501)...${NC}"
+# 8. Iniciar React
+echo "[8/9] React (porta 8501)..."
 cd auronex-dashboard
 pm2 start ecosystem.config.js
-sleep 2
+sleep 3
 cd ..
+echo "✅ React iniciado"
 
-# 8. Iniciar Tunnel
-echo -e "${YELLOW}[8/8] Cloudflare Tunnel...${NC}"
-if systemctl is-active --quiet cloudflared 2>/dev/null; then
-    sudo systemctl restart cloudflared
-else
+# 9. INICIAR CLOUDFLARE TUNNEL - CRÍTICO!
+echo "[9/9] Cloudflare Tunnel..."
+
+# Método 1: Tentar com systemd
+if command -v systemctl &> /dev/null; then
+    echo "   Tentando systemd..."
     sudo systemctl start cloudflared
+    sleep 3
+    
+    if systemctl is-active --quiet cloudflared 2>/dev/null; then
+        echo "✅ Tunnel iniciado (systemd)"
+    else
+        # Método 2: Processo direto
+        echo "   Tentando processo direto..."
+        nohup sudo cloudflared tunnel run $TUNNEL_NAME > /tmp/tunnel.log 2>&1 &
+        TUNNEL_PID=$!
+        sleep 3
+        
+        if ps -p $TUNNEL_PID > /dev/null 2>&1; then
+            echo "✅ Tunnel iniciado (PID: $TUNNEL_PID)"
+        else
+            echo "❌ FALHA ao iniciar tunnel!"
+            echo "   Execute manualmente:"
+            echo "   sudo systemctl start cloudflared"
+            echo "   OU"
+            echo "   sudo cloudflared tunnel run $TUNNEL_NAME"
+        fi
+    fi
+else
+    # Sem systemd - iniciar direto
+    echo "   Iniciando processo direto..."
+    nohup sudo cloudflared tunnel run $TUNNEL_NAME > /tmp/tunnel.log 2>&1 &
+    TUNNEL_PID=$!
+    sleep 3
+    
+    if ps -p $TUNNEL_PID > /dev/null 2>&1; then
+        echo "✅ Tunnel iniciado (PID: $TUNNEL_PID)"
+    else
+        echo "❌ Tunnel não iniciou!"
+    fi
 fi
 
+# Salvar PM2
 pm2 save
 
 echo ""
-echo -e "${GREEN}============================================================${NC}"
-echo -e "${GREEN}  ✅ DEPLOY CONCLUÍDO!${NC}"
-echo -e "${GREEN}============================================================${NC}"
+echo "============================================================"
+echo "  ✅ DEPLOY CONCLUÍDO!"
+echo "============================================================"
 echo ""
 
+# Status
 pm2 status
 
 echo ""
-echo "Acesse: https://app.auronex.com.br/"
-echo ""
+echo "Cloudflare Tunnel:"
+if systemctl is-active --quiet cloudflared 2>/dev/null; then
+    sudo systemctl status cloudflared | grep "Active:"
+elif ps aux | grep -q "cloudflared tunnel run"; then
+    echo "✅ Rodando (processo direto)"
+    ps aux | grep "cloudflared tunnel" | grep -v grep
+else
+    echo "⚠️ Não detectado"
+fi
 
+echo ""
+echo "URLs Públicas:"
+echo "  Landing + API: https://auronex.com.br"
+echo "  Dashboard: https://app.auronex.com.br/"
+echo ""
+echo "Portas Locais:"
+netstat -tulnp 2>/dev/null | grep -E ":(8001|8501)" || echo "  (use sudo para ver portas)"
+echo ""
+echo "============================================================"
