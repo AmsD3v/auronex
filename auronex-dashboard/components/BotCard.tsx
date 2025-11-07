@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Pause, Settings, Trash2 } from 'lucide-react'
 import { useBots } from '@/hooks/useBots'
+import { useTradingStore } from '@/stores/tradingStore'
 import { botsApi } from '@/lib/api'
 import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils'
@@ -24,6 +25,7 @@ interface BotCardProps {
  */
 export function BotCard({ bot, index }: BotCardProps) {
   const { toggle, isToggling, deleteBot, isDeleting } = useBots()
+  const { currency } = useTradingStore()  // ✅ PEGAR MOEDA SELECIONADA
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const handleToggle = () => {
@@ -81,7 +83,7 @@ export function BotCard({ bot, index }: BotCardProps) {
         <div className="flex justify-between text-sm">
           <span className="text-gray-400">Capital</span>
           <span className="font-medium text-white">
-            {formatCurrency(bot.capital)}
+            {formatCurrency(bot.capital, currency)}
           </span>
         </div>
 
