@@ -71,10 +71,19 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     # Criar token
     access_token = create_access_token(data={"user_id": user.id, "email": user.email})
     
+    # ✅ Retornar USER também (Dashboard precisa!)
     return {
         "access_token": access_token,
-        "refresh_token": access_token,  # Por enquanto, mesmo token
-        "token_type": "bearer"
+        "refresh_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name or "",
+            "last_name": user.last_name or "",
+            "is_active": user.is_active,
+            "subscription": None  # TODO: Buscar subscription
+        }
     }
 
 @router.get("/me/", response_model=UserResponse)
