@@ -483,14 +483,34 @@ class TradingBot:
                 iteration += 1
                 logger.info(f"[OK][OK] Iteração #{iteration}")
                 
-                # Recarregar config (verificar se foi pausado)
-                if iteration % 10 == 0:  # A cada 10 iterações
+                # ✅ RECARREGAR CONFIG A CADA 3 ITERAÇÕES (não 10!)
+                # Detecta mudanças no Dashboard rapidamente!
+                if iteration % 3 == 0:
+                    old_config = self.config.copy()
+                    
                     if not self.load_config():
                         break
                     
+                    # Verificar se foi pausado
                     if not self.config['is_active']:
-                        logger.info("[OK][OK] Bot pausado pelo usuário")
+                        logger.info("")
+                        logger.info("⏸️ Bot DESATIVADO no Dashboard - parando...")
                         break
+                    
+                    # ✅ Detectar mudanças de configuração
+                    if old_config['symbols'] != self.config['symbols']:
+                        logger.info(f"")
+                        logger.info(f"🔄 Cryptos MUDARAM no Dashboard!")
+                        logger.info(f"   Antes: {old_config['symbols']}")
+                        logger.info(f"   Agora: {self.config['symbols']}")
+                    
+                    if old_config['strategy'] != self.config['strategy']:
+                        logger.info(f"")
+                        logger.info(f"🔄 Estratégia MUDOU no Dashboard!")
+                        logger.info(f"   Antes: {old_config['strategy']}")
+                        logger.info(f"   Agora: {self.config['strategy']}")
+                        # Reinicializar estratégia
+                        self.initialize_components()
                 
                 # Atualizar saldo e verificar drawdown
                 self.risk_manager.update_balance()

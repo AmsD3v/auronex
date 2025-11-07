@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/stores/authStore'
 import { useTradingStore } from '@/stores/tradingStore'
 import { useRealtime } from '@/hooks/useRealtime'
+import { useHeartbeat } from '@/hooks/useHeartbeat'
 import { Clock } from '@/components/Clock'
 import { MetricsGrid } from '@/components/MetricsGrid'
 import { BalanceCard } from '@/components/BalanceCard'
+import { CapitalInvestidoCard } from '@/components/CapitalInvestidoCard'
 import { BotsGrid } from '@/components/BotsGrid'
 import { Top5Performance } from '@/components/Top5Performance'
 import { LogOut, RefreshCw } from 'lucide-react'
@@ -24,6 +26,9 @@ export default function DashboardPage() {
   const { currency } = useTradingStore()
   
   const [mounted, setMounted] = useState(false)
+  
+  // ✅ Heartbeat - Detecta quando fecha navegador
+  useHeartbeat()
   
   // ✅ Hook de tempo real - Atualiza automaticamente!
   const {
@@ -191,12 +196,14 @@ export default function DashboardPage() {
         />
 
         {/* Balance Card + Info */}
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            {balance && <BalanceCard balance={balance} currency={currency} />}
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Capital Investido (soma dos bots ativos) */}
+          <div>
+            <CapitalInvestidoCard bots={bots || []} currency={currency} />
           </div>
 
-          <div className="lg:col-span-2">
+          {/* Status do Sistema */}
+          <div>
             <div className="card p-6">
               <h3 className="text-xl font-semibold text-white mb-4">
                 📊 Status do Sistema

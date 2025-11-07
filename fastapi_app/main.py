@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .database import engine, Base
-from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config, profile_limits, exchange
+from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config, profile_limits, exchange, heartbeat
 from .models_payment import Subscription, Payment as PaymentModel  # Import para criar tabelas
 
 # Configurar templates e arquivos estáticos
@@ -51,39 +51,15 @@ app.add_middleware(
 # ========================================
 # BOT CONTROLLER INTEGRADO - INICIA AUTOMATICAMENTE!
 # ========================================
-import threading
-import time
+# ✅ BOT CONTROLLER REMOVIDO - NÃO IMPORTAR threading!
 
-def start_bot_controller_background():
-    """Bot Controller roda automaticamente com FastAPI"""
-    try:
-        time.sleep(10)  # Aguardar FastAPI iniciar
-        
-        print("\n" + "="*60)
-        print("  🤖 BOT CONTROLLER INICIANDO AUTOMATICAMENTE!")
-        print("  Bots ativos serao gerenciados automaticamente")
-        print("  Botoes Start/Stop do Dashboard funcionam!")
-        print("="*60 + "\n")
-        
-        # Importar após aguardar
-        import sys
-        from pathlib import Path
-        bot_path = Path(__file__).resolve().parent.parent / "bot"
-        sys.path.insert(0, str(bot_path))
-        
-        from bot.bot_controller import BotController
-        
-        controller = BotController()
-        controller.run_controller()
-        
-    except Exception as e:
-        print(f"[ERRO] Bot Controller: {e}")
-
-# Iniciar em thread daemon (não bloqueia FastAPI)
-controller_thread = threading.Thread(target=start_bot_controller_background, daemon=True)
-controller_thread.start()
-
-print("[OK] Bot Controller agendado para iniciar em 10 segundos...")
+print("")
+print("="*70)
+print("✅ FastAPI APENAS - SEM Bot Controller")
+print("="*70)
+print("Bot Controller: Execute separadamente via TESTAR_LOCAL.bat")
+print("="*70)
+print("")
 
 # Servir arquivos estáticos (CSS, JS, imagens)
 if static_dir.exists():
@@ -108,7 +84,7 @@ app.include_router(trades.router)
 app.include_router(profile_limits.router)
 app.include_router(trades_stats.router)
 app.include_router(exchange.router)
-# app.include_router(capital_validation.router)  # TODO: Importar módulo primeiro
+app.include_router(heartbeat.router)  # ✅ Heartbeat para detectar navegador fechado
 app.include_router(payments.router)
 app.include_router(payments_public.router)  # Pagamentos públicos (PRODUÇÃO)
 app.include_router(payment_check.router)  # Verificação automática

@@ -77,7 +77,7 @@ def get_all_bots_status(
     
     for bot in bots:
         # Trades do bot
-        trades = db.query(Trade).filter(Trade.bot_id == bot.id).all()
+        trades = db.query(Trade).filter(Trade.bot_config_id == bot.id).all()
         
         total = len(trades)
         ganhos = sum(1 for t in trades if t.profit_loss and t.profit_loss > 0)

@@ -39,3 +39,4 @@ print("\nUse estas para fazer login!")
 
 db.close()
 
+

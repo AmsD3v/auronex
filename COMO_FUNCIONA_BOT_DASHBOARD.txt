@@ -1,0 +1,107 @@
+════════════════════════════════════════════════════════════
+ COMO FUNCIONA: BOT INICIA PELO DASHBOARD
+════════════════════════════════════════════════════════════
+
+FLUXO COMPLETO:
+
+1. CLIENTE NO DASHBOARD REACT
+   ↓
+   Clica botão ▶️ "Iniciar" no bot
+   ↓
+   
+2. DASHBOARD ENVIA PARA FASTAPI
+   ↓
+   PATCH /api/bots/{id}/toggle
+   Body: {"is_active": true}
+   ↓
+   
+3. FASTAPI ATUALIZA BANCO
+   ↓
+   UPDATE bot_configurations 
+   SET is_active = 1 
+   WHERE id = {id}
+   ↓
+   
+4. BOT CONTROLLER (rodando em background)
+   ↓
+   A cada 10 segundos:
+     - Consulta banco
+     - Vê bots com is_active = 1
+     - Se não está rodando → INICIA!
+   ↓
+   
+5. BOT INICIA E COMEÇA A OPERAR
+   ↓
+   Lê configurações do banco:
+     - Exchange (ex: Binance)
+     - Cryptos (ex: SOL/USDT, PEPE/USDT)
+     - Velocidade (ex: 1s - Scalper)
+     - Estratégia (ex: Arbitrage)
+   ↓
+   
+6. BOT OPERA
+   ↓
+   Loop infinito:
+     - Analisa mercado a cada 1s
+     - Detecta oportunidades
+     - Executa trades
+     - Atualiza banco com resultados
+   ↓
+   
+7. CLIENTE VÊ NO DASHBOARD (tempo real!)
+   ↓
+   Dashboard consulta banco a cada 1-5s
+   Mostra:
+     - Saldo atualizado
+     - Trades executados
+     - Lucro/perda
+   ↓
+
+8. CLIENTE PARA BOT
+   ↓
+   Clica ⏸️ "Pausar"
+   ↓
+   FASTAPI: SET is_active = 0
+   ↓
+   Bot Controller detecta (10s)
+   ↓
+   Para bot
+   ↓
+   FIM!
+
+════════════════════════════════════════════════════════════
+ RESUMO
+════════════════════════════════════════════════════════════
+
+✅ Cliente controla bot pelo Dashboard
+✅ Clica Play → Bot inicia (em até 10s)
+✅ Clica Pause → Bot para (em até 10s)
+✅ Bot lê TODAS configs do Dashboard
+✅ Tudo automático!
+
+════════════════════════════════════════════════════════════
+ REQUISITOS
+════════════════════════════════════════════════════════════
+
+Para funcionar:
+
+1. FastAPI rodando (porta 8001)
+   ✅ INICIAR_FASTAPI_APENAS.bat
+
+2. Bot Controller rodando (background)
+   ✅ INICIAR_BOT_CONTROLLER_APENAS.bat
+
+3. Dashboard React (porta 8501)
+   ✅ INICIAR_DASHBOARD_REACT_APENAS.bat
+
+OU execute TODOS de uma vez:
+   ✅ TESTAR_LOCAL.bat (abre 3 janelas)
+
+════════════════════════════════════════════════════════════
+
+AGORA FUNCIONA ASSIM! ✅
+
+Cliente no Dashboard → Play → Bot inicia automaticamente!
+
+════════════════════════════════════════════════════════════
+

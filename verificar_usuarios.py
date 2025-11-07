@@ -20,3 +20,4 @@ for user in users:
 print(f"\nTotal: {len(users)} usuarios")
 db.close()
 
+

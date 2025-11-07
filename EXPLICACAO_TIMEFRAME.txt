@@ -1,0 +1,59 @@
+════════════════════════════════════════════════════════════
+ O QUE É TIMEFRAME?
+════════════════════════════════════════════════════════════
+
+TIMEFRAME = Intervalo de tempo de cada CANDLE (vela)
+
+EXEMPLO:
+
+Timeframe 1m (1 minuto):
+  Cada vela = 1 minuto de dados
+  - Open: Preço às 10:00:00
+  - Close: Preço às 10:01:00
+  - High/Low: Maior/Menor nesse minuto
+  
+Timeframe 15m (15 minutos):
+  Cada vela = 15 minutos
+  - Open: Preço às 10:00
+  - Close: Preço às 10:15
+  - High/Low: Maior/Menor nesses 15min
+
+════════════════════════════════════════════════════════════
+ TIMEFRAMES DISPONÍVEIS
+════════════════════════════════════════════════════════════
+
+1m   = 1 minuto    → Scalping (ultra rápido)
+5m   = 5 minutos   → Day trading rápido
+15m  = 15 minutos  → Day trading normal
+1h   = 1 hora      → Swing trading
+4h   = 4 horas     → Position trading
+1d   = 1 dia       → Long term
+
+════════════════════════════════════════════════════════════
+ QUAL USAR?
+════════════════════════════════════════════════════════════
+
+SCALPER (1s):
+  → Timeframe: 1m, 5m
+  Analisa velas curtas para micro movimentos
+
+CAÇADOR (3s):
+  → Timeframe: 5m, 15m
+  Balanceado entre velocidade e precisão
+
+ULTRA RÁPIDO (5s):
+  → Timeframe: 15m, 1h
+  Movimentos mais amplos e seguros
+
+════════════════════════════════════════════════════════════
+ NO SEU BOT
+════════════════════════════════════════════════════════════
+
+Bot 38:
+  Velocidade: 1s (Scalper)
+  Timeframe: 1m ✅ CORRETO!
+  
+Combinação perfeita para scalping!
+
+════════════════════════════════════════════════════════════
+
