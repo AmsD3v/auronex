@@ -45,18 +45,24 @@ def list_bots(
                 "name": bot.name,
                 "exchange": bot.exchange,
                 "symbols": bot.symbols if isinstance(bot.symbols, list) else [bot.symbols],
-                "capital": 0,  # Será validado ao ativar
+                "capital": float(bot.capital) if bot.capital else 0,  # ✅ Retornar capital real!
                 "strategy": bot.strategy,
                 "timeframe": bot.timeframe,
                 "stop_loss_percent": float(bot.stop_loss_percent) if bot.stop_loss_percent else 0,
                 "take_profit_percent": float(bot.take_profit_percent) if bot.take_profit_percent else 0,
                 "is_active": bot.is_active,
-                "user_id": bot.user_id
+                "is_testnet": bot.is_testnet if hasattr(bot, 'is_testnet') else True,
+                "user_id": bot.user_id,
+                "created_at": bot.created_at.isoformat() if bot.created_at else None,
+                "updated_at": bot.updated_at.isoformat() if bot.updated_at else None,
+                # ✅ NOVO: Velocidade
+                "analysis_interval": bot.analysis_interval if hasattr(bot, 'analysis_interval') else 5,
+                "hunter_mode": bot.hunter_mode if hasattr(bot, 'hunter_mode') else False,
             })
         
         print(f"✅ Listando {len(result)} bots do usuário {current_user.id} (Plano: {plan}, Limite: {max_bots})")
         
-        # Retornar com info de limite
+        # SEMPRE retornar formato: {bots: [...], info: {...}}
         return {
             "bots": result,
             "total": len(result),
@@ -163,14 +169,17 @@ def create_bot(
             name=bot_data.name,
             exchange=bot_data.exchange.lower(),
             symbols=symbols_list,
-            capital=0,  # Não usado mais - saldo real da exchange
+            capital=float(bot_data.capital) if bot_data.capital else 0,  # ✅ Salvar capital!
             strategy=bot_data.strategy,
             timeframe=bot_data.timeframe,
-            stop_loss_percent=bot_data.stop_loss_percent,
-            take_profit_percent=bot_data.take_profit_percent,
+            stop_loss_percent=float(bot_data.stop_loss_percent),
+            take_profit_percent=float(bot_data.take_profit_percent),
             is_active=bot_data.is_active if hasattr(bot_data, 'is_active') else False,
-            created_at=now,  # Obrigatório
-            updated_at=now   # Obrigatório também!
+            is_testnet=bot_data.is_testnet if hasattr(bot_data, 'is_testnet') else True,
+            analysis_interval=bot_data.analysis_interval if hasattr(bot_data, 'analysis_interval') else 5,
+            hunter_mode=bot_data.hunter_mode if hasattr(bot_data, 'hunter_mode') else False,
+            created_at=now,
+            updated_at=now
         )
         
         db.add(bot)
@@ -190,13 +199,14 @@ def create_bot(
         )
 
 @router.put("/{bot_id}/")
+@router.patch("/{bot_id}/")  # ✅ ADICIONAR PATCH TAMBÉM!
 def update_bot(
     bot_id: int,
     bot_data: dict,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Atualizar bot - ACEITA DICT DIRETO"""
+    """Atualizar bot - ACEITA PUT E PATCH"""
     
     try:
         from datetime import datetime
@@ -209,11 +219,15 @@ def update_bot(
         if not bot:
             raise HTTPException(status_code=404, detail="Bot não encontrado")
         
-        # Atualizar TODOS os campos
+        # Atualizar TODOS os campos possíveis
         if 'name' in bot_data:
             bot.name = bot_data['name']
-        if 'capital' in bot_data:
-            bot.capital = bot_data['capital']
+        if 'exchange' in bot_data:
+            bot.exchange = bot_data['exchange'].lower()
+        if 'symbols' in bot_data:
+            bot.symbols = bot_data['symbols']
+        if 'capital' in bot_data and bot_data['capital'] is not None:
+            bot.capital = float(bot_data['capital'])  # ✅ Garantir conversão
         if 'strategy' in bot_data:
             bot.strategy = bot_data['strategy']
         if 'timeframe' in bot_data:
@@ -224,6 +238,13 @@ def update_bot(
             bot.take_profit_percent = bot_data['take_profit_percent']
         if 'is_active' in bot_data:
             bot.is_active = bot_data['is_active']
+        if 'is_testnet' in bot_data:
+            bot.is_testnet = bot_data['is_testnet']
+        # ✅ NOVO: Velocidade
+        if 'analysis_interval' in bot_data:
+            bot.analysis_interval = bot_data['analysis_interval']
+        if 'hunter_mode' in bot_data:
+            bot.hunter_mode = bot_data['hunter_mode']
         
         # Atualizar timestamp
         bot.updated_at = datetime.utcnow()
@@ -233,16 +254,25 @@ def update_bot(
         
         print(f"✅ Bot {bot.id} atualizado!")
         
-        # Retornar dict
+        # Retornar dict completo
         return {
             "id": bot.id,
             "name": bot.name,
-            "capital": float(bot.capital),
+            "exchange": bot.exchange,
+            "symbols": bot.symbols if isinstance(bot.symbols, list) else [bot.symbols],
+            "capital": float(bot.capital) if bot.capital else 0,
             "strategy": bot.strategy,
             "timeframe": bot.timeframe,
-            "stop_loss_percent": float(bot.stop_loss_percent),
-            "take_profit_percent": float(bot.take_profit_percent),
-            "is_active": bot.is_active
+            "stop_loss_percent": float(bot.stop_loss_percent) if bot.stop_loss_percent else 0,
+            "take_profit_percent": float(bot.take_profit_percent) if bot.take_profit_percent else 0,
+            "is_active": bot.is_active,
+            "is_testnet": bot.is_testnet if hasattr(bot, 'is_testnet') else True,
+            "user_id": bot.user_id,
+            "created_at": bot.created_at.isoformat() if bot.created_at else None,
+            "updated_at": bot.updated_at.isoformat() if bot.updated_at else None,
+            # ✅ Velocidade
+            "analysis_interval": bot.analysis_interval if hasattr(bot, 'analysis_interval') else 5,
+            "hunter_mode": bot.hunter_mode if hasattr(bot, 'hunter_mode') else False,
         }
         
     except Exception as e:

@@ -36,7 +36,7 @@ export const useTradingStore = create<TradingState>((set) => ({
   selectedBot: null,
   balance: null,
   limits: null,
-  currency: 'USD',
+  currency: 'BRL',  // ✅ Padrão BRL
   selectedSymbols: [],
 
   // Set bots

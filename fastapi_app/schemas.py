@@ -76,12 +76,25 @@ class BotConfigCreate(BaseModel):
     stop_loss_percent: Decimal = Decimal("1.5")
     take_profit_percent: Decimal = Decimal("3.0")
     is_active: bool = False
+    is_testnet: bool = True
+    # ✅ NOVO: Velocidade
+    analysis_interval: Optional[int] = 5
+    hunter_mode: Optional[bool] = False
 
 class BotConfigUpdate(BaseModel):
     name: Optional[str] = None
     symbols: Optional[List[str]] = None
     capital: Optional[Decimal] = None
     is_active: Optional[bool] = None
+    exchange: Optional[str] = None
+    strategy: Optional[str] = None
+    timeframe: Optional[str] = None
+    stop_loss_percent: Optional[Decimal] = None
+    take_profit_percent: Optional[Decimal] = None
+    is_testnet: Optional[bool] = None
+    # ✅ NOVO: Velocidade
+    analysis_interval: Optional[int] = None
+    hunter_mode: Optional[bool] = None
 
 class BotConfigResponse(BaseModel):
     id: int

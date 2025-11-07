@@ -65,6 +65,10 @@ class BotConfiguration(Base):
     stop_loss_percent = Column(Numeric(5, 3), default=1.5)
     take_profit_percent = Column(Numeric(5, 3), default=3.0)
     is_active = Column(Boolean, default=False)
+    is_testnet = Column(Boolean, default=True)
+    # ✅ NOVO: Velocidade do bot
+    analysis_interval = Column(Integer, default=5)  # segundos (1-60)
+    hunter_mode = Column(Boolean, default=False)  # Modo caçador
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     

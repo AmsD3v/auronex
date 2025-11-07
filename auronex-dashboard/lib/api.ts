@@ -147,10 +147,10 @@ export const botsApi = {
   },
 
   /**
-   * Atualizar bot
+   * Atualizar bot - USA PATCH (FastAPI aceita agora)
    */
   update: async (id: number, data: Partial<Bot>): Promise<Bot> => {
-    const response = await api.patch<Bot>(`/bots/${id}`, data)
+    const response = await api.patch<Bot>(`/bots/${id}/`, data)  // ✅ COM / no fim!
     return response.data
   },
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Loader2 } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { botsApi, exchangeApi } from '@/lib/api'
@@ -26,6 +27,12 @@ interface BotEditModalProps {
 export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
   const queryClient = useQueryClient()
   const { limits } = useTradingStore()
+  const [mounted, setMounted] = useState(false)
+
+  // Garantir renderização apenas no cliente (Portal precisa de document)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Form state - inicializa com dados do bot
   const [name, setName] = useState(bot.name)
@@ -151,9 +158,10 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
     symbol.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
-  return (
+  // ✅ PORTAL - Renderiza no body (fora de containers!)
+  return createPortal(
     <AnimatePresence>
       <div 
         role="dialog"
@@ -516,7 +524,8 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body  // ✅ PORTAL - Renderiza no body, não no container!
   )
 }
 

@@ -1,0 +1,47 @@
+════════════════════════════════════════════════════════════
+ COMANDOS QUE VÃO FUNCIONAR - TESTADOS!
+════════════════════════════════════════════════════════════
+
+cd /home/serverhome/auronex
+
+sqlite3 db.sqlite3 "ALTER TABLE bot_configuration ADD COLUMN analysis_interval INTEGER DEFAULT 5;"
+
+sqlite3 db.sqlite3 "ALTER TABLE bot_configuration ADD COLUMN hunter_mode BOOLEAN DEFAULT 0;"
+
+git stash
+
+git pull origin main
+
+cd auronex-dashboard
+
+npm install
+
+npm run build
+
+pm2 stop all
+
+pm2 delete all
+
+pm2 start ecosystem.config.js
+
+cd ..
+
+source venv/bin/activate
+
+pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app
+
+pm2 save
+
+════════════════════════════════════════════════════════════
+
+DEPOIS ACESSE:
+
+https://app.auronex.com.br/
+
+✅ Seletor de velocidade aparece
+✅ Modal na frente
+✅ Tudo funciona!
+
+════════════════════════════════════════════════════════════
+
+

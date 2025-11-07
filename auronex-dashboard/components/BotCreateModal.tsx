@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Plus, Loader2 } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { botsApi, exchangeApi, apiKeysApi } from '@/lib/api'
@@ -23,6 +24,12 @@ interface BotCreateModalProps {
 export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
   const queryClient = useQueryClient()
   const { limits } = useTradingStore()
+  const [mounted, setMounted] = useState(false)
+
+  // Garantir renderização apenas no cliente (Portal precisa de document)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Form state
   const [name, setName] = useState('')
@@ -160,9 +167,10 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
     symbol.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
-  return (
+  // ✅ USAR PORTAL - Renderiza FORA do container!
+  return createPortal(
     <AnimatePresence>
       <div 
         role="dialog"
@@ -318,7 +326,7 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
                         ) : (
                           filteredSymbols.map((symbol) => {
                             const isSelected = symbols.includes(symbol)
-                            const symbolName = symbol.split('/')[0]
+                            const symbolName = symbol  // ✅ Formato completo: GALA/USDT
 
                             return (
                               <button
@@ -331,7 +339,7 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
                                     : 'border-white/10 bg-dark-700/50 text-gray-400 hover:border-accent-500/50 hover:text-white'
                                 }`}
                               >
-                                {symbolName}
+                                {symbolName.replace('/USDT', '').replace('/BRL', '').replace('/BTC', '')}
                               </button>
                             )
                           })
@@ -561,7 +569,8 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body  // ✅ PORTAL - Renderiza no body!
   )
 }
 

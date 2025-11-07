@@ -57,11 +57,13 @@ def toggle_bot(
                 api_key_dec = decrypt_data(api_key.api_key_encrypted)
                 secret_dec = decrypt_data(api_key.secret_key_encrypted)
                 
-                # MAPEAMENTO DE NOMES (mesmo que listar bots!)
+                # ✅ MAPEAMENTO COMPLETO
                 ccxt_map = {
                     'mercadobitcoin': 'mercado',
                     'brasilbitcoin': None,
-                    'gateio': 'gate'
+                    'gateio': 'gate',
+                    'foxbit': 'foxbit',
+                    'novadax': 'novadax',
                 }
                 
                 ccxt_name = ccxt_map.get(bot.exchange, bot.exchange)
@@ -69,7 +71,7 @@ def toggle_bot(
                 if ccxt_name is None:
                     raise HTTPException(
                         status_code=400,
-                        detail=f"{bot.exchange.upper()} não é suportada ainda."
+                        detail=f"{bot.exchange.upper()} não suportada pelo ccxt"
                     )
                 
                 print(f"🔗 Conectando: {bot.exchange} -> {ccxt_name}")
@@ -79,7 +81,12 @@ def toggle_bot(
                     'apiKey': api_key_dec,
                     'secret': secret_dec,
                     'enableRateLimit': True,
-                    'timeout': 20000
+                    'timeout': 30000,
+                    'options': {
+                        'defaultType': 'spot',
+                        'adjustForTimeDifference': True,
+                        'recvWindow': 60000,
+                    }
                 })
                 
                 if api_key.is_testnet:

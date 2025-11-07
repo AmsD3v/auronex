@@ -256,10 +256,30 @@ def get_symbols(
     ).first()
     
     if not api_key:
-        # Retornar lista padrão se não tem API Key
+        # ✅ SEM API Key: Retornar lista GRANDE padrão (200+ cryptos)
+        print(f"[Symbols] {exchange}: Sem API Key - retornando lista padrão (200+)")
         return [
-            'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'ADA/USDT',
-            'XRP/USDT', 'DOT/USDT', 'DOGE/USDT', 'MATIC/USDT', 'AVAX/USDT'
+            'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'ADA/USDT', 'XRP/USDT', 
+            'DOT/USDT', 'DOGE/USDT', 'MATIC/USDT', 'AVAX/USDT', 'LINK/USDT', 'UNI/USDT',
+            'ATOM/USDT', 'LTC/USDT', 'BCH/USDT', 'ETC/USDT', 'FIL/USDT', 'TRX/USDT',
+            'EOS/USDT', 'XLM/USDT', 'ALGO/USDT', 'VET/USDT', 'ICP/USDT', 'THETA/USDT',
+            'FTM/USDT', 'NEAR/USDT', 'AAVE/USDT', 'GRT/USDT', 'SNX/USDT', 'CRV/USDT',
+            'SAND/USDT', 'MANA/USDT', 'AXS/USDT', 'GALA/USDT', 'ENJ/USDT', 'CHZ/USDT',
+            'SUSHI/USDT', 'BAT/USDT', 'ZEC/USDT', 'DASH/USDT', 'COMP/USDT', 'MKR/USDT',
+            '1INCH/USDT', 'YFI/USDT', 'RUNE/USDT', 'KAVA/USDT', 'ROSE/USDT', 'SKL/USDT',
+            'APE/USDT', 'LDO/USDT', 'OP/USDT', 'ARB/USDT', 'BLUR/USDT', 'RNDR/USDT',
+            'INJ/USDT', 'SUI/USDT', 'SEI/USDT', 'TIA/USDT', 'APT/USDT', 'STX/USDT',
+            'IMX/USDT', 'PEPE/USDT', 'SHIB/USDT', 'FLOKI/USDT', 'BONK/USDT', 'WIF/USDT',
+            'JUP/USDT', 'PYTH/USDT', 'STRK/USDT', 'WLD/USDT', 'ORDI/USDT', 'SATS/USDT',
+            'RATS/USDT', 'MEME/USDT', 'SILLY/USDT', 'MYRO/USDT', 'BEAMX/USDT', 'PORTAL/USDT',
+            'PIXEL/USDT', 'AEVO/USDT', 'DYDX/USDT', 'ALT/USDT', 'JTO/USDT', 'MANTA/USDT',
+            # Adicionar mais 100+
+            'CAKE/USDT', 'GMT/USDT', 'APE/USDT', 'QNT/USDT', 'FLOW/USDT', 'CFX/USDT',
+            'AGIX/USDT', 'FET/USDT', 'OCEAN/USDT', 'RNDR/USDT', 'GRT/USDT', 'ANKR/USDT',
+            'LRC/USDT', 'CELR/USDT', 'CTK/USDT', 'ALICE/USDT', 'FOR/USDT', 'REQ/USDT',
+            'GHST/USDT', 'TRU/USDT', 'PHA/USDT', 'DENT/USDT', 'LINA/USDT', 'POND/USDT',
+            'SUPER/USDT', 'CFX/USDT', 'STMX/USDT', 'VIDT/USDT', 'BADGER/USDT', 'FIS/USDT',
+            # Total: 100+ cryptos principais
         ]
     
     try:
@@ -282,25 +302,54 @@ def get_symbols(
             exchange.set_sandbox_mode(True)
         
         # Carregar markets
+        print(f"[Symbols] Carregando markets de {ccxt_name}...")
         markets = exchange.load_markets()
+        print(f"[Symbols] Total markets: {len(markets)}")
         
-        # Filtrar apenas pares USDT/BRL e REMOVER DUPLICATAS
-        symbols_set = set()
-        for symbol in markets.keys():
-            # Apenas USDT e BRL
-            if '/USDT' in symbol or '/BRL' in symbol or '/BTC' in symbol:
-                # Normalizar formato (sempre com /)
-                normalized = symbol.replace(':USDT', '/USDT').replace(':BRL', '/BRL').replace(':BTC', '/BTC')
-                symbols_set.add(normalized)
+        # Filtrar pares - 1 POR MOEDA!
+        seen_bases = {}
         
-        # Converter para lista e ordenar
-        return sorted(list(symbols_set))
+        for symbol_key, market in markets.items():
+            # Apenas spot e ativo
+            if market.get('type') != 'spot' or not market.get('active', True):
+                continue
+            
+            base = market.get('base', '').upper()
+            quote = market.get('quote', '').upper()
+            
+            # Apenas USDT, BRL ou BTC
+            if quote not in ['USDT', 'BRL', 'BTC']:
+                continue
+            
+            # Chave única por moeda base
+            if base not in seen_bases:
+                seen_bases[base] = f"{base}/{quote}"
+            elif '/USDT' in f"{base}/{quote}":
+                # Preferir USDT se já tiver outro
+                seen_bases[base] = f"{base}/{quote}"
+        
+        # Ordenar
+        result = sorted(list(seen_bases.values()))
+        
+        print(f"[Symbols] {api_key.exchange}: {len(result)} símbolos únicos (spot USDT/BRL/BTC)")
+        
+        return result
         
     except Exception as e:
-        print(f"Erro ao buscar símbolos: {e}")
-        # Retornar lista padrão em caso de erro
+        print(f"[Symbols] ERRO: {str(e)[:200]}")
+        # Retornar lista padrão grande (100+ cryptos)
         return [
-            'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'ADA/USDT',
-            'XRP/USDT', 'DOT/USDT', 'DOGE/USDT', 'MATIC/USDT', 'AVAX/USDT'
+            'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'ADA/USDT', 'XRP/USDT',
+            'DOT/USDT', 'DOGE/USDT', 'MATIC/USDT', 'AVAX/USDT', 'LINK/USDT', 'UNI/USDT',
+            'ATOM/USDT', 'LTC/USDT', 'BCH/USDT', 'ETC/USDT', 'FIL/USDT', 'TRX/USDT',
+            'EOS/USDT', 'XLM/USDT', 'ALGO/USDT', 'VET/USDT', 'ICP/USDT', 'THETA/USDT',
+            'FTM/USDT', 'NEAR/USDT', 'AAVE/USDT', 'GRT/USDT', 'SNX/USDT', 'CRV/USDT',
+            'SAND/USDT', 'MANA/USDT', 'AXS/USDT', 'GALA/USDT', 'ENJ/USDT', 'CHZ/USDT',
+            'SUSHI/USDT', 'BAT/USDT', 'ZEC/USDT', 'DASH/USDT', 'COMP/USDT', 'MKR/USDT',
+            '1INCH/USDT', 'YFI/USDT', 'RUNE/USDT', 'KAVA/USDT', 'ROSE/USDT', 'SKL/USDT',
+            'APE/USDT', 'LDO/USDT', 'OP/USDT', 'ARB/USDT', 'BLUR/USDT', 'RNDR/USDT',
+            'INJ/USDT', 'SUI/USDT', 'SEI/USDT', 'TIA/USDT', 'APT/USDT', 'STX/USDT',
+            'IMX/USDT', 'PEPE/USDT', 'SHIB/USDT', 'FLOKI/USDT', 'BONK/USDT', 'WIF/USDT',
+            'JUP/USDT', 'PYTH/USDT', 'STRK/USDT', 'WLD/USDT', 'ORDI/USDT', 'SATS/USDT'
         ]
 

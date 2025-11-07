@@ -1,0 +1,60 @@
+╔════════════════════════════════════════════════════════════╗
+║          ESTRATÉGIAS DE TRADING - EXPLICAÇÃO               ║
+╚════════════════════════════════════════════════════════════╝
+
+1. MEAN REVERSION (Reversão à Média)
+   ✅ Recomendado para: Iniciantes
+   🎯 Lógica: Preço sempre volta à média
+   📊 Funciona em: Mercado lateral (sem tendência forte)
+   ⏱️ Timeframe: 15m, 1h
+   💰 Win Rate: 55-65%
+   
+   Como funciona:
+   - Compra quando preço cai muito (oversold)
+   - Vende quando preço sobe muito (overbought)
+   - Usa Bandas de Bollinger + RSI
+
+2. TREND FOLLOWING (Seguir Tendência)
+   ✅ Recomendado para: Intermediários
+   🎯 Lógica: Segue a tendência do mercado
+   📊 Funciona em: Mercado em tendência (alta ou baixa)
+   ⏱️ Timeframe: 1h, 4h
+   💰 Win Rate: 50-60%
+   
+   Como funciona:
+   - Compra quando tendência de alta confirmada
+   - Vende quando tendência de baixa confirmada
+   - Usa EMAs (9/21/50) + RSI
+
+3. SCALPING (Operações Rápidas)
+   ✅ Recomendado para: Avançados
+   🎯 Lógica: Micro ganhos rápidos (0.3-0.5%)
+   📊 Funciona em: Qualquer mercado
+   ⏱️ Timeframe: 1m, 3m, 5m
+   💰 Win Rate: 60-65%
+   
+   Como funciona:
+   - Entra e sai muito rápido (30s-5min)
+   - Lucros pequenos mas frequentes
+   - Alta frequência (50-100 trades/dia)
+   - Usa EMA ultra-rápida (3) + RSI sensível
+
+4. ARBITRAGE (Arbitragem) - NÃO IMPLEMENTADA
+   ⚠️ Apenas placeholder (não funciona ainda)
+   🎯 Lógica: Lucra com diferença de preço entre exchanges
+   📊 Exemplo: BTC na Binance $50k, na Bybit $50.1k
+   💰 Win Rate: 90%+ (se funcionar)
+   
+   Problemas:
+   - Precisa contas em múltiplas exchanges
+   - Taxas de saque podem comer lucro
+   - Complexo de implementar
+
+╔════════════════════════════════════════════════════════════╗
+║  RECOMENDAÇÃO:                                             ║
+║                                                            ║
+║  - Iniciante: MEAN REVERSION + Ultra Rápido (5s)           ║
+║  - Intermediário: TREND FOLLOWING + Caçador (3s)           ║
+║  - Avançado: SCALPING + Scalper (1s)                       ║
+╚════════════════════════════════════════════════════════════╝
+

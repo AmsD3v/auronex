@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Pause, Settings, Trash2 } from 'lucide-react'
 import { useBots } from '@/hooks/useBots'
+import { botsApi } from '@/lib/api'
+import { toast } from 'sonner'
 import { formatCurrency } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { BotEditModal } from './BotEditModal'
@@ -103,7 +105,7 @@ export function BotCard({ bot, index }: BotCardProps) {
         </div>
       </div>
 
-      {/* Symbols */}
+      {/* Symbols com opção de remover */}
       {bot.symbols && bot.symbols.length > 0 && (
         <div className="mb-4">
           <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">
@@ -111,12 +113,32 @@ export function BotCard({ bot, index }: BotCardProps) {
           </p>
           <div className="flex flex-wrap gap-2">
             {bot.symbols.slice(0, 5).map((symbol) => (
-              <span
+              <div
                 key={symbol}
-                className="badge badge-info text-xs"
+                className="relative group"
               >
-                {symbol.replace('/USDT', '').replace('/BRL', '').replace('/BTC', '')}
-              </span>
+                <span className="badge badge-info text-xs pr-6">
+                  {symbol.replace('/USDT', '').replace('/BRL', '').replace('/BTC', '')}
+                </span>
+                {/* ✅ X para remover (SEM confirm) */}
+                {bot.symbols.length > 1 && (
+                  <button
+                    onClick={async () => {
+                      const newSymbols = bot.symbols.filter(s => s !== symbol)
+                      try {
+                        await botsApi.update(bot.id, { symbols: newSymbols })
+                        toast.success(`${symbol} removida!`)
+                      } catch (error: any) {
+                        toast.error('Erro ao remover')
+                      }
+                    }}
+                    className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    title="Remover"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             ))}
             {bot.symbols.length > 5 && (
               <span className="badge bg-gray-500/20 text-gray-400 text-xs">
@@ -138,6 +160,21 @@ export function BotCard({ bot, index }: BotCardProps) {
         <span className="text-sm text-gray-400">
           {bot.is_active ? 'Ativo' : 'Pausado'}
         </span>
+        
+        {/* ✅ VELOCIDADE DO BOT */}
+        {bot.analysis_interval && (
+          <span className={cn(
+            "badge text-xs ml-2",
+            bot.analysis_interval === 1 ? "badge-error" : 
+            bot.analysis_interval <= 3 ? "badge-warning" : 
+            "badge-info"
+          )}>
+            {bot.analysis_interval === 1 ? '⚡ 1s' : 
+             bot.analysis_interval === 3 ? '🎯 3s' : 
+             '📈 5s'}
+          </span>
+        )}
+        
         {bot.is_testnet && (
           <span className="badge badge-warning ml-auto">Testnet</span>
         )}

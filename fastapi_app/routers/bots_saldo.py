@@ -41,17 +41,19 @@ def get_bot_saldo(
     try:
         import ccxt
         
-        # Mapeamento
+        # ✅ Mapeamento completo
         ccxt_map = {
             'mercadobitcoin': 'mercado',
             'brasilbitcoin': None,
-            'gateio': 'gate'
+            'gateio': 'gate',
+            'foxbit': 'foxbit',
+            'novadax': 'novadax',
         }
         
         ccxt_name = ccxt_map.get(bot.exchange, bot.exchange)
         
         if ccxt_name is None:
-            return {"saldo_usd": 0, "saldo_brl": 0, "erro": "Exchange não suportada"}
+            return {"saldo_usd": 0, "saldo_brl": 0, "erro": f"{bot.exchange.upper()} não suportada"}
         
         # Conectar
         api_dec = decrypt_data(api_key.api_key_encrypted)
@@ -62,7 +64,12 @@ def get_bot_saldo(
             'apiKey': api_dec,
             'secret': secret_dec,
             'enableRateLimit': True,
-            'timeout': 15000
+            'timeout': 30000,
+            'options': {
+                'defaultType': 'spot',
+                'adjustForTimeDifference': True,  # ✅ Corrigir timestamp
+                'recvWindow': 60000,  # ✅ Janela maior para Bybit
+            }
         })
         
         if api_key.is_testnet:

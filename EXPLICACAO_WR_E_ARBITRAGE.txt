@@ -1,0 +1,136 @@
+════════════════════════════════════════════════════════════
+ WR = WIN RATE (Taxa de Acerto)
+════════════════════════════════════════════════════════════
+
+WR é a porcentagem de trades que dão LUCRO.
+
+Exemplo:
+  100 trades executados
+  65 trades com lucro
+  35 trades com perda
+  → WR = 65%
+
+Classificação:
+  WR 50-55% = Ruim
+  WR 55-60% = OK
+  WR 60-65% = Bom
+  WR 65-70% = Muito Bom
+  WR 70-80% = Excelente
+  WR 80%+ = Excepcional
+
+════════════════════════════════════════════════════════════
+ ARBITRAGE (Arbitragem)
+════════════════════════════════════════════════════════════
+
+O QUE É:
+  Lucrar com DIFERENÇA DE PREÇO entre exchanges
+
+COMO FUNCIONA:
+  1. BTC na Binance: $50,000
+  2. BTC na Bybit: $50,100
+  3. Diferença: $100 (0.2%)
+  
+  4. Ação:
+     - Compra 1 BTC na Binance ($50,000)
+     - Vende 1 BTC na Bybit ($50,100)
+     - Lucro: $100 - taxas
+
+VANTAGENS:
+  ✅ WR 90%+ (quase sempre dá certo!)
+  ✅ Risco MUITO baixo
+  ✅ Não depende do mercado subir/cair
+  ✅ Lucros consistentes
+
+DESVANTAGENS:
+  ❌ Precisa conta em 2+ exchanges
+  ❌ Precisa saldo nas 2 exchanges
+  ❌ Taxas de saque podem comer lucro
+  ❌ Oportunidades raras (mercado é eficiente)
+  ❌ Setup complexo
+
+EXEMPLO REAL:
+  Capital: $10,000
+  Split: $5,000 Binance + $5,000 Bybit
+  
+  Oportunidade:
+    BTC Binance: $50,000
+    BTC Bybit: $50,150 (0.3% diferença)
+  
+  Execução:
+    Compra 0.1 BTC Binance = $5,000
+    Vende 0.1 BTC Bybit = $5,015
+    
+  Resultado:
+    Lucro bruto: $15
+    Taxa Binance: -$5 (0.1%)
+    Taxa Bybit: -$5 (0.1%)
+    Lucro líquido: $5 (0.1%)
+  
+  Por mês (20 oportunidades):
+    $5 × 20 = $100/mês
+  
+  ROI: 1%/mês (conservador mas consistente!)
+
+QUANDO USAR:
+  ✅ Tem contas em múltiplas exchanges
+  ✅ Quer risco MUITO baixo
+  ✅ Aceita lucros pequenos mas consistentes
+  ✅ Tem capital grande ($10k+)
+
+MELHOR ESTRATÉGIA PARA:
+  - Instituições
+  - Conservadores
+  - Capital grande
+  - Busca consistência
+
+════════════════════════════════════════════════════════════
+ COMPARAÇÃO DE ESTRATÉGIAS
+════════════════════════════════════════════════════════════
+
+MEAN REVERSION (Reversão à Média):
+  WR: 55-65%
+  Risco: Médio
+  Frequência: 10-20 trades/dia
+  Lucro médio: 1-2% por trade
+  Para: Iniciantes
+
+TREND FOLLOWING (Seguir Tendência):
+  WR: 50-60%
+  Risco: Médio
+  Frequência: 5-15 trades/dia
+  Lucro médio: 2-4% por trade
+  Para: Intermediários
+
+SCALPING (Operações Rápidas):
+  WR: 60-65%
+  Risco: Médio-Alto
+  Frequência: 50-100+ trades/dia
+  Lucro médio: 0.3-0.5% por trade
+  Para: Avançados
+
+ARBITRAGE (Arbitragem):
+  WR: 90%+ ← MAIOR!
+  Risco: Baixo ← MENOR!
+  Frequência: 5-20 oportunidades/dia
+  Lucro médio: 0.2-0.5% por trade
+  Para: Experts (setup complexo)
+
+════════════════════════════════════════════════════════════
+ QUAL ESCOLHER?
+════════════════════════════════════════════════════════════
+
+Se INICIANTE:
+  → Mean Reversion + Ultra Rápido (5s)
+  
+Se quer MÁXIMA PERFORMANCE:
+  → Scalping + Scalper (1s)
+  
+Se quer MAIOR WIN RATE (90%):
+  → Arbitrage (mas precisa 2+ exchanges)
+  
+Se quer BALANCEADO:
+  → Trend Following + Caçador (3s)
+
+════════════════════════════════════════════════════════════
+
+

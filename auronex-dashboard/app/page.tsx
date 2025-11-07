@@ -9,6 +9,7 @@ import { Clock } from '@/components/Clock'
 import { MetricsGrid } from '@/components/MetricsGrid'
 import { BalanceCard } from '@/components/BalanceCard'
 import { BotsGrid } from '@/components/BotsGrid'
+import { Top5Performance } from '@/components/Top5Performance'
 import { LogOut, RefreshCw } from 'lucide-react'
 
 /**
@@ -85,9 +86,20 @@ export default function DashboardPage() {
                 <p className="text-sm font-medium text-white">
                   {user?.first_name || user?.email || 'Usuário'}
                 </p>
-                <p className="text-xs text-gray-400">
-                  {user?.subscription?.plan?.toUpperCase() || 'FREE'} · {currency}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-gray-400">
+                    {user?.subscription?.plan?.toUpperCase() || 'FREE'}
+                  </p>
+                  {/* Seletor BRL/USD */}
+                  <select
+                    value={currency}
+                    onChange={(e) => useTradingStore.setState({ currency: e.target.value as 'USD' | 'BRL' })}
+                    className="text-xs bg-dark-700 text-gray-400 border border-white/10 rounded px-2 py-0.5"
+                  >
+                    <option value="BRL">BRL</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </div>
               </div>
 
               {/* Logout button */}
@@ -231,6 +243,11 @@ export default function DashboardPage() {
         {/* Bots Grid - TEMPO REAL! */}
         <div className="mt-8">
           <BotsGrid bots={bots || []} />
+        </div>
+
+        {/* Top 5 Performance */}
+        <div className="mt-8">
+          <Top5Performance />
         </div>
 
         {/* Links úteis */}

@@ -6,6 +6,7 @@ from .base import BaseStrategy
 from .mean_reversion import MeanReversionStrategy
 from .trend_following import TrendFollowingStrategy
 from .micro_hunter import MicroHunterStrategy, ScalpingStrategy
+from .arbitrage import ArbitrageStrategy
 
 __all__ = [
     'BaseStrategy',
@@ -13,4 +14,5 @@ __all__ = [
     'TrendFollowingStrategy',
     'MicroHunterStrategy',
     'ScalpingStrategy',
+    'ArbitrageStrategy',
 ]

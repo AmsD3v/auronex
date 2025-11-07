@@ -218,7 +218,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="create-bot-form">
+                <form id="create-bot-form" method="post" action="javascript:void(0);">
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="mb-3">Configurações Básicas</h6>
@@ -230,7 +230,7 @@
                             
                             <div class="mb-3">
                                 <label for="bot_exchange" class="form-label">Exchange</label>
-                                <select class="form-select" id="bot_exchange" name="exchange" required onchange="loadApiKeysForExchange()">
+                                <select class="form-select" id="exchange" name="exchange" required onchange="loadSymbolsForExchange(this.value);loadApiKeysForExchange()">
                                     <option value="">Selecione...</option>
                                     <option value="binance">Binance</option>
                                     <option value="bybit">Bybit</option>
@@ -259,13 +259,9 @@
                             
                             <div class="mb-3">
                                 <label for="symbols" class="form-label">Criptomoedas</label>
-                                <select class="form-select" id="symbols" name="symbols" multiple size="5">
-                                    <option value="BTCUSDT">BTC/USDT</option>
-                                    <option value="ETHUSDT">ETH/USDT</option>
-                                    <option value="BNBUSDT">BNB/USDT</option>
-                                    <option value="SOLUSDT">SOL/USDT</option>
-                                    <option value="ADAUSDT">ADA/USDT</option>
-                                    <option value="XRPUSDT">XRP/USDT</option>
+                                <input type="text" class="form-control mb-2" id="search-symbols" placeholder="🔍 Buscar criptomoeda..." onkeyup="filterSymbols(this.value)">
+                                <select class="form-select" id="symbols" name="symbols" multiple size="8">
+                                    <option value="">Selecione a Exchange primeiro</option>
                                 </select>
                                 <small class="text-muted">Segure CTRL para selecionar múltiplos</small>
                             </div>
@@ -344,9 +340,11 @@ async function loadBots() {
         
         if (response.ok) {
             const data = await response.json();
+            console.log('[loadBots] Dados recebidos:', data);
             
             // Se retornou objeto com info de limite
             if (data.bots) {
+                console.log('[loadBots] Bots encontrados:', data.bots.length);
                 displayBots(data.bots);
                 
                 // Atualizar botão criar
@@ -421,6 +419,53 @@ function displayBots(bots) {
     `).join('');
 }
 
+// ✅ CARREGAR CRYPTOS DINAMICAMENTE
+let allSymbols = [];
+
+async function loadSymbolsForExchange(exchange) {
+    if (!exchange) return;
+    
+    const symbolsSelect = document.getElementById('symbols');
+    symbolsSelect.innerHTML = '<option value="">Carregando...</option>';
+    
+    try {
+        const response = await authenticatedFetch(`/api/exchange/symbols?exchange=${exchange}`);
+        allSymbols = await response.json();
+        
+        // Popular com TODAS
+        symbolsSelect.innerHTML = allSymbols.map(s => 
+            `<option value="${s}">${s}</option>`
+        ).join('');
+        
+        console.log(`[Symbols] ${allSymbols.length} cryptos de ${exchange}`);
+    } catch (error) {
+        console.error('[Symbols] Erro:', error);
+        symbolsSelect.innerHTML = '<option value="">Erro</option>';
+    }
+}
+
+// Filtrar cryptos pela busca
+function filterSymbols(searchTerm) {
+    const symbolsSelect = document.getElementById('symbols');
+    const filtered = allSymbols.filter(s => 
+        s.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    symbolsSelect.innerHTML = filtered.map(s => 
+        `<option value="${s}">${s}</option>`
+    ).join('');
+}
+
+// Exchange change já está no onchange do select
+
+// Carregar cryptos ao abrir modal
+document.getElementById('createBotModal').addEventListener('shown.bs.modal', function() {
+    const exchange = document.getElementById('exchange').value || 'binance';
+    if (exchange) {
+        loadSymbolsForExchange(exchange);
+    }
+});
+
 // Criar bot
 document.getElementById('create-bot-form').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -432,31 +477,44 @@ document.getElementById('create-bot-form').addEventListener('submit', async func
         name: formData.get('name'),
         exchange: formData.get('exchange'),
         symbols: selectedSymbols,
-        capital: parseFloat(formData.get('capital')),
+        capital: parseFloat(formData.get('capital')) || 0,  // ✅ Default 0 se vazio
         strategy: formData.get('strategy'),
         timeframe: formData.get('timeframe'),
         stop_loss_percent: parseFloat(formData.get('stop_loss_percent')),
         take_profit_percent: parseFloat(formData.get('take_profit_percent')),
+        is_testnet: true,  // ✅ NOVO
+        analysis_interval: 5,  // ✅ NOVO: Padrão 5s
+        hunter_mode: false,  // ✅ NOVO
         is_active: false
     };
     
     try {
         // Usar helper global
+        console.log('[Create Bot] Enviando dados:', data);
+        
         const response = await authenticatedFetch('/api/bots/', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         });
         
+        console.log('[Create Bot] Response:', response.status);
+        
         if (response.ok) {
-            // SEM ALERT - Cria imediatamente!
+            const result = await response.json();
+            console.log('[Create Bot] Bot criado:', result);
+            
+            // Fechar modal
             bootstrap.Modal.getInstance(document.getElementById('createBotModal')).hide();
             e.target.reset();
-            loadBots();  // Recarrega e mostra bot criado
+            
+            // Recarregar lista
+            setTimeout(() => loadBots(), 500);  // Aguardar 500ms
         } else {
             const error = await response.json();
+            console.error('[Create Bot] Erro:', error);
             const errorMsg = typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail || error);
-            alert('❌ ' + errorMsg);
+            alert('Erro: ' + errorMsg);
         }
     } catch (error) {
         alert('❌ Erro de conexão: ' + error.message);

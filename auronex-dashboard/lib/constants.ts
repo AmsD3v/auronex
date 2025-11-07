@@ -92,9 +92,9 @@ export const TIMEFRAMES = [
 ] as const
 
 export const STRATEGIES = [
-  { value: 'trend_following', label: 'Trend Following', description: 'Segue tendências de mercado' },
-  { value: 'mean_reversion', label: 'Mean Reversion', description: 'Reversão à média' },
-  { value: 'scalping', label: 'Scalping', description: 'Operações rápidas' },
-  { value: 'arbitrage', label: 'Arbitrage', description: 'Arbitragem entre exchanges' },
+  { value: 'mean_reversion', label: 'Mean Reversion', description: '✅ Iniciantes · Reversão à média · WR 55-65%' },
+  { value: 'trend_following', label: 'Trend Following', description: '📈 Intermediários · Segue tendências · WR 50-60%' },
+  { value: 'scalping', label: 'Scalping', description: '⚡ Avançados · Alta frequência · WR 60-65%' },
+  { value: 'arbitrage', label: 'Arbitrage', description: '💱 Experts · Entre exchanges · WR 90%+' },
 ] as const
 
