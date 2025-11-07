@@ -1,1 +1,1 @@
-ECHO está desativado.
+1.0.0-beta 
