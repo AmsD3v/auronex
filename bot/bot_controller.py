@@ -14,6 +14,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from fastapi_app.database import SessionLocal
 from fastapi_app.models import BotConfiguration
 from bot.main import TradingBot
+from bot.bot_locks import acquire_bot_lock, renew_bot_lock, release_bot_lock, force_clear_expired_locks
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class BotController:
     def start_bot(self, bot_id: int) -> bool:
         """
         Inicia um bot específico
+        ✅ COM LOCK - Garante apenas 1 instância!
         
         Args:
             bot_id: ID do bot no banco
@@ -35,8 +37,15 @@ class BotController:
         Returns:
             True se iniciou com sucesso
         """
+        # ✅ VERIFICAR LOCK PRIMEIRO
+        if not acquire_bot_lock(bot_id):
+            logger.error(f"[BLOQUEADO] Bot {bot_id} JÁ ESTÁ RODANDO em outro processo!")
+            logger.error(f"[BLOQUEADO] IMPOSSÍVEL iniciar múltiplas instâncias!")
+            return False
+        
         if bot_id in self.active_bots:
-            logger.warning(f"Bot {bot_id} ja esta rodando")
+            logger.warning(f"Bot {bot_id} ja esta rodando neste processo")
+            release_bot_lock(bot_id)
             return False
         
         try:
@@ -74,9 +83,13 @@ class BotController:
             return False
     
     def stop_bot(self, bot_id: int) -> bool:
-        """Para um bot específico"""
+        """
+        Para um bot específico
+        ✅ Libera lock
+        """
         if bot_id not in self.active_bots:
             logger.warning(f"Bot {bot_id} nao esta rodando")
+            release_bot_lock(bot_id)  # ✅ Liberar lock mesmo assim
             return False
         
         try:
@@ -89,7 +102,10 @@ class BotController:
             # Remover
             del self.active_bots[bot_id]
             
-            logger.info(f"[OK] Bot {bot_id} parado")
+            # ✅ LIBERAR LOCK
+            release_bot_lock(bot_id)
+            
+            logger.info(f"[OK] Bot {bot_id} parado e lock liberado")
             return True
             
         except Exception as e:
@@ -143,17 +159,34 @@ class BotController:
             logger.error(f"Erro ao sincronizar: {e}")
     
     def run_controller(self):
-        """Loop principal do controlador"""
-        logger.info("[OK] Controlador de bots iniciado")
+        """
+        Loop principal do controlador
+        ✅ Com limpeza de locks expirados
+        """
+        logger.info("[OK] Controlador de bots iniciado COM PROTEÇÃO DE LOCKS")
         self.running = True
+        
+        iteration = 0
         
         try:
             while self.running:
+                iteration += 1
+                
+                # ✅ Limpar locks expirados a cada 30s
+                if iteration % 3 == 0:
+                    expired = force_clear_expired_locks()
+                    if expired > 0:
+                        logger.info(f"[LOCK] Limpou {expired} locks expirados")
+                
                 # Sincronizar com banco a cada 10 segundos
                 self.sync_with_database()
                 
                 # Mostrar status
                 logger.info(f"Bots ativos: {len(self.active_bots)}")
+                
+                # ✅ Renovar locks a cada iteração
+                for bot_id in self.active_bots.keys():
+                    renew_bot_lock(bot_id)
                 
                 time.sleep(10)
                 

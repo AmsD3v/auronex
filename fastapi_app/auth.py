@@ -33,7 +33,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Criar JWT token"""
+    """Criar JWT token E registrar sessão única"""
     to_encode = data.copy()
     
     if expires_delta:
@@ -43,6 +43,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    
+    # ✅ REGISTRAR SESSÃO
+    if 'user_id' in data:
+        from .middleware_session import register_session
+        register_session(data['user_id'], encoded_jwt)
     
     return encoded_jwt
 
@@ -76,6 +81,14 @@ def get_current_user(
     
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Usuário inativo")
+    
+    # ✅ VERIFICAR SESSÃO ÚNICA
+    from .middleware_session import is_session_valid
+    if not is_session_valid(user.id, token):
+        raise HTTPException(
+            status_code=401,
+            detail="Sessão inválida. Você fez login em outro lugar.",
+        )
     
     return user
 

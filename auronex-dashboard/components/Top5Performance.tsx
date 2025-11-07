@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { TrendingUp, TrendingDown, Flame, Calendar, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useTradingStore } from '@/stores/tradingStore'
 
 interface Top5Coin {
   symbol: string
@@ -26,6 +26,12 @@ const EXCHANGES = [
 export function Top5Performance() {
   const [activeCategory, setActiveCategory] = useState<Category>('hoje')
   const [searchExchange, setSearchExchange] = useState('binance')
+  const { currency } = useTradingStore()  // ✅ PEGAR MOEDA SELECIONADA
+  
+  // ✅ Conversão e símbolo
+  const cotacao = 5.0
+  const converter = (valor: number) => currency === 'BRL' ? valor * cotacao : valor
+  const simbolo = currency === 'BRL' ? 'R$' : '$'
 
   // Dados por categoria
   const dataByCategory: Record<Category, Top5Coin[]> = {
@@ -190,7 +196,10 @@ export function Top5Performance() {
             {/* Preço + Variação */}
             <div className="text-right">
               <p className="text-white font-medium text-sm">
-                ${coin.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}
+                {simbolo} {converter(coin.price).toLocaleString(currency === 'BRL' ? 'pt-BR' : 'en-US', { 
+                  minimumFractionDigits: 2, 
+                  maximumFractionDigits: coin.price < 1 ? 8 : 2 
+                })}
               </p>
               <div className="flex items-center gap-1">
                 {((activeCategory === 'semana' ? coin.change_7d : 
