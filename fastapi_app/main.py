@@ -55,9 +55,9 @@ app.add_middleware(
 
 print("")
 print("="*70)
-print("✅ FastAPI APENAS - SEM Bot Controller")
+print("[OK] FastAPI APENAS - SEM Bot Controller")
 print("="*70)
-print("Bot Controller: Execute separadamente via TESTAR_LOCAL.bat")
+print("Bot Controller: Execute separadamente")
 print("="*70)
 print("")
 

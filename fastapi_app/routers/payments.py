@@ -32,8 +32,8 @@ MERCADOPAGO_CLIENT_SECRET = "ccpL5XOYoM9AlsMeaoIpYzF6u6M1mmdl"
 STRIPE_SECRET_KEY = "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"
 STRIPE_PUBLISHABLE_KEY = "pk_live_51SN37vRjxbCNnFAQ14aGnoYQd5YElcrVB4hKXa98M42R0Qun9p7DN64ff2SDu0u24IJjIS06cGSYzajaeau9fpOc00JgDpcJhI"
 
-print("⚠️ ATENÇÃO: Chaves de PRODUÇÃO configuradas!")
-print("⚠️ Pagamentos REAIS serão processados!")
+print("[AVISO] Chaves de PRODUCAO configuradas!")
+print("[AVISO] Pagamentos REAIS serao processados!")
 
 # Planos disponíveis - VALORES REAIS ATUALIZADOS 06/11/2025
 PLANS = {
