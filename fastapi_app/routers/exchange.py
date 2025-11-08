@@ -79,8 +79,17 @@ def get_balance(
                 balance = exchange_obj.fetch_balance()
                 usdt = balance.get('free', {}).get('USDT', 0) or 0
                 
+                # ✅ Se 0, tentar BRL (exchanges brasileiras)
+                if usdt == 0:
+                    brl = balance.get('free', {}).get('BRL', 0) or 0
+                    if brl > 0:
+                        usdt = brl / 5.0  # Converter
+                        print(f"[Balance] {api_key.exchange.upper()}: R$ {brl:.2f} = ${usdt:.2f}")
+                
                 total_usdt += usdt
-                print(f"[Balance] {api_key.exchange.upper()}: ${usdt:.2f}")
+                
+                if usdt > 0:
+                    print(f"[Balance] {api_key.exchange.upper()}: ${usdt:.2f}")
                 
             except:
                 pass
@@ -136,6 +145,13 @@ def get_balance(
         balance = exchange.fetch_balance()
         
         usdt = balance.get('free', {}).get('USDT', 0) or 0
+        
+        # ✅ Se 0, tentar BRL
+        if usdt == 0:
+            brl = balance.get('free', {}).get('BRL', 0) or 0
+            if brl > 0:
+                usdt = brl / 5.0
+        
         btc = balance.get('free', {}).get('BTC', 0) or 0
         eth = balance.get('free', {}).get('ETH', 0) or 0
         bnb = balance.get('free', {}).get('BNB', 0) or 0

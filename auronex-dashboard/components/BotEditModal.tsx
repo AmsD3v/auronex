@@ -142,8 +142,10 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
     // ✅ VALIDAÇÃO 3: Se capital 0, permitir (sem saldo na exchange)
     // Mas se > 0, deve validar
 
-    // ✅ VALIDAÇÃO 4: BLOQUEAR se investimento > saldo
-    if (saldoExchange > 0 && capitalUSD > saldoExchange) {
+    // ✅ VALIDAÇÃO 4: BLOQUEAR se investimento > saldo E capital > 0
+    const capitalUSD = toUSD(capital)
+    
+    if (capital > 0 && saldoExchange > 0 && capitalUSD > saldoExchange) {
       const saldoMoeda = toMoeda(saldoExchange)
       toast.error(
         `🚫 INVESTIMENTO MAIOR QUE SALDO!\n\n` +
@@ -152,7 +154,19 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
         `IMPOSSÍVEL!`,
         { duration: 10000 }
       )
-      return  // ✅ PARA AQUI! NÃO CHAMA mutate!
+      return  // ✅ PARA! NÃO CHAMA mutate!
+    }
+    
+    // ✅ Se saldo = 0 E investimento > 0, BLOQUEAR também!
+    if (saldoExchange === 0 && capital > 0) {
+      toast.error(
+        `🚫 SEM SALDO NA ${exchange.toUpperCase()}!\n\n` +
+        `Saldo: R$ 0,00\n` +
+        `Você quer investir: ${simbolo} ${capital.toFixed(2)}\n\n` +
+        `Adicione fundos primeiro!`,
+        { duration: 10000 }
+      )
+      return  // ✅ PARA!
     }
 
     // Converter velocidade e capital
@@ -474,14 +488,14 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
                   type="number"
                   value={capital}
                   onChange={(e) => {
-                    const valor = Number(e.target.value) || 0
+                    const valor = parseFloat(e.target.value) || 0
                     setCapital(valor)
                     if (saldoExchange > 0 && valor > 0 && toUSD(valor) > saldoExchange) {
                       toast.error(`⚠️ Investimento maior que saldo!`, { duration: 3000 })
                     }
                   }}
                   min="0"
-                  step={currency === 'BRL' ? '10' : '1'}
+                  step="0.01"
                   className={`input ${capital > 0 && toUSD(capital) > saldoExchange && saldoExchange > 0 ? 'border-red-500' : ''}`}
                 />
                 {capital > 0 && toUSD(capital) > saldoExchange && saldoExchange > 0 && (
