@@ -44,3 +44,4 @@ print("  Bot Controller rodando? ps aux | grep bot_controller")
 print("  Logs do bot: tail -f logs/bot_controller.log")
 print()
 
+
