@@ -158,18 +158,19 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       return  // ✅ PARA AQUI! NÃO CHAMA mutate!
     }
 
-    // Converter velocidade
+    // Converter velocidade e capital
     const speedMap = { ultra: 5, hunter: 3, scalper: 1 }
     const analysisInterval = speedMap[botSpeed]
+    const capitalParaSalvar = toUSD(capital)  // ✅ Converter para USD
 
-    // Atualizar bot (capital já está em USD - capitalUSD)
+    // Atualizar bot
     updateBotMutation.mutate({
       name: name.trim(),
       exchange,
       symbols,
       strategy,
       timeframe,
-      capital: capitalUSD,  // ✅ Sempre envia USD para backend
+      capital: capitalParaSalvar,  // ✅ Sempre USD para backend
       stop_loss_percent: stopLoss,
       take_profit_percent: takeProfit,
       is_testnet: isTestnet,

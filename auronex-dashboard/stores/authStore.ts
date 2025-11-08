@@ -40,15 +40,20 @@ export const useAuthStore = create<AuthState>()(
         try {
           const data = await authApi.login(email, password)
 
-          set({
-            token: data.access_token,
-            user: data.user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          })
+      // ✅ Salvar e garantir que persiste
+      set({
+        token: data.access_token,
+        user: data.user,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      })
+      
+      // ✅ LOG para debug
+      console.log('[Auth] Login OK! Token:', data.access_token?.substring(0, 20))
+      console.log('[Auth] User:', data.user?.email)
 
-          return true
+      return true
         } catch (error: any) {
           const errorMessage =
             error.response?.data?.detail ||

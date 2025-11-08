@@ -75,7 +75,9 @@ export default function LoginPage() {
 
     if (success) {
       toast.success('Login realizado com sucesso!')
-      router.push('/')  // ✅ Raiz (não /dashboard)
+      // ✅ Aguardar localStorage salvar (crítico para produção!)
+      await new Promise(resolve => setTimeout(resolve, 200))
+      router.push('/')
     } else {
       toast.error('Email ou senha incorretos!')
     }
