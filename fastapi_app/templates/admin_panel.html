@@ -493,6 +493,12 @@ function showSection(section) {
     
     currentSection = section;
     
+    // ✅ Carregar dados específicos de cada seção
+    if (section === 'users') loadUsers();
+    if (section === 'subscriptions') loadSubscriptions();
+    if (section === 'bots') loadBots();  // ✅ CHAMA loadBots!
+    if (section === 'payments') loadPayments();
+    
     // Carregar dados da seção
     loadSectionData(section);
 }

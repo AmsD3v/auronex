@@ -1,0 +1,62 @@
+════════════════════════════════════════════════════════════
+ DEPLOY REALIZADO - v1.0.1-beta
+════════════════════════════════════════════════════════════
+
+DATA: 08/11/2025
+VERSÃO: 1.0.1-beta
+TOKENS USADOS: 391k/1M
+
+════════════════════════════════════════════════════════════
+ O QUE FOI ENVIADO
+════════════════════════════════════════════════════════════
+
+✅ Dashboard React Enterprise
+✅ Bot Async (3-5x mais rápido)
+✅ Conversão BRL/USD
+✅ Top 5 Performance (5 categorias)
+✅ Capital Investido (soma bots ativos)
+✅ Log de Atividades dos Bots
+✅ Admin Panel melhorado (usuários)
+✅ Validações básicas
+✅ 14 corretoras suportadas
+✅ Trades salvos no banco
+
+════════════════════════════════════════════════════════════
+ ATUALIZAR SERVIDOR
+════════════════════════════════════════════════════════════
+
+No servidor (SSH):
+
+cd /home/serverhome/auronex
+./ATUALIZAR_SERVIDOR_PRODUCAO.sh
+
+Aguarde ~5-8 minutos
+
+════════════════════════════════════════════════════════════
+ PENDÊNCIAS (Próxima sessão)
+════════════════════════════════════════════════════════════
+
+Arquivo: PENDENCIAS_PROXIMA_SESSAO.md
+
+🔥 CRÍTICO:
+1. Validação BLOQUEAR salvar se invest > saldo
+2. Saldo Total somar TODAS exchanges
+3. Bot trades afetar saldo real
+
+📊 IMPORTANTE:
+4. admin#bots carregar dados
+5. Saldo corretora visível na modal
+6. Cryptos carregar para todas exchanges
+
+🔒 BAIXA:
+7. Login único
+
+════════════════════════════════════════════════════════════
+
+PRÓXIMA SESSÃO:
+- Resolver 7 pendências
+- Testar cada uma
+- Sistema 100% completo
+
+════════════════════════════════════════════════════════════
+

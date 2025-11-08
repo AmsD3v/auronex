@@ -145,7 +145,7 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       return
     }
 
-    // ✅ VALIDAÇÃO 4: Capital vs Saldo (usar capital já em USD!)
+    // ✅ VALIDAÇÃO 4: BLOQUEAR se investimento > saldo
     if (saldoExchange > 0 && capitalUSD > saldoExchange) {
       const saldoMoeda = toMoeda(saldoExchange)
       toast.error(
@@ -155,17 +155,14 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
         `IMPOSSÍVEL!`,
         { duration: 10000 }
       )
-      return  // PARA!
+      return  // ✅ PARA AQUI! NÃO CHAMA mutate!
     }
 
     // Converter velocidade
     const speedMap = { ultra: 5, hunter: 3, scalper: 1 }
     const analysisInterval = speedMap[botSpeed]
 
-    // ✅ Converter capital para USD antes de salvar!
-    const capitalUSD = toUSD(capital)
-
-    // Atualizar bot
+    // Atualizar bot (capital já está em USD - capitalUSD)
     updateBotMutation.mutate({
       name: name.trim(),
       exchange,
@@ -473,17 +470,28 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
               {/* Capital */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">
-                  Capital ({currency}) *
+                  Investimento ({currency}) * 
+                  <span className="ml-2 text-xs text-gray-400">
+                    | Saldo Corretora: {simbolo} {toMoeda(saldoExchange).toFixed(2)}
+                  </span>
                 </label>
                 <input
                   type="number"
                   value={capital}
-                  onChange={(e) => setCapital(Number(e.target.value))}
-                  min="1"
-                  step="0.01"
-                  className="input"
-                  required
+                  onChange={(e) => {
+                    const valor = Number(e.target.value)
+                    setCapital(valor)
+                    if (saldoExchange > 0 && toUSD(valor) > saldoExchange) {
+                      toast.error(`⚠️ Investimento maior que saldo!`, { duration: 3000 })
+                    }
+                  }}
+                  min="0"
+                  step={currency === 'BRL' ? '10' : '1'}
+                  className={`input ${toUSD(capital) > saldoExchange && saldoExchange > 0 ? 'border-red-500' : ''}`}
                 />
+                {toUSD(capital) > saldoExchange && saldoExchange > 0 && (
+                  <p className="mt-1 text-xs text-red-500">⚠️ Maior que saldo!</p>
+                )}
               </div>
 
               {/* Stop Loss e Take Profit */}
