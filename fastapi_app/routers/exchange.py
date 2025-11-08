@@ -12,11 +12,15 @@ router = APIRouter(prefix="/api/exchange", tags=["exchange"])
 
 @router.get("/balance")
 def get_balance(
-    exchange: str = Query(default=None),  # ✅ NOVO: Filtrar por exchange
+    exchange: str = Query(default=None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Buscar saldo (pode filtrar por exchange específica)"""
+    """
+    Buscar saldo
+    - Se exchange específica: retorna saldo dela
+    - Sem exchange: retorna saldo TOTAL de TODAS as exchanges
+    """
     
     # ✅ Se especificou exchange, buscar dela
     if exchange:
@@ -26,11 +30,68 @@ def get_balance(
             ExchangeAPIKey.is_active == True
         ).first()
     else:
-        # Primeira API Key ativa
-        api_key = db.query(ExchangeAPIKey).filter(
+        # ✅ SEM exchange = SOMAR TODAS!
+        api_keys = db.query(ExchangeAPIKey).filter(
             ExchangeAPIKey.user_id == current_user.id,
             ExchangeAPIKey.is_active == True
-        ).first()
+        ).all()
+        
+        if not api_keys:
+            return {
+                "usdt": 0,
+                "btc": 0,
+                "eth": 0,
+                "bnb": 0,
+                "total_usd": 0,
+                "exchange": "none",
+                "is_testnet": True
+            }
+        
+        # Somar TODAS as exchanges
+        total_usdt = 0
+        
+        for api_key in api_keys:
+            try:
+                import ccxt
+                ccxt_map = {'mercadobitcoin': 'mercado', 'gateio': 'gate'}
+                ccxt_name = ccxt_map.get(api_key.exchange, api_key.exchange)
+                
+                api_dec = decrypt_data(api_key.api_key_encrypted)
+                secret_dec = decrypt_data(api_key.secret_key_encrypted)
+                
+                exchange_class = getattr(ccxt, ccxt_name)
+                exchange_obj = exchange_class({
+                    'apiKey': api_dec,
+                    'secret': secret_dec,
+                    'enableRateLimit': True,
+                })
+                
+                if api_key.is_testnet:
+                    exchange_obj.set_sandbox_mode(True)
+                
+                balance = exchange_obj.fetch_balance()
+                usdt = balance.get('free', {}).get('USDT', 0) or 0
+                
+                total_usdt += usdt
+                print(f"[Balance] {api_key.exchange.upper()}: ${usdt:.2f}")
+                
+            except:
+                pass
+        
+        print(f"[Balance TOTAL] ${total_usdt:.2f} de {len(api_keys)} exchange(s)")
+        
+        return {
+            "usdt": round(total_usdt, 2),
+            "btc": 0,
+            "eth": 0,
+            "bnb": 0,
+            "total_usd": round(total_usdt, 2),
+            "exchange": "consolidated",
+            "is_testnet": True
+        }
+    
+    # Exchange específica
+    api_key = api_key
     
     if not api_key:
         # ✅ Retornar saldo 0 ao invés de erro

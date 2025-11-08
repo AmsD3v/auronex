@@ -127,41 +127,38 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       return
     }
 
-    if (symbols.length === 0) {
-      toast.error('Selecione pelo menos 1 criptomoeda')
-      return
+    // ✅ VALIDAÇÃO 1: Mínimo 1 cripto (SEMPRE BLOQUEAR!)
+    if (!symbols || symbols.length === 0) {
+      toast.error('❌ Selecione pelo menos 1 criptomoeda!', { duration: 5000 })
+      return  // ✅ PARA AQUI!
     }
 
+    // ✅ VALIDAÇÃO 2: Máximo de cryptos
     if (symbols.length > maxSymbols) {
       toast.error(`Máximo de ${maxSymbols} criptomoedas no plano ${limits?.plan.toUpperCase()}`)
       return
     }
 
-    if (capital <= 0) {
-      toast.error('Capital deve ser maior que zero')
+    // ✅ VALIDAÇÃO 3: Capital > 0
+    if (!capital || capital <= 0) {
+      toast.error('❌ Investimento deve ser maior que zero!')
       return
     }
 
-    // ✅ VALIDAÇÃO (apenas se saldo > 0, senão testnet pode estar offline)
-    if (saldoExchange > 0) {
-      const capitalUSD = toUSD(capital)
-      
-      if (capitalUSD > saldoExchange) {
-        const saldoMoeda = toMoeda(saldoExchange)
-        toast.error(
-          `🚫 Capital maior que saldo!\n\n` +
-          `Saldo ${exchange.toUpperCase()}: ${simbolo} ${saldoMoeda.toFixed(2)}\n` +
-          `Você quer: ${simbolo} ${capital.toFixed(2)}`,
-          { duration: 8000 }
-        )
-        return
-      }
-    } else {
-      // Testnet offline - permitir mas avisar
-      console.warn(`[${exchange}] Testnet offline - validação ignorada`)
+    // ✅ VALIDAÇÃO 4: Capital vs Saldo (usar capital já em USD!)
+    if (saldoExchange > 0 && capitalUSD > saldoExchange) {
+      const saldoMoeda = toMoeda(saldoExchange)
+      toast.error(
+        `🚫 INVESTIMENTO MAIOR QUE SALDO!\n\n` +
+        `Saldo ${exchange.toUpperCase()}: ${simbolo} ${saldoMoeda.toFixed(2)}\n` +
+        `Você quer: ${simbolo} ${capital.toFixed(2)}\n\n` +
+        `IMPOSSÍVEL!`,
+        { duration: 10000 }
+      )
+      return  // PARA!
     }
 
-    // ✅ Converter velocidade
+    // Converter velocidade
     const speedMap = { ultra: 5, hunter: 3, scalper: 1 }
     const analysisInterval = speedMap[botSpeed]
 

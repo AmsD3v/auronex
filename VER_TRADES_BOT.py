@@ -45,3 +45,5 @@ print("  Logs do bot: tail -f logs/bot_controller.log")
 print()
 
 
+
+

@@ -187,11 +187,42 @@
                     <!-- BOTS -->
                     <div id="section-bots" class="admin-section" style="display:none;">
                         <div class="card">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">Todos os Bots do Sistema</h5>
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <div class="d-flex gap-2">
+                                    <h5 class="mb-0">Todos os Bots do Sistema</h5>
+                                    <button class="btn btn-sm btn-danger" id="delete-selected-bots-btn" onclick="deleteSelectedBots()" style="display:none;">
+                                        <i class="fas fa-trash"></i> Deletar Selecionados (<span id="selected-bots-count">0</span>)
+                                    </button>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <div id="bots-list">Carregando...</div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th width="50">
+                                                    <input type="checkbox" id="select-all-bots" onchange="toggleSelectAllBots(this.checked)">
+                                                </th>
+                                                <th>Bot ID</th>
+                                                <th>Nome</th>
+                                                <th>Exchange</th>
+                                                <th>Usuário</th>
+                                                <th>User ID</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bots-table">
+                                            <tr><td colspan="8" class="text-center">Carregando...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Paginação -->
+                                <nav>
+                                    <ul class="pagination justify-content-center" id="pagination-bots">
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
                     </div>
@@ -964,44 +995,176 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(loadDashboardStats, 30000);
 });
 
-// Carregar bots - CORRIGIDO
+// Admin Bots - COM PAGINAÇÃO
+let allBots = [];
+let currentBotPage = 1;
+const botsPerPage = 10;
+let selectedBots = new Set();
+
 async function loadBots() {
-    console.log('Carregando bots...');
-    
+    console.log('[Admin Bots] Carregando...');
     try {
-        const response = await fetch('/api/bots/', {credentials: 'include'});
-        console.log('Resposta bots:', response.status);
+        const response = await fetch('/api/admin/bots/all', {credentials: 'include'});
+        console.log('[Admin Bots] Response:', response.status);
         
         if (response.ok) {
-            const bots = await response.json();
-            console.log('Total bots:', bots.length);
-            
-            if (bots.length === 0) {
-                document.getElementById('bots-list').innerHTML = `
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> Nenhum bot foi criado ainda no sistema.
-                        <br><small>Bots aparecerão aqui quando os usuários criarem.</small>
-                    </div>`;
-            } else {
-                document.getElementById('bots-list').innerHTML = 
-                    '<div class="table-responsive"><table class="table table-hover"><thead class="table-dark"><tr><th>Nome</th><th>Exchange</th><th>Usuário</th><th>Status</th></tr></thead><tbody>' +
-                    bots.map(bot => `
-                        <tr>
-                            <td><strong>${bot.name}</strong></td>
-                            <td><span class="badge bg-primary">${bot.exchange}</span></td>
-                            <td>User #${bot.user_id}</td>
-                            <td><span class="badge bg-${bot.is_active ? 'success' : 'secondary'}">${bot.is_active ? 'Ativo' : 'Inativo'}</span></td>
-                        </tr>
-                    `).join('') + '</tbody></table></div>';
-            }
-        } else {
-            console.error('Erro HTTP:', response.status);
-            document.getElementById('bots-list').innerHTML = '<div class="alert alert-info">Nenhum bot criado no sistema.</div>';
+            const data = await response.json();
+            allBots = data.bots || [];
+            currentBotPage = 1;
+            selectedBots.clear();
+            updateBotsCount();
+            renderBotsPage();
         }
     } catch (error) {
-        console.error('Erro ao carregar bots:', error);
-        document.getElementById('bots-list').innerHTML = '<div class="alert alert-info"><i class="fas fa-robot"></i> Nenhum bot criado ainda. Os bots dos usuários aparecerão aqui.</div>';
+        document.getElementById('bots-table').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Erro</td></tr>';
     }
+}
+
+function renderBotsPage() {
+    const tbody = document.getElementById('bots-table');
+    const start = (currentBotPage - 1) * botsPerPage;
+    const end = start + botsPerPage;
+    const botsToShow = allBots.slice(start, end);
+    
+    if (allBots.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Nenhum bot</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = botsToShow.map(bot => `
+        <tr class="${selectedBots.has(bot.id) ? 'table-active' : ''}">
+            <td>
+                <input type="checkbox" class="bot-checkbox" value="${bot.id}" 
+                    ${selectedBots.has(bot.id) ? 'checked' : ''}
+                    onchange="toggleBotSelection(${bot.id}, this.checked)">
+            </td>
+            <td>${bot.id}</td>
+            <td><strong>${bot.name}</strong></td>
+            <td><span class="badge bg-info">${bot.exchange.toUpperCase()}</span></td>
+            <td>${bot.user_email || 'N/A'}</td>
+            <td>${bot.user_id}</td>
+            <td>
+                <span class="badge bg-${bot.is_active ? 'success' : 'secondary'}">
+                    ${bot.is_active ? 'ATIVO' : 'Inativo'}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-${bot.is_active ? 'warning' : 'success'}" 
+                    onclick="toggleBotStatus(${bot.id}, ${!bot.is_active})" 
+                    title="${bot.is_active ? 'Desativar' : 'Ativar'}">
+                    <i class="fas fa-${bot.is_active ? 'pause' : 'play'}"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteBot(${bot.id})" title="Deletar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+    
+    renderBotsPagination();
+}
+
+function renderBotsPagination() {
+    const totalPages = Math.ceil(allBots.length / botsPerPage);
+    const pagination = document.getElementById('pagination-bots');
+    
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = `<li class="page-item ${currentBotPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changeBotPage(${currentBotPage - 1}); return false;">Anterior</a>
+    </li>`;
+    
+    for (let i = 1; i <= totalPages; i++) {
+        html += `<li class="page-item ${i === currentBotPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changeBotPage(${i}); return false;">${i}</a>
+        </li>`;
+    }
+    
+    html += `<li class="page-item ${currentBotPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="changeBotPage(${currentBotPage + 1}); return false;">Próximo</a>
+    </li>`;
+    
+    pagination.innerHTML = html;
+}
+
+function changeBotPage(page) {
+    const totalPages = Math.ceil(allBots.length / botsPerPage);
+    if (page < 1 || page > totalPages) return;
+    currentBotPage = page;
+    renderBotsPage();
+}
+
+function toggleBotSelection(botId, checked) {
+    if (checked) {
+        selectedBots.add(botId);
+    } else {
+        selectedBots.delete(botId);
+    }
+    updateBotsCount();
+}
+
+function toggleSelectAllBots(checked) {
+    const start = (currentBotPage - 1) * botsPerPage;
+    const end = start + botsPerPage;
+    const botsOnPage = allBots.slice(start, end);
+    
+    botsOnPage.forEach(bot => {
+        if (checked) {
+            selectedBots.add(bot.id);
+        } else {
+            selectedBots.delete(bot.id);
+        }
+    });
+    
+    updateBotsCount();
+    renderBotsPage();
+}
+
+function updateBotsCount() {
+    document.getElementById('selected-bots-count').textContent = selectedBots.size;
+    document.getElementById('delete-selected-bots-btn').style.display = selectedBots.size > 0 ? 'inline-block' : 'none';
+}
+
+async function toggleBotStatus(botId, activate) {
+    try {
+        const response = await fetch(`/api/bots/${botId}/toggle`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({is_active: activate}),
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            alert(`Bot ${activate ? 'ativado' : 'desativado'}!`);
+            loadBots();
+        }
+    } catch (e) {
+        alert('Erro ao alterar status');
+    }
+}
+
+async function deleteSelectedBots() {
+    if (selectedBots.size === 0) return;
+    
+    if (!confirm(`Deletar ${selectedBots.size} bot(s)?`)) return;
+    
+    for (const botId of Array.from(selectedBots)) {
+        try {
+            await fetch(`/api/bots/${botId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    alert('Bots deletados!');
+    selectedBots.clear();
+    loadBots();
 }
 
 // Carregar pagamentos REAIS

@@ -129,8 +129,9 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
       return
     }
 
+    // ✅ VALIDAÇÃO: Mínimo 1 cripto
     if (symbols.length === 0) {
-      toast.error('Selecione pelo menos 1 criptomoeda')
+      toast.error('❌ Selecione pelo menos 1 criptomoeda!', { duration: 5000 })
       return
     }
 

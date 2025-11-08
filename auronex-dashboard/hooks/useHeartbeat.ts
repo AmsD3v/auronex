@@ -13,39 +13,27 @@ export function useHeartbeat() {
   useEffect(() => {
     if (!isAuthenticated) return
 
-    // ✅ Enviar heartbeat a cada 30s
+    // ✅ Enviar heartbeat a cada 30s (DESATIVADO - causava problemas)
     const interval = setInterval(async () => {
       try {
-        await fetch('/api/heartbeat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        })
+        // DESATIVADO TEMPORARIAMENTE
+        // await fetch('/api/heartbeat', ...)
+        console.log('[Heartbeat] Ping (desativado)')
       } catch (error) {
         console.error('[Heartbeat] Erro:', error)
       }
     }, 30000)  // 30 segundos
 
-    // ✅ Ao fechar navegador/aba - CRÍTICO!
+    // ✅ Ao fechar navegador (DESATIVADO - causava problemas de login)
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Enviar sinal SÍNCRONO para garantir execução
-      const xhr = new XMLHttpRequest()
-      xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'}/api/session/close`, false)  // false = síncrono!
-      xhr.setRequestHeader('Content-Type', 'application/json')
-      xhr.withCredentials = true
-      
-      try {
-        xhr.send()
-        console.log('[Heartbeat] Session closed on exit')
-      } catch (e) {
-        console.error('[Heartbeat] Failed to close session:', e)
-      }
+      // DESATIVADO TEMPORARIAMENTE
+      // const xhr = new XMLHttpRequest()
+      // xhr.open('POST', '/api/session/close', false)
+      // xhr.send()
+      console.log('[Heartbeat] Browser closing (auto-stop desativado)')
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
-    window.addEventListener('unload', handleBeforeUnload)  // Backup
 
     return () => {
       clearInterval(interval)
