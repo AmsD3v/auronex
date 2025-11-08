@@ -47,7 +47,7 @@ export function MetricsGrid({
     {
       label: 'Trades Hoje',
       value: tradesCount,
-      subtitle: `${Math.floor(tradesCount / 2)} bots operando`,
+      subtitle: `${activeBots} bot${activeBots !== 1 ? 's' : ''} operando`,  // ✅ CORRETO!
       icon: '📈',
       color: 'purple',
     },

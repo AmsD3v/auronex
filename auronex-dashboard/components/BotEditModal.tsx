@@ -26,10 +26,19 @@ interface BotEditModalProps {
  */
 export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
   const queryClient = useQueryClient()
-  const { limits } = useTradingStore()
+  const { limits, currency } = useTradingStore()
   const [mounted, setMounted] = useState(false)
+  
+  // ✅ Conversão
+  const COTACAO = 5.0
+  const toMoeda = (usd: number) => currency === 'BRL' ? usd * COTACAO : usd
+  const toUSD = (valor: number) => currency === 'BRL' ? valor / COTACAO : valor
+  const simbolo = currency === 'BRL' ? 'R$' : '$'
+  
+  // ✅ Saldo da exchange
+  const [saldoExchange, setSaldoExchange] = useState<number>(0)
+  const [carregandoSaldo, setCarregandoSaldo] = useState(false)
 
-  // Garantir renderização apenas no cliente (Portal precisa de document)
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -47,6 +56,22 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
   const [searchTerm, setSearchTerm] = useState('')  // ✅ Busca de cryptos
   const [botSpeed, setBotSpeed] = useState<'ultra' | 'hunter' | 'scalper'>('ultra')  // ✅ NOVO: Velocidade
 
+  // ✅ Buscar saldo quando exchange mudar
+  useEffect(() => {
+    if (isOpen && exchange) {
+      setCarregandoSaldo(true)
+      exchangeApi.getBalance(exchange.toLowerCase())
+        .then(balance => {
+          setSaldoExchange(balance.total_usd || 0)
+          setCarregandoSaldo(false)
+        })
+        .catch(() => {
+          setSaldoExchange(0)
+          setCarregandoSaldo(false)
+        })
+    }
+  }, [isOpen, exchange])
+
   // Resetar form quando bot mudar
   useEffect(() => {
     if (bot) {
@@ -55,7 +80,8 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       setSymbols(bot.symbols || [])
       setStrategy(bot.strategy)
       setTimeframe(bot.timeframe)
-      setCapital(bot.capital)
+      // ✅ Converter capital USD → moeda selecionada
+      setCapital(toMoeda(bot.capital))
       setStopLoss(bot.stop_loss_percent)
       setTakeProfit(bot.take_profit_percent)
       setIsTestnet(bot.is_testnet ?? true)
@@ -92,7 +118,7 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
   const maxSymbols = limits?.max_symbols_per_bot || 1
 
   // Handle submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // Validações
@@ -116,13 +142,31 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       return
     }
 
-    // ✅ NOVO: Converter velocidade para segundos
-    const speedMap = {
-      ultra: 5,
-      hunter: 3,
-      scalper: 1,
+    // ✅ VALIDAÇÃO (apenas se saldo > 0, senão testnet pode estar offline)
+    if (saldoExchange > 0) {
+      const capitalUSD = toUSD(capital)
+      
+      if (capitalUSD > saldoExchange) {
+        const saldoMoeda = toMoeda(saldoExchange)
+        toast.error(
+          `🚫 Capital maior que saldo!\n\n` +
+          `Saldo ${exchange.toUpperCase()}: ${simbolo} ${saldoMoeda.toFixed(2)}\n` +
+          `Você quer: ${simbolo} ${capital.toFixed(2)}`,
+          { duration: 8000 }
+        )
+        return
+      }
+    } else {
+      // Testnet offline - permitir mas avisar
+      console.warn(`[${exchange}] Testnet offline - validação ignorada`)
     }
+
+    // ✅ Converter velocidade
+    const speedMap = { ultra: 5, hunter: 3, scalper: 1 }
     const analysisInterval = speedMap[botSpeed]
+
+    // ✅ Converter capital para USD antes de salvar!
+    const capitalUSD = toUSD(capital)
 
     // Atualizar bot
     updateBotMutation.mutate({
@@ -131,12 +175,12 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       symbols,
       strategy,
       timeframe,
-      capital,
+      capital: capitalUSD,  // ✅ Sempre envia USD para backend
       stop_loss_percent: stopLoss,
       take_profit_percent: takeProfit,
       is_testnet: isTestnet,
-      analysis_interval: analysisInterval,  // ✅ NOVO!
-      hunter_mode: botSpeed !== 'ultra',  // ✅ NOVO!
+      analysis_interval: analysisInterval,
+      hunter_mode: botSpeed !== 'ultra',
     })
   }
 
@@ -432,7 +476,7 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
               {/* Capital */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">
-                  Capital (USD) *
+                  Capital ({currency}) *
                 </label>
                 <input
                   type="number"

@@ -23,15 +23,16 @@ interface BotCreateModalProps {
  */
 export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
   const queryClient = useQueryClient()
-  const { limits } = useTradingStore()
+  const { limits, currency } = useTradingStore()  // ✅ Moeda
   const [mounted, setMounted] = useState(false)
+  
+  // ✅ Conversão
+  const COTACAO = 5.0
+  const toMoeda = (usd: number) => currency === 'BRL' ? usd * COTACAO : usd
+  const toUSD = (valor: number) => currency === 'BRL' ? valor / COTACAO : valor
+  const simbolo = currency === 'BRL' ? 'R$' : '$'
 
-  // Garantir renderização apenas no cliente (Portal precisa de document)
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Form state
+  // ✅ Form state ANTES dos useEffects!
   const [name, setName] = useState('')
   const [exchange, setExchange] = useState('binance')
   const [symbols, setSymbols] = useState<string[]>([])
@@ -41,8 +42,31 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
   const [stopLoss, setStopLoss] = useState(2.0)
   const [takeProfit, setTakeProfit] = useState(4.0)
   const [isTestnet, setIsTestnet] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')  // ✅ Busca de cryptos
-  const [botSpeed, setBotSpeed] = useState<'ultra' | 'hunter' | 'scalper'>('ultra')  // ✅ NOVO: Velocidade
+  const [searchTerm, setSearchTerm] = useState('')
+  const [botSpeed, setBotSpeed] = useState<'ultra' | 'hunter' | 'scalper'>('ultra')
+  const [saldoExchange, setSaldoExchange] = useState<number>(0)
+  const [carregandoSaldo, setCarregandoSaldo] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  // ✅ Buscar saldo quando exchange mudar
+  useEffect(() => {
+    if (isOpen && exchange) {
+      setCarregandoSaldo(true)
+      exchangeApi.getBalance(exchange.toLowerCase())
+        .then(balance => {
+          setSaldoExchange(balance.total_usd || 0)
+          setCarregandoSaldo(false)
+        })
+        .catch(() => {
+          // Falhou - não bloqueia, apenas não mostra
+          setSaldoExchange(0)
+          setCarregandoSaldo(false)
+        })
+    }
+  }, [isOpen, exchange])
 
   // Buscar API Keys do usuário
   const { data: apiKeys } = useQuery({
@@ -96,7 +120,7 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
   const canCreateBot = limits?.can_create_bot ?? true
 
   // Handle submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {  // ✅ ASYNC!
     e.preventDefault()
 
     // Validações
@@ -125,12 +149,37 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
       return
     }
 
-    // ✅ NOVO: Converter velocidade
-    const speedMap = {
-      ultra: 5,
-      hunter: 3,
-      scalper: 1,
+    // ✅ VALIDAÇÃO CORRETA: Capital vs Saldo da MESMA exchange
+    try {
+      const balanceResponse = await exchangeApi.getBalance()  // TODO: Filtrar por exchange
+      const saldoExchangeUSD = balanceResponse.total_usd || 0
+      const saldoMoeda = toMoeda(saldoExchangeUSD)
+      const capitalUSD = toUSD(capital)
+      
+      // ✅ Validar capital DESTE bot vs saldo DESTA exchange
+      if (capitalUSD > saldoExchangeUSD) {
+        toast.error(
+          `🚫 Capital maior que saldo na ${exchange.toUpperCase()}!\n\n` +
+          `Saldo ${exchange.toUpperCase()}: ${simbolo} ${saldoMoeda.toFixed(2)}\n` +
+          `Você quer alocar: ${simbolo} ${capital.toFixed(2)}\n\n` +
+          `Reduza o capital ou adicione fundos nesta exchange.`,
+          { duration: 10000 }
+        )
+        return
+      }
+      
+      console.log(`[${exchange}] OK: ${simbolo}${capital} <= ${simbolo}${saldoMoeda.toFixed(2)}`)
+      
+    } catch (error) {
+      toast.error('Erro ao validar saldo.')
+      return
     }
+
+    // Converter velocidade
+    const speedMap = { ultra: 5, hunter: 3, scalper: 1 }
+
+    // ✅ Converter capital para USD antes de salvar!
+    const capitalUSD = toUSD(capital)
 
     // Criar bot
     createMutation.mutate({
@@ -139,13 +188,13 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
       symbols,
       strategy,
       timeframe,
-      capital,
+      capital: capitalUSD,  // ✅ Sempre USD para backend
       stop_loss_percent: stopLoss,
       take_profit_percent: takeProfit,
       is_testnet: isTestnet,
       is_active: false,
-      analysis_interval: speedMap[botSpeed],  // ✅ NOVO!
-      hunter_mode: botSpeed !== 'ultra',  // ✅ NOVO!
+      analysis_interval: speedMap[botSpeed],
+      hunter_mode: botSpeed !== 'ultra',
     })
   }
 
@@ -474,7 +523,7 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-300">
-                    Capital (USD) *
+                    Capital ({currency}) *
                   </label>
                   <input
                     type="number"

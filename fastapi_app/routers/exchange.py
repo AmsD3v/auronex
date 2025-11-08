@@ -12,17 +12,38 @@ router = APIRouter(prefix="/api/exchange", tags=["exchange"])
 
 @router.get("/balance")
 def get_balance(
+    exchange: str = Query(default=None),  # ✅ NOVO: Filtrar por exchange
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Buscar saldo"""
-    api_key = db.query(ExchangeAPIKey).filter(
-        ExchangeAPIKey.user_id == current_user.id,
-        ExchangeAPIKey.is_active == True
-    ).first()
+    """Buscar saldo (pode filtrar por exchange específica)"""
+    
+    # ✅ Se especificou exchange, buscar dela
+    if exchange:
+        api_key = db.query(ExchangeAPIKey).filter(
+            ExchangeAPIKey.user_id == current_user.id,
+            ExchangeAPIKey.exchange == exchange.lower(),
+            ExchangeAPIKey.is_active == True
+        ).first()
+    else:
+        # Primeira API Key ativa
+        api_key = db.query(ExchangeAPIKey).filter(
+            ExchangeAPIKey.user_id == current_user.id,
+            ExchangeAPIKey.is_active == True
+        ).first()
     
     if not api_key:
-        raise HTTPException(status_code=404, detail="API Key não configurada")
+        # ✅ Retornar saldo 0 ao invés de erro
+        return {
+            "usdt": 0,
+            "btc": 0,
+            "eth": 0,
+            "bnb": 0,
+            "total_usd": 0,
+            "exchange": exchange or "none",
+            "is_testnet": True,
+            "error": "API Key não configurada"
+        }
     
     try:
         import ccxt
@@ -62,7 +83,18 @@ def get_balance(
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"[Balance] ERRO: {str(e)[:200]}")
+        # ✅ Retornar saldo 0 ao invés de erro 500
+        return {
+            "usdt": 0,
+            "btc": 0,
+            "eth": 0,
+            "bnb": 0,
+            "total_usd": 0,
+            "exchange": exchange or "unknown",
+            "is_testnet": True,
+            "error": "Erro ao conectar exchange (Testnet offline?)"
+        }
 
 @router.get("/symbols")
 def get_symbols(

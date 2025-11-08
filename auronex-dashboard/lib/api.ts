@@ -222,10 +222,11 @@ export const botsApi = {
 
 export const exchangeApi = {
   /**
-   * Buscar saldo da exchange
+   * Buscar saldo da exchange (pode filtrar por exchange específica)
    */
-  getBalance: async (): Promise<Balance> => {
-    const response = await api.get<Balance>('/exchange/balance')
+  getBalance: async (exchange?: string): Promise<Balance> => {
+    const url = exchange ? `/exchange/balance?exchange=${exchange}` : '/exchange/balance'
+    const response = await api.get<Balance>(url)
     return response.data
   },
 

@@ -28,22 +28,24 @@ export function useHeartbeat() {
       }
     }, 30000)  // 30 segundos
 
-    // ✅ Ao fechar navegador/aba
-    const handleBeforeUnload = async () => {
-      // Enviar sinal de logout
+    // ✅ Ao fechar navegador/aba - CRÍTICO!
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Enviar sinal SÍNCRONO para garantir execução
+      const xhr = new XMLHttpRequest()
+      xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'}/api/session/close`, false)  // false = síncrono!
+      xhr.setRequestHeader('Content-Type', 'application/json')
+      xhr.withCredentials = true
+      
       try {
-        await fetch('/api/session/close', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          keepalive: true,  // ✅ Garante que envia mesmo fechando
-        })
+        xhr.send()
+        console.log('[Heartbeat] Session closed on exit')
       } catch (e) {
-        // Ignorar erro (navegador está fechando)
+        console.error('[Heartbeat] Failed to close session:', e)
       }
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
+    window.addEventListener('unload', handleBeforeUnload)  // Backup
 
     return () => {
       clearInterval(interval)

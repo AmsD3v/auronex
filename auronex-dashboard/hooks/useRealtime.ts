@@ -53,10 +53,11 @@ export function useRealtime() {
       setBalance(data)
       return data
     },
-    refetchInterval: REFETCH_INTERVALS.REALTIME, // 1 segundo!
+    refetchInterval: 3000, // ✅ 3 segundos (detecta trades rápido!)
     staleTime: 0,
     retry: 2,
-    enabled: isAuthenticated, // ✅ Só busca se autenticado!
+    enabled: isAuthenticated,
+    refetchOnWindowFocus: true  // ✅ Atualiza ao focar janela
   })
 
   // ========================================
@@ -68,9 +69,10 @@ export function useRealtime() {
   } = useQuery({
     queryKey: ['trades-today'],
     queryFn: tradesApi.getToday,
-    refetchInterval: REFETCH_INTERVALS.FAST,
+    refetchInterval: 3000,  // ✅ 3s para detectar novos trades!
     staleTime: 0,
-    enabled: isAuthenticated, // ✅ Só busca se autenticado!
+    enabled: isAuthenticated,
+    refetchOnWindowFocus: true
   })
 
   // ========================================

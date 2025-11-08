@@ -11,6 +11,7 @@ import { MetricsGrid } from '@/components/MetricsGrid'
 import { BalanceCard } from '@/components/BalanceCard'
 import { CapitalInvestidoCard } from '@/components/CapitalInvestidoCard'
 import { BotsGrid } from '@/components/BotsGrid'
+import { BotActivityLog } from '@/components/BotActivityLog'
 import { Top5Performance } from '@/components/Top5Performance'
 import { LogOut, RefreshCw } from 'lucide-react'
 
@@ -255,6 +256,11 @@ export default function DashboardPage() {
         {/* Top 5 Performance */}
         <div className="mt-8">
           <Top5Performance />
+        </div>
+
+        {/* Atividade dos Bots em Tempo Real - DEPOIS do Top 5 */}
+        <div className="mt-8">
+          <BotActivityLog />
         </div>
 
         {/* Links úteis */}

@@ -10,7 +10,7 @@ from ..database import get_db
 from ..models import User, BotConfiguration
 from ..auth import get_current_user
 
-router = APIRouter(prefix="/api", tags=["heartbeat"])
+router = APIRouter(tags=["heartbeat"])
 
 # Cache de heartbeats {user_id: timestamp}
 heartbeats = {}

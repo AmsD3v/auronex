@@ -87,6 +87,21 @@ class TradingBotEnterpriseAsync:
                 'hunter_mode': bot_config.hunter_mode if hasattr(bot_config, 'hunter_mode') else False,
             }
             
+            # ✅ LOG CRÍTICO - Mostrar O QUE FOI LIDO DO BANCO!
+            logger.info(f"")
+            logger.info(f"{'='*70}")
+            logger.info(f"📋 CONFIGURAÇÃO LIDA DO BANCO:")
+            logger.info(f"   Nome: {self.config['name']}")
+            logger.info(f"   Exchange: {self.config['exchange'].upper()}")
+            logger.info(f"   Cryptos: {self.config['symbols']}")
+            logger.info(f"   Estratégia: {self.config['strategy'].upper()}")  # ✅ MOSTRAR!
+            logger.info(f"   Timeframe: {self.config['timeframe']}")
+            logger.info(f"   Stop Loss: {self.config['stop_loss']*100:.1f}%")
+            logger.info(f"   Take Profit: {self.config['take_profit']*100:.1f}%")
+            logger.info(f"   Velocidade: {self.config['analysis_interval']}s")
+            logger.info(f"{'='*70}")
+            logger.info(f"")
+            
             db.close()
             return True
             
@@ -144,13 +159,23 @@ class TradingBotEnterpriseAsync:
             
             logger.info(f"✅ Exchange ASYNC conectada: {self.config['exchange']}")
             
-            # Estratégia (síncrona - análise é rápida)
+            # ✅ Estratégia baseada na config DO BANCO!
+            logger.info(f"📊 Carregando estratégia: {self.config['strategy']}")
+            
             if self.config['strategy'] == 'trend_following':
                 self.strategy = TrendFollowingStrategy()
+                logger.info("✅ Estratégia: Trend Following")
             elif self.config['strategy'] == 'scalping':
                 self.strategy = ScalpingStrategy()
+                logger.info("✅ Estratégia: Scalping")
+            elif self.config['strategy'] == 'arbitrage':
+                from bot.strategies.arbitrage import ArbitrageStrategy
+                self.strategy = ArbitrageStrategy()
+                logger.info("✅ Estratégia: Arbitrage")
             else:
+                # Default: Mean Reversion
                 self.strategy = MeanReversionStrategy()
+                logger.info("✅ Estratégia: Mean Reversion")
             
             logger.info(f"✅ Componentes ASYNC inicializados")
             return True
@@ -179,6 +204,40 @@ class TradingBotEnterpriseAsync:
         self.cache.set(cache_key, ohlcv)
         return ohlcv
     
+    def save_trade_to_db(self, symbol: str, side: str, price: float, quantity: float, signal: dict):
+        """✅ Salva trade no banco"""
+        try:
+            from fastapi_app.models import Trade
+            from datetime import datetime
+            
+            db = SessionLocal()
+            
+            trade = Trade(
+                user_id=self.config['user_id'],
+                bot_config_id=self.bot_config_id,  # ✅ Correto!
+                exchange=self.config['exchange'],
+                symbol=symbol,
+                side=side,
+                entry_price=price,
+                quantity=quantity,
+                entry_time=datetime.now(),
+                status='open'
+            )
+            
+            db.add(trade)
+            db.commit()
+            
+            logger.info(f"✅ Trade SALVO no banco! ID: {trade.id}")
+            logger.info(f"   User: {trade.user_id} | Bot: {trade.bot_config_id}")
+            logger.info(f"   {symbol} {side.upper()} @ ${price}")
+            
+            db.close()
+            
+        except Exception as e:
+            logger.error(f"❌ ERRO ao salvar trade: {e}")
+            import traceback
+            traceback.print_exc()
+    
     async def check_and_execute_trade_async(self, symbol: str) -> dict:
         """
         ✅ ASYNC - Análise e execução de trade
@@ -202,6 +261,32 @@ class TradingBotEnterpriseAsync:
             
             elapsed = time.time() - start
             logger.info(f"⚡ {symbol}: {signal['signal'].upper()} ({signal['confidence']:.0f}%) - {elapsed:.2f}s")
+            
+            # ✅ Se sinal de COMPRA (confidence >= 60% - mais fácil!)
+            if signal['signal'] == 'buy' and signal['confidence'] >= 60:
+                current_price = df['close'].iloc[-1]
+                quantity = 10 / current_price  # $10 worth
+                
+                logger.info(f"")
+                logger.info(f"{'🟢'*30}")
+                logger.info(f"OPORTUNIDADE DE COMPRA DETECTADA!")
+                logger.info(f"")
+                logger.info(f"   Symbol: {symbol}")
+                logger.info(f"   Preço: ${current_price:.8f}")
+                logger.info(f"   Quantidade: {quantity:.8f}")
+                logger.info(f"   Confiança: {signal['confidence']:.0f}%")
+                logger.info(f"   Motivo: {signal.get('reason', 'N/A')}")
+                logger.info(f"")
+                logger.info(f"{'🟢'*30}")
+                
+                # ✅ SALVAR TRADE NO BANCO
+                self.save_trade_to_db(symbol, 'buy', current_price, quantity, signal)
+                
+                logger.info(f"")
+                logger.info(f"✅✅✅ TRADE EXECUTADO E SALVO! ✅✅✅")
+                logger.info(f"")
+                
+                return {'symbol': symbol, 'action': 'buy', 'confidence': signal['confidence'], 'executed': True}
             
             return {'symbol': symbol, 'action': signal['signal'], 'confidence': signal['confidence']}
             
