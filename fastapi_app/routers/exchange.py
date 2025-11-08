@@ -53,8 +53,15 @@ def get_balance(
         for api_key in api_keys:
             try:
                 import ccxt
-                ccxt_map = {'mercadobitcoin': 'mercado', 'gateio': 'gate'}
+                ccxt_map = {
+                    'mercadobitcoin': 'mercado',
+                    'brasilbitcoin': None,  # Não suportada
+                    'gateio': 'gate'
+                }
                 ccxt_name = ccxt_map.get(api_key.exchange, api_key.exchange)
+                
+                if ccxt_name is None:
+                    continue  # Pular exchange não suportada
                 
                 api_dec = decrypt_data(api_key.api_key_encrypted)
                 secret_dec = decrypt_data(api_key.secret_key_encrypted)

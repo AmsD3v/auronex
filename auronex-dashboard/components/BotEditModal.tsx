@@ -139,11 +139,8 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
       return
     }
 
-    // ✅ VALIDAÇÃO 3: Capital > 0
-    if (!capital || capital <= 0) {
-      toast.error('❌ Investimento deve ser maior que zero!')
-      return
-    }
+    // ✅ VALIDAÇÃO 3: Se capital 0, permitir (sem saldo na exchange)
+    // Mas se > 0, deve validar
 
     // ✅ VALIDAÇÃO 4: BLOQUEAR se investimento > saldo
     if (saldoExchange > 0 && capitalUSD > saldoExchange) {
@@ -471,26 +468,23 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
               {/* Capital */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">
-                  Investimento ({currency}) * 
-                  <span className="ml-2 text-xs text-gray-400">
-                    | Saldo Corretora: {simbolo} {toMoeda(saldoExchange).toFixed(2)}
-                  </span>
+                  Investimento ({currency}) * | Saldo Corretora: {simbolo} {toMoeda(saldoExchange).toFixed(2)}
                 </label>
                 <input
                   type="number"
                   value={capital}
                   onChange={(e) => {
-                    const valor = Number(e.target.value)
+                    const valor = Number(e.target.value) || 0
                     setCapital(valor)
-                    if (saldoExchange > 0 && toUSD(valor) > saldoExchange) {
+                    if (saldoExchange > 0 && valor > 0 && toUSD(valor) > saldoExchange) {
                       toast.error(`⚠️ Investimento maior que saldo!`, { duration: 3000 })
                     }
                   }}
                   min="0"
                   step={currency === 'BRL' ? '10' : '1'}
-                  className={`input ${toUSD(capital) > saldoExchange && saldoExchange > 0 ? 'border-red-500' : ''}`}
+                  className={`input ${capital > 0 && toUSD(capital) > saldoExchange && saldoExchange > 0 ? 'border-red-500' : ''}`}
                 />
-                {toUSD(capital) > saldoExchange && saldoExchange > 0 && (
+                {capital > 0 && toUSD(capital) > saldoExchange && saldoExchange > 0 && (
                   <p className="mt-1 text-xs text-red-500">⚠️ Maior que saldo!</p>
                 )}
               </div>
