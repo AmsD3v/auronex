@@ -490,15 +490,24 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
                   onChange={(e) => {
                     const valor = parseFloat(e.target.value) || 0
                     setCapital(valor)
-                    if (saldoExchange > 0 && valor > 0 && toUSD(valor) > saldoExchange) {
-                      toast.error(`⚠️ Investimento maior que saldo!`, { duration: 3000 })
+                    
+                    // ✅ Validar SEMPRE (onChange)
+                    if (valor > 0) {
+                      if (saldoExchange === 0) {
+                        toast.error(`⚠️ Sem saldo na ${exchange.toUpperCase()}!`, { duration: 3000 })
+                      } else if (toUSD(valor) > saldoExchange) {
+                        toast.error(`⚠️ Investimento maior que saldo!`, { duration: 3000 })
+                      }
                     }
                   }}
                   min="0"
                   step="0.01"
-                  className={`input ${capital > 0 && toUSD(capital) > saldoExchange && saldoExchange > 0 ? 'border-red-500' : ''}`}
+                  className={`input ${capital > 0 && (saldoExchange === 0 || toUSD(capital) > saldoExchange) ? 'border-red-500' : ''}`}
                 />
-                {capital > 0 && toUSD(capital) > saldoExchange && saldoExchange > 0 && (
+                {capital > 0 && saldoExchange === 0 && (
+                  <p className="mt-1 text-xs text-red-500">⚠️ Sem saldo na corretora!</p>
+                )}
+                {capital > 0 && saldoExchange > 0 && toUSD(capital) > saldoExchange && (
                   <p className="mt-1 text-xs text-red-500">⚠️ Maior que saldo!</p>
                 )}
               </div>
