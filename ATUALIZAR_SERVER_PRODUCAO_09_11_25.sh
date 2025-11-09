@@ -2,20 +2,25 @@
 # ====================================
 # ATUALIZAR SERVIDOR PRODUCAO
 # Data: 09/11/2025
-# Para tudo, atualiza, rebuild, reinicia
+# COMPLETO: cd + pull + para + atualiza + reinicia
 # ====================================
-
-PROJETO="/home/serverhome/auronex"
-cd "$PROJETO" || exit 1
 
 echo "============================================================"
 echo "  ATUALIZANDO SERVIDOR PRODUCAO - 09/11/2025"
 echo "============================================================"
 echo ""
 
-# Ver versao antes
-VERSAO_ANTES=$(cat VERSION.txt 2>/dev/null || echo "Desconhecida")
-echo "Versao atual: $VERSAO_ANTES"
+# 0. IR PARA PASTA E PULL
+echo "[0/11] Navegando e puxando codigo..."
+cd /home/serverhome/auronex || exit 1
+git stash 2>/dev/null
+git pull origin main
+echo "OK"
+echo ""
+
+# Ver versao
+VERSAO=$(cat VERSION.txt 2>/dev/null || echo "Desconhecida")
+echo "Versao: $VERSAO"
 echo ""
 
 # 1. PARAR TUDO
