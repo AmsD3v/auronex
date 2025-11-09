@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useTradingStore } from '@/stores/tradingStore'
 import { formatCurrency } from '@/lib/utils'
 import { TrendingUp } from 'lucide-react'
@@ -11,14 +12,30 @@ interface CapitalInvestidoCardProps {
 }
 
 /**
- * Card: Capital Investido
- * Soma capital de TODOS os bots ATIVOS
+ * Card: Capital Investido + Lucro Líquido
+ * Soma capital de bots ATIVOS + mostra ganhos/perdas
  */
 export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardProps) {
+  const [lucroTotal, setLucroTotal] = useState(0)
+  
+  // ✅ Buscar lucro/perda total
+  useEffect(() => {
+    fetch('/api/trades/stats', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => {
+        setLucroTotal(data.total_profit || 0)
+      })
+      .catch(() => setLucroTotal(0))
+  }, [])
+  
   // ✅ Somar capital APENAS dos bots ATIVOS
   const capitalInvestido = bots
     .filter(bot => bot.is_active)
     .reduce((sum, bot) => sum + (bot.capital || 0), 0)
+  
+  // Conversão
+  const COTACAO = 5.0
+  const lucroMoeda = currency === 'BRL' ? lucroTotal * COTACAO : lucroTotal
   
   // Número de bots ativos
   const botsAtivos = bots.filter(bot => bot.is_active).length
@@ -27,18 +44,26 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
     <div className="card p-6">
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-400">💰 Capital Investido</p>
-        <TrendingUp className="h-5 w-5 text-accent-500" />
-      </div>
-
-      {/* Valor total investido */}
-      <div className="mb-6">
-        <p className="text-4xl font-light text-white">
-          {formatCurrency(capitalInvestido, currency)}
-        </p>
-        <p className="mt-1 text-xs text-gray-500">
-          {botsAtivos} bot{botsAtivos !== 1 ? 's' : ''} ativo{botsAtivos !== 1 ? 's' : ''}
-        </p>
+        <div className="flex-1">
+          <p className="text-sm text-gray-400">💰 Capital Investido</p>
+          <p className="text-4xl font-light text-white mt-2">
+            {formatCurrency(capitalInvestido, currency)}
+          </p>
+          <p className="mt-1 text-xs text-gray-500">
+            {botsAtivos} bot{botsAtivos !== 1 ? 's' : ''} ativo{botsAtivos !== 1 ? 's' : ''}
+          </p>
+        </div>
+        
+        {/* Lucro Líquido */}
+        <div className="text-right">
+          <p className="text-xs text-gray-400 mb-1">Lucro Líquido</p>
+          <p className={`text-2xl font-bold ${lucroMoeda >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
+            {lucroMoeda >= 0 ? '+' : ''}{formatCurrency(Math.abs(lucroMoeda), currency)}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            {lucroMoeda >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroMoeda / capitalInvestido) * 100).toFixed(1) : '0.0'}%
+          </p>
+        </div>
       </div>
 
       {/* Detalhes por bot ativo */}

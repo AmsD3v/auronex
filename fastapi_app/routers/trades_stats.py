@@ -57,11 +57,15 @@ def get_trade_stats(
     
     win_rate = (win_trades / total_trades * 100) if total_trades > 0 else 0
     
+    # ✅ Calcular lucro/perda TOTAL
+    total_profit = sum(t.profit_loss for t in trades if t.profit_loss) or 0
+    
     return {
         "total_trades": total_trades,
         "win_trades": win_trades,
         "loss_trades": loss_trades,
-        "win_rate": round(win_rate, 2)
+        "win_rate": round(win_rate, 2),
+        "total_profit": round(total_profit, 2)  # ✅ Lucro líquido!
     }
 
 
