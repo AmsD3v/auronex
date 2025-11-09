@@ -21,7 +21,28 @@ interface BotActivity {
 export function BotActivityLog() {
   const [activities, setActivities] = useState<BotActivity[]>([])
 
-  // Buscar atividades dos bots (mock por enquanto)
+  // ✅ Buscar atividades REAIS dos bots
+  useEffect(() => {
+    const loadActivities = async () => {
+      try {
+        const response = await fetch('/api/bot-activity/recent', { credentials: 'include' })
+        if (response.ok) {
+          const data = await response.json()
+          setActivities(data)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar atividades:', error)
+      }
+    }
+    
+    loadActivities()
+    
+    // Atualizar a cada 5s
+    const interval = setInterval(loadActivities, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Mock para exibir quando não houver dados
   const mockActivities: BotActivity[] = [
     {
       id: 1,
@@ -44,25 +65,7 @@ export function BotActivityLog() {
     },
   ]
 
-  useEffect(() => {
-    // Atualizar atividades (mock)
-    const interval = setInterval(() => {
-      const newActivity: BotActivity = {
-        id: Date.now(),
-        bot_id: 38,
-        bot_name: 'Bot Binance',
-        timestamp: new Date().toISOString(),
-        action: Math.random() > 0.7 ? 'buy' : 'analyzing',
-        symbol: Math.random() > 0.5 ? 'SOL/USDT' : 'PEPE/USDT',
-        price: Math.random() * 200,
-        reason: Math.random() > 0.7 ? 'Oportunidade detectada!' : 'Analisando mercado...'
-      }
-      
-      setActivities(prev => [newActivity, ...prev].slice(0, 20))  // Últimas 20
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [])
+  // Mock removido - usa dados reais agora!
 
   const getActionIcon = (action: string) => {
     switch (action) {
