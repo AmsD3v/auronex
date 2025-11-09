@@ -157,10 +157,13 @@ def toggle_bot(
                 # Sempre propagar erro de validação
                 raise
             except Exception as e:
-                # ✅ Se Testnet offline, PERMITIR mesmo assim (modo teste)
-                print(f"⚠️ Validação falhou: {str(e)[:100]}")
-                print(f"⚠️ PERMITINDO ativação (modo testnet)")
-                # Não bloqueia em testnet
+                # ✅ Se exchange não funcionar, BLOQUEAR!
+                print(f"❌ BLOQUEADO: Não foi possível validar saldo")
+                print(f"❌ Erro: {str(e)[:150]}")
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Não foi possível validar saldo da {bot.exchange.upper()}. Verifique se a exchange está online e tente novamente."
+                )
         
         # Atualizar status
         bot.is_active = data.get('is_active', False)
