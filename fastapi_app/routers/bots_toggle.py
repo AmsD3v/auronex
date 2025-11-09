@@ -65,6 +65,13 @@ def toggle_bot(
             print(f"[{bot.exchange.upper()}] Este bot: ${capital_este_bot:.2f}")
             print(f"[{bot.exchange.upper()}] TOTAL nesta exchange: ${capital_total_nesta_exchange:.2f}")
             
+            # ✅ BLOQUEAR se capital = 0
+            if capital_este_bot == 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Bot sem capital definido! Configure um valor de investimento antes de ativar."
+                )
+            
             # 3. Validar saldo
             from ..utils.encryption import decrypt_data
             import ccxt

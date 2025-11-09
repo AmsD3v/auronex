@@ -1015,14 +1015,20 @@ async function loadBots() {
         
         if (response.ok) {
             const data = await response.json();
+            console.log('[Admin Bots] Data:', data);
             allBots = data.bots || [];
+            console.log('[Admin Bots] Total bots:', allBots.length);
             currentBotPage = 1;
             selectedBots.clear();
             updateBotsCount();
             renderBotsPage();
+        } else {
+            console.error('[Admin Bots] Erro HTTP:', response.status);
+            document.getElementById('bots-table').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Erro ' + response.status + '</td></tr>';
         }
     } catch (error) {
-        document.getElementById('bots-table').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Erro</td></tr>';
+        console.error('[Admin Bots] Exception:', error);
+        document.getElementById('bots-table').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Erro: ' + error + '</td></tr>';
     }
 }
 
