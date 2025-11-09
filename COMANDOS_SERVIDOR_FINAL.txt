@@ -1,0 +1,33 @@
+════════════════════════════════════════════════════════════
+ COMANDOS SERVIDOR - ATUALIZAR E CORRIGIR
+════════════════════════════════════════════════════════════
+
+cd /home/serverhome/auronex
+
+# 1. Parar TUDO
+pm2 stop all
+pm2 delete all
+
+# 2. Pull código NOVO
+git stash
+git pull origin main
+
+# 3. Build React
+cd auronex-dashboard
+rm -rf .next
+npm run build
+
+# 4. Iniciar
+cd ..
+source venv/bin/activate
+
+pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app
+pm2 start "npm --prefix auronex-dashboard start" --name auronex-dashboard
+
+nohup cloudflared tunnel run auronex > logs/tunnel.log 2>&1 &
+
+pm2 save
+pm2 status
+
+════════════════════════════════════════════════════════════
+

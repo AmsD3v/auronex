@@ -89,11 +89,11 @@ app.include_router(payments.router)
 app.include_router(payments_public.router)  # Pagamentos públicos (PRODUÇÃO)
 app.include_router(payment_check.router)  # Verificação automática
 app.include_router(payment_verify.router)  # Verificação de pagamento (localhost)
-app.include_router(admin_api.router)  # APIs do Admin Panel
+app.include_router(admin_api.router)  # APIs do Admin Panel (inclui /bots/all)
 app.include_router(admin_payments.router)  # Pagamentos do Admin
 app.include_router(admin_delete.router)  # Deletar usuário completo
 app.include_router(admin_edit_user.router)  # Editar usuário
-app.include_router(admin_bots.router)  # Admin Bots ✅
+# app.include_router(admin_bots.router)  # Movido para admin_api.router
 
 # Incluir router de páginas HTML (será criado)
 try:
