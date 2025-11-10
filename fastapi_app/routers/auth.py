@@ -71,7 +71,7 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     # Criar token
     access_token = create_access_token(data={"user_id": user.id, "email": user.email})
     
-    # ✅ Retornar USER também (Dashboard precisa!)
+    # ✅ Retornar USER com dados completos
     return {
         "access_token": access_token,
         "refresh_token": access_token,
@@ -79,10 +79,10 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
         "user": {
             "id": user.id,
             "email": user.email,
-            "first_name": user.first_name or "",
+            "first_name": user.first_name or user.email.split('@')[0],  # ✅ Usar email se nome vazio
             "last_name": user.last_name or "",
             "is_active": user.is_active,
-            "subscription": None  # TODO: Buscar subscription
+            "subscription": None
         }
     }
 

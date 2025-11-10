@@ -329,6 +329,21 @@ class TradingBotEnterpriseAsync:
             elapsed = time.time() - start
             logger.info(f"⚡ {symbol}: {signal['signal'].upper()} ({signal['confidence']:.0f}%) - {elapsed:.2f}s")
             
+            # ✅ ANTES DE COMPRAR: Verificar se JÁ TEM posição aberta!
+            from fastapi_app.models import Trade
+            db_check = SessionLocal()
+            posicao_aberta = db_check.query(Trade).filter(
+                Trade.user_id == self.config['user_id'],
+                Trade.bot_config_id == self.bot_config_id,
+                Trade.symbol == symbol,
+                Trade.status == 'open'
+            ).first()
+            db_check.close()
+            
+            if posicao_aberta:
+                logger.info(f"⏸️ {symbol}: Posição JÁ ABERTA - aguardando fechar")
+                return {'symbol': symbol, 'action': 'hold', 'reason': 'Posição já aberta'}
+            
             # ✅ Se sinal de COMPRA (confidence >= 50% - MAIS TRADES!)
             if signal['signal'] == 'buy' and signal['confidence'] >= 50:
                 current_price = df['close'].iloc[-1]
