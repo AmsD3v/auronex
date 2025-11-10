@@ -238,6 +238,69 @@ class TradingBotEnterpriseAsync:
             import traceback
             traceback.print_exc()
     
+    async def check_open_positions_async(self, symbol: str, current_price: float):
+        """✅ Verificar posições abertas e fechar se atingiu stop/take"""
+        try:
+            from fastapi_app.models import Trade
+            from datetime import datetime
+            
+            db = SessionLocal()
+            
+            # Buscar posição aberta
+            trade = db.query(Trade).filter(
+                Trade.user_id == self.config['user_id'],
+                Trade.bot_config_id == self.bot_config_id,
+                Trade.symbol == symbol,
+                Trade.status == 'open'
+            ).order_by(Trade.id.desc()).first()
+            
+            if not trade:
+                db.close()
+                return False  # Sem posição aberta
+            
+            entry_price = float(trade.entry_price)
+            variacao_percent = ((current_price - entry_price) / entry_price) * 100
+            
+            fechar = False
+            motivo = ""
+            
+            # Take Profit
+            if variacao_percent >= (self.config['take_profit'] * 100):
+                fechar = True
+                motivo = f"Take Profit ({variacao_percent:.1f}%)"
+            
+            # Stop Loss
+            elif variacao_percent <= -(self.config['stop_loss'] * 100):
+                fechar = True
+                motivo = f"Stop Loss ({variacao_percent:.1f}%)"
+            
+            if fechar:
+                # Fechar posição
+                trade.exit_price = current_price
+                trade.exit_time = datetime.now()
+                trade.profit_loss = (current_price - entry_price) * float(trade.quantity)
+                trade.profit_loss_percent = variacao_percent
+                trade.status = 'closed'
+                
+                db.commit()
+                
+                logger.info(f"")
+                logger.info(f"{'🔴'*30}")
+                logger.info(f"POSIÇÃO FECHADA!")
+                logger.info(f"   Symbol: {symbol}")
+                logger.info(f"   Motivo: {motivo}")
+                logger.info(f"   Entry: ${entry_price:.8f}")
+                logger.info(f"   Exit: ${current_price:.8f}")
+                logger.info(f"   Lucro: ${trade.profit_loss:.2f}")
+                logger.info(f"{'🔴'*30}")
+            
+            db.close()
+            return fechar
+            
+        except Exception as e:
+            logger.error(f"❌ Erro verificar posição: {e}")
+            return False
+    
     async def check_and_execute_trade_async(self, symbol: str) -> dict:
         """
         ✅ ASYNC - Análise e execução de trade
@@ -255,6 +318,10 @@ class TradingBotEnterpriseAsync:
             
             # Converter para DataFrame
             df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+            current_price = df['close'].iloc[-1]
+            
+            # ✅ PRIMEIRO: Verificar posições abertas!
+            await self.check_open_positions_async(symbol, current_price)
             
             # Analisar (síncrono - rápido)
             signal = self.strategy.analyze(df)
