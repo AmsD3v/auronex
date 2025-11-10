@@ -75,6 +75,42 @@ async def count_bots(db: Session = Depends(get_db)):
     except Exception as e:
         return {"active": 0, "error": str(e)}
 
+@router.get("/bots/all")
+def get_all_bots(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Buscar TODOS os bots (admin only)"""
+    
+    print(f"[Admin Bots] User: {current_user.email}")
+    print(f"[Admin Bots] is_superuser: {current_user.is_superuser}")
+    
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=403, detail="Apenas admins")
+    
+    bots = db.query(BotConfiguration).all()
+    
+    print(f"[Admin Bots] Total: {len(bots)}")
+    
+    result = []
+    for bot in bots:
+        user = db.query(User).filter(User.id == bot.user_id).first()
+        
+        result.append({
+            "id": bot.id,
+            "name": bot.name,
+            "exchange": bot.exchange,
+            "symbols": bot.symbols if isinstance(bot.symbols, list) else [bot.symbols],
+            "strategy": bot.strategy,
+            "capital": float(bot.capital) if bot.capital else 0,
+            "is_active": bot.is_active,
+            "user_id": bot.user_id,
+            "user_email": user.email if user else "N/A",
+            "user_name": f"{user.first_name} {user.last_name}" if user else "N/A"
+        })
+    
+    return {"bots": result, "total": len(result)}
+
 # ========================================
 # USUÁRIOS
 # ========================================
