@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light mode styles */
+.light {
+  --color-dark-900: #ffffff;
+  --color-dark-800: #f9fafb;
+  --color-dark-700: #f3f4f6;
+}
+
+.light .bg-dark-900 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-dark-800 {
+  background-color: #f9fafb !important;
+}
+
+.light .text-white {
+  color: #111827 !important;
+}
+
+.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+.light .card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
 /* ========================================
    RESET E BASE
    ======================================== */
