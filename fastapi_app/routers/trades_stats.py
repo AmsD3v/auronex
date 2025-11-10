@@ -57,8 +57,14 @@ def get_trade_stats(
     
     win_rate = (win_trades / total_trades * 100) if total_trades > 0 else 0
     
-    # ✅ Calcular lucro/perda TOTAL
-    total_profit = sum(t.profit_loss for t in trades if t.profit_loss) or 0
+    # ✅ Calcular lucro/perda TOTAL (verificar None e Decimal)
+    total_profit = 0
+    for t in trades:
+        if t.profit_loss is not None:
+            try:
+                total_profit += float(t.profit_loss)
+            except:
+                pass
     
     return {
         "total_trades": total_trades,
