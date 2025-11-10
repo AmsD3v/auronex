@@ -41,12 +41,15 @@ python3 --version  # Confirmar 3.10+
 
 ---
 
-### **4. INSTALAR NODE.JS 18+**
+### **4. INSTALAR NODE.JS 20 LTS**
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Node.js 20 LTS (suporte até 2026)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
-node --version  # Confirmar 18+
+
+# Verificar
+node --version  # Deve mostrar v20.x.x
 npm --version
 ```
 
