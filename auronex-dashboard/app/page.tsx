@@ -13,6 +13,7 @@ import { CapitalInvestidoCard } from '@/components/CapitalInvestidoCard'
 import { BotsGrid } from '@/components/BotsGrid'
 import { BotActivityLog } from '@/components/BotActivityLog'
 import { Top5Performance } from '@/components/Top5Performance'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import { LogOut, RefreshCw } from 'lucide-react'
 
 /**

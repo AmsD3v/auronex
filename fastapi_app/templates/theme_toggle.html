@@ -1,0 +1,61 @@
+<!-- Theme Toggle para FastAPI Admin -->
+<style>
+/* Light mode */
+body.light-mode {
+    background-color: #f9fafb !important;
+    color: #111827 !important;
+}
+
+body.light-mode .bg-dark {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+}
+
+body.light-mode .text-white {
+    color: #111827 !important;
+}
+
+body.light-mode .card {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .table-dark {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+}
+</style>
+
+<button id="theme-toggle" class="btn btn-sm btn-outline-secondary" onclick="toggleTheme()">
+    <i class="fas fa-moon" id="theme-icon"></i>
+</button>
+
+<script>
+function toggleTheme() {
+    const body = document.body;
+    const icon = document.getElementById('theme-icon');
+    
+    body.classList.toggle('light-mode');
+    
+    if (body.classList.contains('light-mode')) {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'light');
+    } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+
+// Carregar tema salvo
+document.addEventListener('DOMContentLoaded', () => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('theme-icon').classList.remove('fa-moon');
+        document.getElementById('theme-icon').classList.add('fa-sun');
+    }
+});
+</script>
+
