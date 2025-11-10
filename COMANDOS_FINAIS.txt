@@ -1,0 +1,59 @@
+════════════════════════════════════════════════════════════
+ COMANDOS FINAIS - TESTAR SISTEMA
+════════════════════════════════════════════════════════════
+
+LOCAL:
+------
+Execute: TESTAR_SERVER_LOCAL_09_11_25.bat
+
+Aguarde 3 janelas CMD abrirem (~30s)
+
+Teste:
+1. http://localhost:8501 (Dashboard React)
+2. http://localhost:8001/admin/ (Admin Panel)
+
+Login Admin:
+  Email: admin@robotrader.com
+  Senha: admin123
+
+Ir em: Bots
+Deve carregar lista de 17 bots!
+
+════════════════════════════════════════════════════════════
+
+PRODUÇÃO:
+---------
+No servidor SSH:
+
+./ATUALIZAR_SERVER_PRODUCAO_09_11_25.sh
+
+Aguarde ~5-8 min
+
+URLs:
+  https://app.auronex.com.br/
+  https://app.auronex.com.br/admin/
+
+════════════════════════════════════════════════════════════
+
+BOT RODANDO HOJE À NOITE:
+-------------------------
+- Binance
+- 3 cryptos: PEPE, SHIB, SOL
+- Capital total Binance
+- Confidence 50%
+
+Amanhã:
+  - Ver logs
+  - 31 posições devem fechar
+  - Lucros aparecem!
+
+════════════════════════════════════════════════════════════
+
+VERSÃO ATUAL: 1.0.01b
+PRÓXIMA: 1.0.02b (automático)
+
+COMMITS HOJE: 30+
+TOKENS: 393k/1M (60.7% disponível)
+
+════════════════════════════════════════════════════════════
+
