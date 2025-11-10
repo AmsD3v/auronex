@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
@@ -23,7 +24,21 @@ export function BalanceCard({
   currency = 'USD',
   className = '',
 }: BalanceCardProps) {
-  const isPositive = (balance.change_24h || 0) >= 0
+  const [lucroTrades, setLucroTrades] = useState(0)
+  
+  // ✅ Buscar lucro dos trades
+  useEffect(() => {
+    fetch('/api/trades/stats', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => setLucroTrades(data.total_profit || 0))
+      .catch(() => setLucroTrades(0))
+  }, [balance])
+  
+  // ✅ Saldo Total = Exchange + Lucro Trades
+  const saldoExchange = balance?.total_usd || 0
+  const saldoComTrades = saldoExchange + lucroTrades
+  
+  const isPositive = lucroTrades >= 0
   const conversionRate = currency === 'BRL' ? 5.0 : 1.0
   const symbol = currency === 'BRL' ? 'R$' : '$'
 
@@ -45,17 +60,17 @@ export function BalanceCard({
           </h3>
         </div>
 
-        {/* Balance */}
+        {/* Balance - COM LUCRO DOS TRADES! */}
         <div className="mb-4 flex items-baseline gap-3">
           <span className="text-5xl font-light text-white tabular-nums">
             {symbol}{' '}
-            {(balance.total_usd * conversionRate).toLocaleString('en-US', {
+            {(saldoComTrades * conversionRate).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
           </span>
 
-          {balance.change_24h !== undefined && (
+          {lucroTrades !== 0 && (
             <span
               className={cn(
                 'flex items-center gap-1 text-sm font-medium',
@@ -67,7 +82,7 @@ export function BalanceCard({
               ) : (
                 <TrendingDown className="h-4 w-4" />
               )}
-              {Math.abs(balance.change_24h).toFixed(2)}%
+              {Math.abs(lucroTrades * conversionRate).toFixed(2)}
             </span>
           )}
         </div>
