@@ -88,6 +88,10 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/me/", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
-    """Obter usuário atual"""
+    """Obter usuário atual com dados completos"""
+    # ✅ Se first_name vazio, usar email
+    if not current_user.first_name or current_user.first_name.strip() == '':
+        current_user.first_name = current_user.email.split('@')[0]
+    
     return current_user
 
