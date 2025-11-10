@@ -16,10 +16,15 @@ pm2 stop all
 pm2 delete all
 sleep 2
 
-# 2. PULL FORCADO
-echo "[2/7] Pull GitHub..."
+# 2. BACKUP BANCO + PULL
+echo "[2/7] Backup banco + Pull..."
+cp db.sqlite3 db.sqlite3.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null
 git fetch --all
 git reset --hard origin/main
+# ✅ RESTAURAR BANCO (NUNCA sobrescrever!)
+if [ -f db.sqlite3.backup.* ]; then
+    mv db.sqlite3.backup.* db.sqlite3 2>/dev/null
+fi
 echo "Versao: $(cat VERSION.txt 2>/dev/null || echo '?')"
 
 # 3. LIMPAR REACT

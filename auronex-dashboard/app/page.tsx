@@ -94,7 +94,9 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <p className="text-sm font-medium text-white">
-                  {user?.first_name || user?.email || 'Usuário'}
+                  {user?.first_name && user.first_name !== user.email?.split('@')[0] 
+                    ? user.first_name 
+                    : user?.email?.split('@')[0] || 'Usuário'}
                 </p>
                 <div className="flex items-center gap-2">
                   <p className="text-xs text-gray-400">

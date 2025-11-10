@@ -121,7 +121,7 @@ export function BotActivityLog() {
       {/* Lista de atividades */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
         <AnimatePresence mode="popLayout">
-          {(activities.length > 0 ? activities : mockActivities).map((activity) => (
+          {activities.length > 0 ? activities.map((activity) => (
             <motion.div
               key={activity.id}
               initial={{ opacity: 0, x: -20 }}
@@ -193,7 +193,12 @@ export function BotActivityLog() {
                 </div>
               </div>
             </motion.div>
-          ))}
+          )) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Nenhuma atividade ainda</p>
+              <p className="text-xs text-gray-600 mt-1">Ative um bot para ver atividades</p>
+            </div>
+          )}
         </AnimatePresence>
       </div>
 
