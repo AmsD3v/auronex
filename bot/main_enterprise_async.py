@@ -262,8 +262,8 @@ class TradingBotEnterpriseAsync:
             elapsed = time.time() - start
             logger.info(f"⚡ {symbol}: {signal['signal'].upper()} ({signal['confidence']:.0f}%) - {elapsed:.2f}s")
             
-            # ✅ Se sinal de COMPRA (confidence >= 60% - mais fácil!)
-            if signal['signal'] == 'buy' and signal['confidence'] >= 60:
+            # ✅ Se sinal de COMPRA (confidence >= 50% - MAIS TRADES!)
+            if signal['signal'] == 'buy' and signal['confidence'] >= 50:
                 current_price = df['close'].iloc[-1]
                 quantity = 10 / current_price  # $10 worth
                 
