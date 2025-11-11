@@ -1197,38 +1197,42 @@ async function deleteBot(botId) {
 
 async function deleteSelectedBots() {
     if (selectedBots.size === 0) {
-        alert('Selecione pelo menos 1 bot!');
+        showAlert('Selecione pelo menos 1 bot!', 'warning');
         return;
     }
     
-    if (!confirm(`Deletar ${selectedBots.size} bot(s) selecionado(s)?`)) return;
-    
-    let sucesso = 0;
-    let erro = 0;
-    
-    for (const botId of Array.from(selectedBots)) {
-        try {
-            console.log(`[Delete] Bot ${botId}`);
-            const response = await fetch(`/api/bots/${botId}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
+    showConfirmModal(
+        'Deletar Bots',
+        `Deletar ${selectedBots.size} bot(s) selecionado(s)?`,
+        async () => {
+            let sucesso = 0;
+            let erro = 0;
             
-            if (response.ok) {
-                sucesso++;
-            } else {
-                erro++;
+            for (const botId of Array.from(selectedBots)) {
+                try {
+                    console.log(`[Delete] Bot ${botId}`);
+                    const response = await fetch(`/api/admin/bot-actions/${botId}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        sucesso++;
+                    } else {
+                        erro++;
+                    }
+                } catch (e) {
+                    console.error(e);
+                    erro++;
+                }
             }
-        } catch (e) {
-            console.error(e);
-            erro++;
+            
+            showAlert(`${sucesso} bot(s) deletado(s)! ${erro > 0 ? erro + ' erro(s)' : ''}`, sucesso > 0 ? 'success' : 'danger');
+            selectedBots.clear();
+            document.getElementById('select-all-bots').checked = false;
+            loadBots();
         }
-    }
-    
-    alert(`${sucesso} bot(s) deletado(s)! ${erro > 0 ? erro + ' erro(s)' : ''}`);
-    selectedBots.clear();
-    document.getElementById('select-all-bots').checked = false;
-    loadBots();
+    );
 }
 
 function filterBots(search) {
