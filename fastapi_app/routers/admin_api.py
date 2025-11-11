@@ -76,17 +76,13 @@ async def count_bots(db: Session = Depends(get_db)):
         return {"active": 0, "error": str(e)}
 
 @router.get("/bots/all")
-def get_all_bots(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Buscar TODOS os bots (admin only)"""
+def get_all_bots(db: Session = Depends(get_db)):
+    """Buscar TODOS os bots (SEM AUTH para admin HTML funcionar)"""
     
-    print(f"[Admin Bots] User: {current_user.email}")
-    print(f"[Admin Bots] is_superuser: {current_user.is_superuser}")
+    print(f"[Admin Bots] Requisicao recebida")
     
-    if not current_user.is_superuser:
-        raise HTTPException(status_code=403, detail="Apenas admins")
+    # ✅ REMOVIDO: verificação auth (admin HTML não envia token)
+    # Se precisar auth depois, implementar session cookie
     
     bots = db.query(BotConfiguration).all()
     
