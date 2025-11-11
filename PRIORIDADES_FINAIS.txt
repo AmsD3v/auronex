@@ -1,0 +1,64 @@
+════════════════════════════════════════════════════════════
+ PRIORIDADES FINAIS - ORDEM DE EXECUCAO
+════════════════════════════════════════════════════════════
+
+🔥 URGENTE (Fazer AGORA):
+------------------------
+
+1. BOT CONTROLLER RODANDO
+   Status: PARADO (fechou CMDs)
+   Acao: Iniciar e deixar rodando
+   Comando: python -m bot.bot_controller
+   Tempo: 1 min
+
+2. TESTAR BOT FAZENDO TRADES
+   Status: Aguardando controller
+   Acao: Ver logs, confirmar trades salvam
+   Tempo: 5 min (observar)
+
+3. ADMIN BOTS CARREGAR
+   Status: Endpoint existe mas não renderiza
+   Acao: Debug F12 console, ver erro
+   Tempo: 10 min
+
+4. CARD ATIVIDADES MOSTRAR DADOS
+   Status: API retorna mas frontend vazio
+   Acao: Verificar se fetch funciona
+   Tempo: 5 min
+
+════════════════════════════════════════════════════════════
+
+📊 IMPORTANTE (Depois):
+-----------------------
+
+5. NOME USUARIO CORRETO
+   Status: Mostra "Usuario" mesmo logado
+   Acao: Verificar authStore user data
+   Tempo: 5 min
+
+6. VALIDACOES PRODUCAO
+   Status: Local funciona, prod não
+   Acao: Deploy + restart servidor
+   Tempo: 10 min
+
+7. SALDO TOTAL COM LUCRO
+   Status: Codigo pronto, testar
+   Acao: Fechar trades, ver se soma
+   Tempo: 5 min (teste)
+
+════════════════════════════════════════════════════════════
+
+🔧 OPCIONAL (Se sobrar tempo):
+-------------------------------
+
+8. Login unico
+9. Brasil Bitcoin remover
+10. Theme toggle FastAPI
+
+════════════════════════════════════════════════════════════
+
+EXECUTAR NESTA ORDEM!
+Tokens: 415k/1M (58.5% disponivel)
+
+════════════════════════════════════════════════════════════
+
