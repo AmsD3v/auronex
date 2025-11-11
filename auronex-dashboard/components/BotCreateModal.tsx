@@ -75,11 +75,16 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
     enabled: isOpen,
   })
 
-  // Buscar símbolos disponíveis da exchange selecionada
+  // ✅ Buscar símbolos da exchange SELECIONADA (recarrega ao mudar!)
   const { data: availableSymbols, isLoading: loadingSymbols } = useQuery({
     queryKey: ['symbols', exchange],
-    queryFn: () => exchangeApi.getSymbols(exchange),
+    queryFn: () => {
+      console.log(`[Symbols] Carregando para ${exchange}...`)
+      return exchangeApi.getSymbols(exchange)
+    },
     enabled: isOpen && !!exchange,
+    staleTime: 0,  // ✅ Sempre recarregar
+    refetchOnMount: true,
   })
 
   // Reset form ao fechar
