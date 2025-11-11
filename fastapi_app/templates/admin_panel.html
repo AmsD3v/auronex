@@ -1150,47 +1150,49 @@ function updateBotsCount() {
 async function toggleBotStatus(botId, activate) {
     try {
         console.log(`[Toggle Bot] ${botId} -> ${activate}`);
-        const response = await fetch(`/api/bots/${botId}/toggle`, {
+        const response = await fetch(`/api/admin/bot-actions/${botId}/toggle`, {
             method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({is_active: activate}),
             credentials: 'include'
         });
         
         console.log(`[Toggle Bot] Response:`, response.status);
         
         if (response.ok) {
-            alert(`Bot ${activate ? 'ativado' : 'desativado'} com sucesso!`);
+            showAlert(`Bot ${activate ? 'ativado' : 'desativado'} com sucesso!`, 'success');
             loadBots();
         } else {
             const error = await response.text();
-            alert(`Erro: ${error}`);
+            showAlert(`Erro: ${error}`, 'danger');
         }
     } catch (e) {
         console.error('[Toggle Bot] Erro:', e);
-        alert('Erro ao alterar status: ' + e);
+        showAlert('Erro ao alterar status', 'danger');
     }
 }
 
 async function deleteBot(botId) {
-    if (!confirm(`Deletar bot ${botId}?`)) return;
-    
-    try {
-        console.log(`[Delete Bot] ${botId}`);
-        const response = await fetch(`/api/bots/${botId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-        
-        if (response.ok) {
-            alert('Bot deletado!');
-            loadBots();
-        } else {
-            alert('Erro ao deletar');
+    showConfirmModal(
+        'Deletar Bot',
+        `Tem certeza que deseja deletar o bot ${botId}?`,
+        async () => {
+            try {
+                console.log(`[Delete Bot] ${botId}`);
+                const response = await fetch(`/api/admin/bot-actions/${botId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    showAlert('Bot deletado com sucesso!', 'success');
+                    loadBots();
+                } else {
+                    showAlert('Erro ao deletar bot', 'danger');
+                }
+            } catch (e) {
+                showAlert('Erro: ' + e, 'danger');
+            }
         }
-    } catch (e) {
-        alert('Erro: ' + e);
-    }
+    );
 }
 
 async function deleteSelectedBots() {

@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .database import engine, Base
-from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config, profile_limits, exchange, heartbeat, admin_bots, bot_activity
+from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config, profile_limits, exchange, heartbeat, admin_bots, bot_activity, admin_bot_actions
 from .models_payment import Subscription, Payment as PaymentModel  # Import para criar tabelas
 
 # Configurar templates e arquivos estáticos
@@ -91,6 +91,7 @@ app.include_router(payments_public.router)  # Pagamentos públicos (PRODUÇÃO)
 app.include_router(payment_check.router)  # Verificação automática
 app.include_router(payment_verify.router)  # Verificação de pagamento (localhost)
 app.include_router(admin_api.router)  # APIs do Admin Panel (inclui /bots/all)
+app.include_router(admin_bot_actions.router)  # ✅ Admin Bot Actions (SEM AUTH)
 app.include_router(admin_payments.router)  # Pagamentos do Admin
 app.include_router(admin_delete.router)  # Deletar usuário completo
 app.include_router(admin_edit_user.router)  # Editar usuário
