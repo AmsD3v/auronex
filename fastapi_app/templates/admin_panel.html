@@ -198,20 +198,27 @@
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-hover">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th width="50">
-                                                    <input type="checkbox" id="select-all-bots" onchange="toggleSelectAllBots(this.checked)">
-                                                </th>
-                                                <th>Bot ID</th>
-                                                <th>Nome</th>
-                                                <th>Exchange</th>
-                                                <th>Usuário</th>
-                                                <th>User ID</th>
-                                                <th>Status</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                        </thead>
+                        <thead class="table-dark">
+                            <tr>
+                                <th width="50">
+                                    <input type="checkbox" id="select-all-bots" onchange="toggleSelectAllBots(this.checked)">
+                                </th>
+                                <th>Bot ID</th>
+                                <th>Nome</th>
+                                <th>Exchange</th>
+                                <th>Usuário</th>
+                                <th>User ID</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                            <tr>
+                                <th colspan="8">
+                                    <input type="text" id="search-bots" class="form-control form-control-sm" 
+                                           placeholder="🔍 Buscar por nome, email, exchange..." 
+                                           onkeyup="filterBots(this.value)">
+                                </th>
+                            </tr>
+                        </thead>
                                         <tbody id="bots-table">
                                             <tr><td colspan="8" class="text-center">Carregando...</td></tr>
                                         </tbody>
@@ -1142,6 +1149,7 @@ function updateBotsCount() {
 
 async function toggleBotStatus(botId, activate) {
     try {
+        console.log(`[Toggle Bot] ${botId} -> ${activate}`);
         const response = await fetch(`/api/bots/${botId}/toggle`, {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
@@ -1149,34 +1157,86 @@ async function toggleBotStatus(botId, activate) {
             credentials: 'include'
         });
         
+        console.log(`[Toggle Bot] Response:`, response.status);
+        
         if (response.ok) {
-            alert(`Bot ${activate ? 'ativado' : 'desativado'}!`);
+            alert(`Bot ${activate ? 'ativado' : 'desativado'} com sucesso!`);
             loadBots();
+        } else {
+            const error = await response.text();
+            alert(`Erro: ${error}`);
         }
     } catch (e) {
-        alert('Erro ao alterar status');
+        console.error('[Toggle Bot] Erro:', e);
+        alert('Erro ao alterar status: ' + e);
+    }
+}
+
+async function deleteBot(botId) {
+    if (!confirm(`Deletar bot ${botId}?`)) return;
+    
+    try {
+        console.log(`[Delete Bot] ${botId}`);
+        const response = await fetch(`/api/bots/${botId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            alert('Bot deletado!');
+            loadBots();
+        } else {
+            alert('Erro ao deletar');
+        }
+    } catch (e) {
+        alert('Erro: ' + e);
     }
 }
 
 async function deleteSelectedBots() {
-    if (selectedBots.size === 0) return;
+    if (selectedBots.size === 0) {
+        alert('Selecione pelo menos 1 bot!');
+        return;
+    }
     
-    if (!confirm(`Deletar ${selectedBots.size} bot(s)?`)) return;
+    if (!confirm(`Deletar ${selectedBots.size} bot(s) selecionado(s)?`)) return;
+    
+    let sucesso = 0;
+    let erro = 0;
     
     for (const botId of Array.from(selectedBots)) {
         try {
-            await fetch(`/api/bots/${botId}`, {
+            console.log(`[Delete] Bot ${botId}`);
+            const response = await fetch(`/api/bots/${botId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });
+            
+            if (response.ok) {
+                sucesso++;
+            } else {
+                erro++;
+            }
         } catch (e) {
             console.error(e);
+            erro++;
         }
     }
     
-    alert('Bots deletados!');
+    alert(`${sucesso} bot(s) deletado(s)! ${erro > 0 ? erro + ' erro(s)' : ''}`);
     selectedBots.clear();
+    document.getElementById('select-all-bots').checked = false;
     loadBots();
+}
+
+function filterBots(search) {
+    search = search.toLowerCase();
+    const rows = document.querySelectorAll('#bots-table tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(search) ? '' : 'none';
+    });
 }
 
 // Carregar pagamentos REAIS
