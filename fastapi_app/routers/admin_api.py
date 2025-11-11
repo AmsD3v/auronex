@@ -8,7 +8,7 @@ from sqlalchemy import func
 from typing import List
 
 from ..database import get_db
-from ..models import User
+from ..models import User, BotConfiguration  # ✅ IMPORT ADICIONADO!
 from ..models_payment import Subscription
 from ..auth import get_current_user
 
