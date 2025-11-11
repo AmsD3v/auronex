@@ -88,10 +88,13 @@ export const authApi = {
    * Login do usuário
    */
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>('/auth/login', {  // ✅ CORRIGIDO!
+    const response = await api.post<LoginResponse>('/auth/login', {
       email,
       password,
     })
+    console.log('[authApi] Response RAW:', response)
+    console.log('[authApi] Response.data:', response.data)
+    console.log('[authApi] Response.data.user:', response.data?.user)
     return response.data
   },
 
