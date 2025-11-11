@@ -49,9 +49,12 @@ export const useAuthStore = create<AuthState>()(
         error: null,
       })
       
-      // ✅ LOG para debug
-      console.log('[Auth] Login OK! Token:', data.access_token?.substring(0, 20))
-      console.log('[Auth] User:', data.user?.email)
+      // ✅ LOG completo para debug
+      console.log('[Auth] Login OK!')
+      console.log('[Auth] Token:', data.access_token?.substring(0, 20))
+      console.log('[Auth] User completo:', data.user)
+      console.log('[Auth] first_name:', data.user?.first_name)
+      console.log('[Auth] email:', data.user?.email)
 
       return true
         } catch (error: any) {
