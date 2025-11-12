@@ -14,16 +14,15 @@ router = APIRouter(prefix="/api/bot-activity", tags=["bot-activity"])
 
 @router.get("/recent")
 def get_recent_activity(
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Últimas 20 atividades dos bots do usuário"""
+    """Últimas 20 atividades dos bots (TODOS usuários - SEM AUTH)"""
     
     # Buscar trades recentes (últimas 24h)
     desde = datetime.now() - timedelta(hours=24)
     
+    # ✅ TODOS os trades (não filtrar por user)
     trades = db.query(Trade).filter(
-        Trade.user_id == current_user.id,
         Trade.entry_time >= desde
     ).order_by(Trade.entry_time.desc()).limit(20).all()
     
