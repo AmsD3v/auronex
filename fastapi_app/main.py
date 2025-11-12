@@ -80,6 +80,7 @@ app.include_router(bots_update_symbols.router)
 app.include_router(bots_update_config.router)
 app.include_router(bot_monitor.router)
 app.include_router(bot_activity.router)  # ✅ Atividades dos bots
+app.include_router(cotacao.router)  # ✅ Cotação USD/BRL tempo real
 app.include_router(trades.router)
 
 app.include_router(profile_limits.router)
