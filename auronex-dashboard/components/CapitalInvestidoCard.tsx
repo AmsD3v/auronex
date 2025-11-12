@@ -42,9 +42,10 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
     .filter(bot => bot.is_active)
     .reduce((sum, bot) => sum + (bot.capital || 0), 0)
   
-  // Conversão
+  // ✅ Conversão CORRETA (lucro já vem em USD do backend)
   const COTACAO = 5.0
   const lucroMoeda = currency === 'BRL' ? lucroTotal * COTACAO : lucroTotal
+  const capitalMoeda = currency === 'BRL' ? capitalInvestido * COTACAO : capitalInvestido
   
   // Número de bots ativos
   const botsAtivos = bots.filter(bot => bot.is_active).length
