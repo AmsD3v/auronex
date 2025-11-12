@@ -1,0 +1,34 @@
+════════════════════════════════════════════════════════════
+ TESTE LOGIN PRODUCAO - PASSO A PASSO
+════════════════════════════════════════════════════════════
+
+NO NAVEGADOR (https://app.auronex.com.br/login):
+
+1. F12 → Console
+2. Application → Storage → Clear All
+3. F5 (recarregar)
+4. Fazer login
+
+5. VER CONSOLE - DEVE APARECER:
+
+[authApi] Response.data: {...}
+[authApi] Response.data.user: {id: 74, first_name: 'Catheriine'}
+[Auth] Login OK!
+[Auth] User completo: {...}
+
+6. SE APARECE "User completo: undefined":
+   - API não retorna user
+   - Servidor não atualizou corretamente
+   - Build React antigo
+
+7. SE APARECE dados MAS volta para login:
+   - localStorage não salva
+   - isAuthenticated não muda
+   - Redirect loop
+
+════════════════════════════════════════════════════════════
+
+COPIE E COLE AQUI O QUE APARECE NO CONSOLE!
+
+════════════════════════════════════════════════════════════
+
