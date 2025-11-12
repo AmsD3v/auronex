@@ -41,15 +41,18 @@ const nextConfig = {
     ]
   },
 
-  // Rewrites para API (proxy reverso)
+  // Rewrites para API (proxy reverso) - SEMPRE localhost em dev
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
-    const baseUrl = apiUrl.replace('/api', '')
+    // ✅ Em dev, SEMPRE localhost (ignorar env)
+    const isDev = process.env.NODE_ENV !== 'production'
+    const baseUrl = isDev ? 'http://localhost:8001' : (process.env.NEXT_PUBLIC_API_URL || 'https://auronex.com.br')
+    
+    console.log('[Next Config] Rewrites para:', baseUrl)
     
     return [
       {
         source: '/api/:path*',
-        destination: `${baseUrl}/:path*`
+        destination: `${baseUrl}/api/:path*`
       }
     ]
   },
