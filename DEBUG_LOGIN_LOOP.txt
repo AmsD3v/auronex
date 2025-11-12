@@ -1,0 +1,35 @@
+════════════════════════════════════════════════════════════
+ DEBUG LOGIN LOOP - PRODUCAO
+════════════════════════════════════════════════════════════
+
+TESTAR NO NAVEGADOR:
+
+1. Abrir: https://app.auronex.com.br/login
+2. F12 → Console
+3. Fazer login
+4. VER O QUE APARECE:
+
+DEVE APARECER:
+[Auth] Login OK!
+[Auth] User completo: {id: 74, email: '...', first_name: 'Catheriine'}
+[Auth] first_name: Catheriine
+
+SE APARECER "undefined":
+- API não retorna user
+- Servidor não atualizou
+- Build React antigo
+
+SE APARECER DADOS MAS VOLTA PARA LOGIN:
+- Redirect loop
+- isAuthenticated não salva
+- localStorage com problema
+
+════════════════════════════════════════════════════════════
+
+ME MOSTRE:
+1. Console F12 completo
+2. Network tab (requisição /api/auth/login/)
+3. Application → Storage → auth-storage (valor)
+
+════════════════════════════════════════════════════════════
+
