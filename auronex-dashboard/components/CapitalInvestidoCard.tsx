@@ -90,15 +90,17 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
           {bots
             .filter(bot => bot.is_active)
             .map(bot => {
-              // ✅ GANHO LIQUIDO = Diferença entre VALORES EXIBIDOS!
+              // ✅ GANHO LIQUIDO = Lucro (cotação real) - Capital (cotação 5.0)
               const percentualBot = capitalInvestido > 0 ? (bot.capital || 0) / capitalInvestido : 0
               const lucroBot = lucroTotal * percentualBot
               
-              // Capital e Lucro AMBOS em BRL com cotação real
-              const capitalBotBRL = (bot.capital || 0) * cotacaoReal
+              // Lucro com cotação REAL (5.29)
               const lucroBotBRL = lucroBot * cotacaoReal
               
-              // ✅ Ganho = Lucro BRL - Capital BRL
+              // Capital com cotação FIXA (5.0) - igual ao exibido
+              const capitalBotBRL = (bot.capital || 0) * 5.0
+              
+              // ✅ Ganho = Diferença entre valores EXIBIDOS
               const ganhoLiquidoBRL = lucroBotBRL - capitalBotBRL
               const ganhoLiquidoUSD = lucroBot - (bot.capital || 0)
               
