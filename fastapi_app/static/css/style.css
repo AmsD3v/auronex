@@ -1,0 +1,36 @@
+/* Admin Panel Custom Styles */
+
+.light-mode {
+    background-color: #f9fafb !important;
+}
+
+.light-mode .bg-dark {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+}
+
+.light-mode .text-white {
+    color: #111827 !important;
+}
+
+.light-mode .card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Toast alerts */
+.alert.position-fixed {
+    max-width: 500px;
+}
+
+/* Admin table */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Bot status badges */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.65rem;
+}
+
