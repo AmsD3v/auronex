@@ -49,9 +49,20 @@ export function BalanceCard({
   const saldoExchange = balance?.total_usd || 0
   const saldoComTrades = saldoExchange + lucroTrades
   
+  // DEBUG
+  console.log('[BalanceCard CALC]', {
+    saldoExchange,
+    lucroTrades,
+    saldoComTrades,
+    currency
+  })
+  
   const isPositive = lucroTrades >= 0
   const conversionRate = currency === 'BRL' ? 5.0 : 1.0
   const symbol = currency === 'BRL' ? 'R$' : '$'
+  
+  const valorFinal = saldoComTrades * conversionRate
+  console.log('[BalanceCard] Valor FINAL:', symbol, valorFinal)
 
   return (
     <motion.div
