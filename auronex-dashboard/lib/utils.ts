@@ -15,12 +15,13 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function formatCurrency(
   valueUSD: number,
-  currency: 'USD' | 'BRL' = 'BRL'
+  currency: 'USD' | 'BRL' = 'BRL',
+  cotacaoReal?: number  // ✅ Aceita cotação REAL opcional!
 ): string {
-  const COTACAO = 5.0  // 1 USD = R$ 5.00
+  const COTACAO = cotacaoReal || 5.0  // ✅ Usa cotação real OU 5.0 fallback
   
   if (currency === 'BRL') {
-    const valorBRL = valueUSD * COTACAO  // ✅ CONVERTER!
+    const valorBRL = valueUSD * COTACAO
     return valorBRL.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
