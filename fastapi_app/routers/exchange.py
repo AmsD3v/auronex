@@ -184,11 +184,42 @@ def get_balance(
 def get_symbols(
     exchange: str = Query(default="binance")
 ):
-    """Buscar símbolos da exchange (SEM AUTH)"""
-    # Lista padrão grande
-    return [
-        'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'ADA/USDT', 'XRP/USDT',
-        'DOT/USDT', 'DOGE/USDT', 'MATIC/USDT', 'AVAX/USDT', 'LINK/USDT', 'UNI/USDT',
-        'ATOM/USDT', 'LTC/USDT', 'GALA/USDT', 'PEPE/USDT', 'SHIB/USDT'
-    ]
+    """Buscar símbolos DA EXCHANGE selecionada (SEM AUTH)"""
+    
+    try:
+        import ccxt
+        
+        # Map de exchanges
+        ccxt_map = {
+            'mercadobitcoin': 'mercado',
+            'brasilbitcoin': None,  # Não suportada
+            'gateio': 'gate'
+        }
+        
+        ccxt_name = ccxt_map.get(exchange.lower(), exchange.lower())
+        
+        if ccxt_name is None:
+            return []  # Exchange não suportada
+        
+        # Criar exchange
+        exchange_class = getattr(ccxt, ccxt_name)
+        exchange_obj = exchange_class({'enableRateLimit': True})
+        
+        # Carregar markets
+        markets = exchange_obj.load_markets()
+        
+        # Pegar symbols
+        symbols = list(markets.keys())
+        
+        print(f"[Symbols] {exchange.upper()}: {len(symbols)} símbolos")
+        
+        return sorted(symbols)[:100]  # Primeiros 100
+        
+    except Exception as e:
+        print(f"[Symbols] Erro {exchange}: {e}")
+        # Fallback para lista padrão
+        return [
+            'BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'PEPE/USDT', 'SHIB/USDT',
+            'XRP/USDT', 'DOGE/USDT', 'MATIC/USDT'
+        ]
 
