@@ -40,15 +40,18 @@ BACKUP="auronex_$(date +%Y%m%d_%H%M%S).tar.gz"
 tar -czf ~/backups/$BACKUP db.sqlite3 2>/dev/null
 echo "Backup: ~/backups/$BACKUP"
 
-# 3. PULL GITHUB
+# 3. PULL GITHUB (PRESERVANDO BANCO!)
 echo "[3/11] Pull do GitHub..."
-git stash
-git pull origin main
-git checkout stash -- db.sqlite3 2>/dev/null
+# ✅ Stash apenas arquivos modificados (não db.sqlite3)
+git add -u  # Apenas tracked files
+git stash push -m "temp" -- $(git diff --name-only --cached | grep -v "db.sqlite3")
 git stash drop 2>/dev/null
+
+git pull origin main
 
 VERSAO_NOVA=$(cat VERSION.txt 2>/dev/null || echo "Desconhecida")
 echo "Nova versao: $VERSAO_NOVA"
+echo "Banco: LOCAL preservado (usuarios/trades mantidos)"
 echo ""
 
 # 4. ATUALIZAR BANCO
