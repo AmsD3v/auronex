@@ -1320,6 +1320,54 @@ async function loadPayments() {
 function saveSettings() {
     alert('Configurações salvas! (funcionalidade em desenvolvimento)');
 }
+
+// ✅ FUNÇÕES DE MODAL (NECESSÁRIAS!)
+function showAlert(message, type = 'success') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => alertDiv.remove(), 3000);
+}
+
+let confirmedAction = null;
+
+function showConfirmModal(title, message, action) {
+    // Criar modal dinamicamente
+    const modalHTML = `
+    <div class="modal fade" id="confirmModalDynamic" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">${title}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">${message}</div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmBtnDynamic">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    
+    // Remover modal antigo se existir
+    const old = document.getElementById('confirmModalDynamic');
+    if (old) old.remove();
+    
+    // Adicionar novo
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    const modal = new bootstrap.Modal(document.getElementById('confirmModalDynamic'));
+    modal.show();
+    
+    document.getElementById('confirmBtnDynamic').onclick = () => {
+        if (action) action();
+        modal.hide();
+        setTimeout(() => document.getElementById('confirmModalDynamic').remove(), 500);
+    };
+}
 </script>
 
 <style>
