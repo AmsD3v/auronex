@@ -81,26 +81,33 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
         </div>
       </div>
 
-      {/* Detalhes por bot ativo */}
+      {/* Lucro por Bot (proporcional ao capital) */}
       {bots.filter(bot => bot.is_active).length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-3">
-            Alocação por Bot
+            Lucro Líquido por Bot
           </p>
           {bots
             .filter(bot => bot.is_active)
-            .map(bot => (
-              <div key={bot.id} className="flex justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-accent-500 animate-pulse"></div>
-                  <span className="text-gray-300">{bot.name}</span>
-                  <span className="text-xs text-gray-500">({bot.exchange.toUpperCase()})</span>
+            .map(bot => {
+              // ✅ Calcular lucro proporcional ao capital do bot
+              const percentualBot = capitalInvestido > 0 ? (bot.capital || 0) / capitalInvestido : 0
+              const lucroBot = lucroTotal * percentualBot
+              const lucroBotBRL = lucroBot * cotacaoReal
+              
+              return (
+                <div key={bot.id} className="flex justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-accent-500 animate-pulse"></div>
+                    <span className="text-gray-300">{bot.name}</span>
+                    <span className="text-xs text-gray-500">({bot.exchange.toUpperCase()})</span>
+                  </div>
+                  <span className={`font-medium ${lucroBot >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
+                    {lucroBot >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(currency === 'BRL' ? lucroBotBRL : lucroBot).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  </span>
                 </div>
-                <span className="font-medium text-white">
-                  {formatCurrency(bot.capital || 0, currency)}
-                </span>
-              </div>
-            ))}
+              )
+            })}
         </div>
       )}
 
