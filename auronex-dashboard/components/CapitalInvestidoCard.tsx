@@ -62,7 +62,7 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
         <div className="flex-1">
           <p className="text-sm text-gray-400">💰 Capital Investido</p>
           <p className="text-4xl font-light text-white mt-2">
-            {formatCurrency(capitalInvestido, currency)}
+            {formatCurrency(capitalInvestido, currency, cotacaoReal)}
           </p>
           <p className="mt-1 text-xs text-gray-500">
             {botsAtivos} bot{botsAtivos !== 1 ? 's' : ''} ativo{botsAtivos !== 1 ? 's' : ''}
