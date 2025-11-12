@@ -45,10 +45,12 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
   
   // ✅ Conversão com cotação REAL!
   const cotacaoReal = useCotacao()
-  const lucroMoeda = currency === 'BRL' ? lucroTotal * cotacaoReal : lucroTotal
-  const capitalMoeda = currency === 'BRL' ? capitalInvestido * cotacaoReal : capitalInvestido
   
+  // DEBUG COMPLETO
   console.log('[CapitalCard] Cotação REAL:', cotacaoReal)
+  console.log('[CapitalCard] Capital USD:', capitalInvestido)
+  console.log('[CapitalCard] Lucro USD:', lucroTotal)
+  console.log('[CapitalCard] Currency:', currency)
   
   // Número de bots ativos
   const botsAtivos = bots.filter(bot => bot.is_active).length
@@ -67,11 +69,11 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
           </p>
         </div>
         
-        {/* Lucro Líquido - ✅ USA lucroMoeda (já convertido)! */}
+        {/* Lucro Líquido - ✅ Mostra valor JÁ em BRL! */}
         <div className="text-right">
           <p className="text-xs text-gray-400 mb-1">Lucro Líquido</p>
-          <p className={`text-2xl font-bold ${lucroMoeda >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
-            {lucroMoeda >= 0 ? '+' : ''}{formatCurrency(Math.abs(lucroMoeda), currency)}
+          <p className={`text-2xl font-bold ${lucroTotal >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
+            {lucroTotal >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(lucroTotal * cotacaoReal).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
           </p>
           <p className="text-xs text-gray-500 mt-1">
             {lucroMoeda >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroTotal / capitalInvestido) * 100).toFixed(1) : '0.0'}%
