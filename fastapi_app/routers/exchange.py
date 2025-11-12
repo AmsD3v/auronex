@@ -23,17 +23,15 @@ def get_balance(
     ⚠️ SEM USER = retorna saldo de TODAS API keys do sistema
     """
     
-    # ✅ Se especificou exchange, buscar dela
+    # ✅ Se especificou exchange, buscar dela (PRIMEIRA ativa do sistema)
     if exchange:
         api_key = db.query(ExchangeAPIKey).filter(
-            ExchangeAPIKey.user_id == current_user.id,
             ExchangeAPIKey.exchange == exchange.lower(),
             ExchangeAPIKey.is_active == True
         ).first()
     else:
-        # ✅ SEM exchange = SOMAR TODAS!
+        # ✅ SEM exchange = SOMAR TODAS as exchanges do sistema!
         api_keys = db.query(ExchangeAPIKey).filter(
-            ExchangeAPIKey.user_id == current_user.id,
             ExchangeAPIKey.is_active == True
         ).all()
         
