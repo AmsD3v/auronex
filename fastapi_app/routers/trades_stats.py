@@ -30,14 +30,12 @@ def get_trades_today(
 
 @router.get("/stats")
 def get_trade_stats(
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Estatísticas de trades (win rate)"""
+    """Estatísticas de trades (win rate) - TODOS usuários SEM AUTH"""
     
-    # Trades fechados (com lucro/perda)
+    # ✅ TODOS os trades fechados (não filtrar por user)
     trades = db.query(Trade).filter(
-        Trade.user_id == current_user.id,
         Trade.exit_time.isnot(None)
     ).all()
     
