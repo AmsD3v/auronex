@@ -1,0 +1,42 @@
+════════════════════════════════════════════════════════════
+ TESTAR LOCALHOST AGORA
+════════════════════════════════════════════════════════════
+
+1. Abrir: http://localhost:8501
+2. F12 → Console → Clear
+3. F5 (recarregar)
+4. Login: catheriine.fake@gmail.com / 123456
+
+5. VER CONSOLE - DEVE APARECER:
+
+[BalanceCard] Buscando lucro...
+[BalanceCard] Stats data: {total_profit: 49.31}
+[BalanceCard CALC] {saldoExchange: 4, lucroTrades: 49.31, saldoComTrades: 53.31}
+[BalanceCard] Valor FINAL: R$ 266.55
+
+[CapitalCard] Buscando lucro...
+[CapitalCard CALC] {capitalInvestido: 4, lucroTotal: 49.31, lucroEmBRL: 246.55}
+
+6. VER TELA - DEVE MOSTRAR:
+
+💰 Saldo Total
+R$ 266,55  ← R$ 20 + R$ 246!
+
+💰 Capital Investido  
+R$ 20,00
+
+Lucro Líquido
++R$ 246,55  ← AQUI!
+📈 1234%
+
+════════════════════════════════════════════════════════════
+
+SE NÃO APARECER:
+
+Me mostre:
+1. Console F12 completo
+2. Qual valor mostra no card
+3. Screenshot
+
+════════════════════════════════════════════════════════════
+
