@@ -58,10 +58,14 @@ export function BalanceCard({
   })
   
   const isPositive = lucroTrades >= 0
-  const conversionRate = currency === 'BRL' ? 5.0 : 1.0
+  
+  // ✅ Usar cotação REAL!
+  const cotacaoReal = useCotacao()
+  const conversionRate = currency === 'BRL' ? cotacaoReal : 1.0
   const symbol = currency === 'BRL' ? 'R$' : '$'
   
   const valorFinal = saldoComTrades * conversionRate
+  console.log('[BalanceCard] Cotação:', cotacaoReal)
   console.log('[BalanceCard] Valor FINAL:', symbol, valorFinal)
 
   return (
