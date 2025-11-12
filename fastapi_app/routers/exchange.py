@@ -13,13 +13,14 @@ router = APIRouter(prefix="/api/exchange", tags=["exchange"])
 @router.get("/balance")
 def get_balance(
     exchange: str = Query(default=None),
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Buscar saldo
+    Buscar saldo (SEM AUTH para dashboard funcionar)
     - Se exchange específica: retorna saldo dela
     - Sem exchange: retorna saldo TOTAL de TODAS as exchanges
+    
+    ⚠️ SEM USER = retorna saldo de TODAS API keys do sistema
     """
     
     # ✅ Se especificou exchange, buscar dela

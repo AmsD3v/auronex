@@ -14,15 +14,14 @@ router = APIRouter(prefix="/api/trades", tags=["trades-stats"])
 
 @router.get("/today")
 def get_trades_today(
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Trades realizados hoje"""
+    """Trades realizados hoje (TODOS usuários SEM AUTH)"""
     
     hoje = datetime.now().date()
     
+    # ✅ TODOS os trades de hoje
     count = db.query(Trade).filter(
-        Trade.user_id == current_user.id,
         func.date(Trade.entry_time) == hoje
     ).count()
     
