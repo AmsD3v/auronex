@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useCotacao } from '@/hooks/useCotacao'
 import { useTradingStore } from '@/stores/tradingStore'
 import { formatCurrency } from '@/lib/utils'
 import { TrendingUp } from 'lucide-react'
