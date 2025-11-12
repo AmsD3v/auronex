@@ -71,15 +71,22 @@ export default function LoginPage() {
     }
 
     // Fazer login
+    console.log('[Login Page] Tentando login...')
     const success = await login(email, password)
+    console.log('[Login Page] Resultado:', success)
 
     if (success) {
+      console.log('[Login Page] Sucesso! Redirecionando...')
       toast.success('Login realizado com sucesso!')
-      // ✅ Aguardar localStorage salvar (crítico para produção!)
-      await new Promise(resolve => setTimeout(resolve, 200))
+      // ✅ Aguardar localStorage salvar
+      await new Promise(resolve => setTimeout(resolve, 300))
       router.push('/')
     } else {
-      toast.error('Email ou senha incorretos!')
+      console.log('[Login Page] FALHA! Mostrando erro...')
+      toast.error('❌ Email ou senha incorretos!', {
+        duration: 5000,
+        position: 'top-center'
+      })
     }
   }
 
