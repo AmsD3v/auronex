@@ -182,11 +182,9 @@ def get_balance(
 
 @router.get("/symbols")
 def get_symbols(
-    exchange: str = Query(default="binance"),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    exchange: str = Query(default="binance")
 ):
-    """Buscar símbolos"""
+    """Buscar símbolos da exchange (SEM AUTH)"""
     # Lista padrão grande
     return [
         'BTC/USDT', 'ETH/USDT', 'BNB/USDT', 'SOL/USDT', 'ADA/USDT', 'XRP/USDT',
