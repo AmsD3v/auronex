@@ -160,7 +160,7 @@ export function BotActivityLog() {
                   </p>
                 )}
 
-                {activity.profit !== undefined && (
+                {activity.profit !== undefined && activity.profit !== null && (
                   <div className="flex items-center gap-1 mt-1">
                     {activity.profit >= 0 ? (
                       <>
