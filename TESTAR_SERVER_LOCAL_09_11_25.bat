@@ -19,9 +19,9 @@ start "1-FastAPI-8001" cmd /k "title FastAPI (8001) && cd /d I:\Robo && venv\Scr
 
 timeout /t 5
 
-REM Janela 2: Dashboard React (porta 8501)
-echo [2/3] Iniciando Dashboard React...
-start "2-Dashboard-React-8501" cmd /k "title Dashboard React (8501) && cd /d I:\Robo\auronex-dashboard && echo ============================================================ && echo   DASHBOARD REACT - PORTA 8501 && echo ============================================================ && echo. && npm run dev"
+REM Janela 2: Dashboard React (porta 8501) - MODO DEV
+echo [2/3] Iniciando Dashboard React (DEV MODE)...
+start "2-Dashboard-React-8501" cmd /k "title Dashboard React DEV (8501) && cd /d I:\Robo\auronex-dashboard && echo ============================================================ && echo   DASHBOARD REACT - MODO DEV (HOT RELOAD) && echo   Chama APIs: http://localhost:8001 && echo ============================================================ && echo. && npm run dev"
 
 timeout /t 3
 
