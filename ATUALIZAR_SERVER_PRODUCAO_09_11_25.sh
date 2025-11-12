@@ -10,21 +10,35 @@ echo "  ATUALIZANDO SERVIDOR PRODUCAO - 09/11/2025"
 echo "============================================================"
 echo ""
 
-# 0. IR PARA PASTA E PULL
-echo "[0/11] Navegando e puxando codigo..."
+# 0. IR PARA PASTA
+echo "[0/11] Navegando para pasta..."
 cd /home/serverhome/auronex || exit 1
-git stash 2>/dev/null
-git pull origin main
+echo "Pasta: $(pwd)"
 echo "OK"
 echo ""
 
-# Ver versao
-VERSAO=$(cat VERSION.txt 2>/dev/null || echo "Desconhecida")
-echo "Versao: $VERSAO"
+# 0.5 VERIFICAR GIT
+echo "[0.5/11] Verificando Git..."
+git status
 echo ""
 
-# 1. PARAR TUDO
-echo "[1/11] Parando servicos..."
+# 1. PULL GITHUB (FORÇADO!)
+echo "[1/11] PULL GITHUB FORCADO..."
+echo "Branch atual: $(git branch --show-current)"
+git fetch --all
+git stash push -u -m "backup_$(date +%Y%m%d_%H%M%S)"
+git reset --hard origin/main
+git pull origin main --rebase
+
+# Ver versao
+VERSAO=$(cat VERSION.txt 2>/dev/null || echo "Desconhecida")
+echo "Versao NOVA: $VERSAO"
+echo "Commits: $(git log --oneline -5)"
+echo "OK - CODIGO ATUALIZADO!"
+echo ""
+
+# 2. PARAR TUDO
+echo "[2/11] Parando servicos..."
 pm2 stop all 2>/dev/null || true
 pm2 delete all 2>/dev/null || true
 sudo lsof -ti:8001 | xargs sudo kill -9 2>/dev/null || true
@@ -33,8 +47,8 @@ pkill -f "cloudflared tunnel" 2>/dev/null || true
 sleep 3
 echo "OK"
 
-# 2. BACKUP
-echo "[2/11] Backup..."
+# 3. BACKUP
+echo "[3/11] Backup..."
 mkdir -p ~/backups
 BACKUP="auronex_$(date +%Y%m%d_%H%M%S).tar.gz"
 tar -czf ~/backups/$BACKUP db.sqlite3 2>/dev/null
