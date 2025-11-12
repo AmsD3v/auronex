@@ -28,10 +28,21 @@ export function BalanceCard({
   
   // ✅ Buscar lucro dos trades
   useEffect(() => {
+    console.log('[BalanceCard] Buscando lucro...')
     fetch('/api/trades/stats', { credentials: 'include' })
-      .then(r => r.json())
-      .then(data => setLucroTrades(data.total_profit || 0))
-      .catch(() => setLucroTrades(0))
+      .then(r => {
+        console.log('[BalanceCard] Stats response:', r.status)
+        return r.json()
+      })
+      .then(data => {
+        console.log('[BalanceCard] Stats data:', data)
+        console.log('[BalanceCard] total_profit:', data.total_profit)
+        setLucroTrades(data.total_profit || 0)
+      })
+      .catch(err => {
+        console.error('[BalanceCard] Erro:', err)
+        setLucroTrades(0)
+      })
   }, [balance])
   
   // ✅ Saldo Total = Exchange + Lucro Trades

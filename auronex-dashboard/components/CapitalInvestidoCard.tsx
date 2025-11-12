@@ -20,12 +20,21 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
   
   // ✅ Buscar lucro/perda total
   useEffect(() => {
+    console.log('[CapitalCard] Buscando lucro...')
     fetch('/api/trades/stats', { credentials: 'include' })
-      .then(r => r.json())
+      .then(r => {
+        console.log('[CapitalCard] Stats response:', r.status)
+        return r.json()
+      })
       .then(data => {
+        console.log('[CapitalCard] Stats data:', data)
+        console.log('[CapitalCard] total_profit:', data.total_profit)
         setLucroTotal(data.total_profit || 0)
       })
-      .catch(() => setLucroTotal(0))
+      .catch(err => {
+        console.error('[CapitalCard] Erro:', err)
+        setLucroTotal(0)
+      })
   }, [])
   
   // ✅ Somar capital APENAS dos bots ATIVOS
