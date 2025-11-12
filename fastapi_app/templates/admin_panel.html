@@ -1150,6 +1150,42 @@ function updateBotsCount() {
 async function toggleBotStatus(botId, activate) {
     try {
         console.log(`[Toggle Bot] ${botId} -> ${activate}`);
+        
+        // ✅ Se ATIVAR, validar saldo primeiro!
+        if (activate) {
+            // Buscar dados do bot
+            const botData = allBots.find(b => b.id === botId);
+            if (!botData) {
+                showAlert('Bot não encontrado!', 'danger');
+                return;
+            }
+            
+            // Buscar saldo da exchange
+            const saldoResp = await fetch(`/api/exchange/balance?exchange=${botData.exchange}`, {credentials: 'include'});
+            const saldoData = await saldoResp.json();
+            const saldo = saldoData.total_usd || 0;
+            
+            // ✅ VALIDAR: saldo deve ser > 0
+            if (saldo <= 0) {
+                showConfirmModal(
+                    '❌ Sem Saldo',
+                    `A exchange ${botData.exchange.toUpperCase()} não tem saldo disponível!\n\nSaldo: $${saldo}\n\nNão é possível ativar o bot sem fundos.`,
+                    () => {} // Nada
+                );
+                return;
+            }
+            
+            // ✅ VALIDAR: capital <= saldo
+            if (botData.capital > saldo) {
+                showConfirmModal(
+                    '❌ Capital Insuficiente',
+                    `Capital do bot ($${botData.capital}) é maior que o saldo disponível ($${saldo})!\n\nAdicione fundos ou reduza o capital do bot.`,
+                    () => {} // Nada
+                );
+                return;
+            }
+        }
+        
         const response = await fetch(`/api/admin/bot-actions/${botId}/toggle`, {
             method: 'PATCH',
             credentials: 'include'
@@ -1158,8 +1194,9 @@ async function toggleBotStatus(botId, activate) {
         console.log(`[Toggle Bot] Response:`, response.status);
         
         if (response.ok) {
-            showAlert(`Bot ${activate ? 'ativado' : 'desativado'} com sucesso!`, 'success');
-            loadBots();
+            const data = await response.json();
+            showAlert(`Bot ${data.is_active ? 'ativado' : 'desativado'} com sucesso!`, 'success');
+            loadBots();  // ✅ Recarrega lista (atualiza ícone)
         } else {
             const error = await response.text();
             showAlert(`Erro: ${error}`, 'danger');
