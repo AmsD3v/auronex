@@ -1,0 +1,44 @@
+════════════════════════════════════════════════════════════
+ CONECTAR SERVIDOR - RAPIDO
+════════════════════════════════════════════════════════════
+
+METODO 1 - PowerShell/CMD:
+---------------------------
+ssh serverhome@IP_DO_SERVIDOR
+
+Quando pedir senha: digitar senha do serverhome
+
+Se der "Connection refused":
+- Servidor desligado OU
+- Firewall bloqueando porta 22
+
+════════════════════════════════════════════════════════════
+
+METODO 2 - PuTTY (se tem instalado):
+-------------------------------------
+Host: IP_DO_SERVIDOR
+Port: 22
+Usuario: serverhome
+Senha: (senha do serverhome)
+
+════════════════════════════════════════════════════════════
+
+QUAL É O ERRO QUE APARECE?
+---------------------------
+1. "Connection refused" = Servidor SSH parado
+2. "Permission denied" = Senha errada
+3. "Host key verification failed" = Limpar ~/.ssh/known_hosts
+4. "Connection timed out" = Firewall bloqueando
+
+════════════════════════════════════════════════════════════
+
+ME MOSTRE:
+----------
+1. O comando que você usa
+2. A mensagem de erro EXATA
+3. IP do servidor (pode mascarar: 192.168.x.x)
+
+Assim posso resolver rápido!
+
+════════════════════════════════════════════════════════════
+
