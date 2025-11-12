@@ -1,0 +1,48 @@
+════════════════════════════════════════════════════════════
+ REINICIAR REACT - OBRIGATORIO!
+════════════════════════════════════════════════════════════
+
+MOTIVO:
+next.config.js foi alterado
+.env.development criado
+
+Next.js PRECISA reiniciar para aplicar!
+
+════════════════════════════════════════════════════════════
+
+FAZER:
+
+1. Fechar janela "Dashboard React DEV" (Ctrl+C)
+
+2. Abrir nova:
+   cd I:\Robo\auronex-dashboard
+   npm run dev
+   
+3. Aguardar compilar (30-60s)
+
+4. Ver mensagem:
+   ▲ Next.js 14.x.x
+   - Local: http://localhost:8501
+   ✓ Ready in Xs
+
+5. Abrir navegador:
+   http://localhost:8501
+   
+6. F12 → Console
+   
+7. Login
+
+════════════════════════════════════════════════════════════
+
+AGORA VAI FUNCIONAR!
+
+Proxy vai chamar: http://localhost:8001/api/*
+Não vai chamar: https://app.auronex.com.br/*
+
+════════════════════════════════════════════════════════════
+
+Commits enviados: 88
+Codigo pronto!
+
+════════════════════════════════════════════════════════════
+
