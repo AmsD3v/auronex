@@ -41,9 +41,9 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     
     return user
 
-@router.post("/login/", response_model=Token)
+@router.post("/login/")  # ✅ SEM response_model para retornar user também
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
-    """Login e obter token JWT"""
+    """Login e obter token JWT + user data"""
     
     # Buscar usuário
     user = db.query(User).filter(User.email == credentials.email).first()
