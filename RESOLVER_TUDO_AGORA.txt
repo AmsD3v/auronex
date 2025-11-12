@@ -1,0 +1,53 @@
+════════════════════════════════════════════════════════════
+ SITUAÇÃO ATUAL - HONESTA
+════════════════════════════════════════════════════════════
+
+FUNCIONANDO:
+✅ admin/#bots CARREGA lista (5 bots)
+✅ Busca funciona
+✅ Checkbox funciona
+✅ Bot MB símbolos corretos
+
+NAO FUNCIONA:
+❌ Deletar bot (endpoints precisam auth)
+❌ Ativar bot (endpoints precisam auth)
+❌ Nome usuário React (user = undefined)
+❌ Card Atividades (rota 404)
+
+════════════════════════════════════════════════════════════
+ CAUSA RAIZ
+════════════════════════════════════════════════════════════
+
+Admin HTML NAO envia JWT token!
+- Usa session cookie
+- Endpoints exigem JWT
+- Por isso "Not authenticated"
+
+════════════════════════════════════════════════════════════
+ SOLUCAO
+════════════════════════════════════════════════════════════
+
+Criar endpoints /api/admin/bot-actions/
+- SEM auth JWT
+- Verifica session cookie
+- Admin pode deletar/ativar qualquer bot
+
+JÁ IMPLEMENTADO mas FastAPI precisa RESTART!
+
+════════════════════════════════════════════════════════════
+ FAZER AGORA
+════════════════════════════════════════════════════════════
+
+1. FECHAR janela FastAPI
+2. ABRIR nova (recarrega código)
+3. TESTAR admin/#bots
+4. Deletar DEVE funcionar!
+
+════════════════════════════════════════════════════════════
+
+Tokens: 451k/1M (55% disponível)
+Commits: 53+
+Sistema: 90% completo
+
+════════════════════════════════════════════════════════════
+
