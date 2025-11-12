@@ -1,0 +1,73 @@
+════════════════════════════════════════════════════════════
+ PROBLEMA SSH - LOGIN VOLTA PARA TELA
+════════════════════════════════════════════════════════════
+
+SINTOMA:
+- Tenta logar no servidor
+- Volta para tela de login
+- Não entra
+
+════════════════════════════════════════════════════════════
+ CAUSAS POSSIVEIS
+════════════════════════════════════════════════════════════
+
+1. SENHA ERRADA
+   - Tente senha novamente
+   - Verifique caps lock
+
+2. USUARIO ERRADO
+   - Usuario: serverhome
+   - Não: root, ubuntu, admin
+
+3. PERMISSOES SSH
+   - ~/.ssh/authorized_keys
+   - Permissões 600
+
+4. SERVIDOR SSH PARADO
+   - sudo systemctl status ssh
+   - sudo systemctl start ssh
+
+════════════════════════════════════════════════════════════
+ SOLUCAO RAPIDA
+════════════════════════════════════════════════════════════
+
+OPCAO 1 - Senha:
+-----------------
+ssh serverhome@IP_DO_SERVIDOR
+
+Se pedir senha: digitar corretamente
+Se recusar: verificar abaixo
+
+OPCAO 2 - Verificar SSH rodando:
+---------------------------------
+Acesso fisico ao servidor:
+
+sudo systemctl status ssh
+sudo systemctl restart ssh
+
+OPCAO 3 - Resetar senha (acesso fisico):
+-----------------------------------------
+sudo passwd serverhome
+# Digitar nova senha 2x
+
+OPCAO 4 - Chave SSH:
+--------------------
+# No seu PC, gerar chave:
+ssh-keygen -t rsa
+
+# Copiar para servidor:
+ssh-copy-id serverhome@IP_DO_SERVIDOR
+
+════════════════════════════════════════════════════════════
+ QUAL É O ERRO EXATO?
+════════════════════════════════════════════════════════════
+
+Me mostre:
+1. Comando que você executa
+2. Mensagem de erro
+3. Screenshot se possível
+
+Com isso posso ajudar melhor!
+
+════════════════════════════════════════════════════════════
+
