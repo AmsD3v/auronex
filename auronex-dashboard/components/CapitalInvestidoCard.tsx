@@ -71,7 +71,7 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
             {lucroMoeda >= 0 ? '+' : ''}{formatCurrency(Math.abs(lucroMoeda), currency)}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            {lucroMoeda >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroMoeda / capitalInvestido) * 100).toFixed(1) : '0.0'}%
+            {lucroMoeda >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroTotal / capitalInvestido) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
       </div>
