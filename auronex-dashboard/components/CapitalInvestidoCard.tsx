@@ -90,12 +90,17 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
           {bots
             .filter(bot => bot.is_active)
             .map(bot => {
-              // ✅ Calcular GANHO LIQUIDO = Lucro - Capital
+              // ✅ GANHO LIQUIDO = Diferença entre VALORES EXIBIDOS!
               const percentualBot = capitalInvestido > 0 ? (bot.capital || 0) / capitalInvestido : 0
               const lucroBot = lucroTotal * percentualBot
-              const capitalBot = bot.capital || 0
-              const ganhoLiquido = lucroBot - capitalBot  // ✅ DIFERENÇA!
-              const ganhoLiquidoBRL = ganhoLiquido * cotacaoReal
+              
+              // Capital e Lucro AMBOS em BRL com cotação real
+              const capitalBotBRL = (bot.capital || 0) * cotacaoReal
+              const lucroBotBRL = lucroBot * cotacaoReal
+              
+              // ✅ Ganho = Lucro BRL - Capital BRL
+              const ganhoLiquidoBRL = lucroBotBRL - capitalBotBRL
+              const ganhoLiquidoUSD = lucroBot - (bot.capital || 0)
               
               return (
                 <div key={bot.id} className="flex justify-between text-sm">
@@ -104,8 +109,8 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
                     <span className="text-gray-300">{bot.name}</span>
                     <span className="text-xs text-gray-500">({bot.exchange.toUpperCase()})</span>
                   </div>
-                  <span className={`font-medium ${ganhoLiquido >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
-                    {ganhoLiquido >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(currency === 'BRL' ? ganhoLiquidoBRL : ganhoLiquido).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  <span className={`font-medium ${(currency === 'BRL' ? ganhoLiquidoBRL : ganhoLiquidoUSD) >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
+                    {(currency === 'BRL' ? ganhoLiquidoBRL : ganhoLiquidoUSD) >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(currency === 'BRL' ? ganhoLiquidoBRL : ganhoLiquidoUSD).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </span>
                 </div>
               )
