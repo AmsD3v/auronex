@@ -76,7 +76,7 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
             {lucroTotal >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(lucroTotal * cotacaoReal).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            {lucroMoeda >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroTotal / capitalInvestido) * 100).toFixed(1) : '0.0'}%
+            {lucroTotal >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroTotal / capitalInvestido) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
       </div>
