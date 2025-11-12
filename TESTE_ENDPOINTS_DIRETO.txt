@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+ TESTE ENDPOINTS DIRETO
+════════════════════════════════════════════════════════════
+
+Abra navegador e cole na barra de endereço:
+
+1. SALDO:
+http://localhost:8001/api/exchange/balance
+
+Deve mostrar:
+{"usdt": 4.0, "total_usd": 4.0}
+
+2. LUCRO:
+http://localhost:8001/api/trades/stats
+
+Deve mostrar:
+{"total_profit": 50.18, "win_rate": 100}
+
+3. TRADES HOJE:
+http://localhost:8001/api/trades/today
+
+Deve mostrar:
+{"count": 0}
+
+4. ATIVIDADES:
+http://localhost:8001/api/bot-activity/recent
+
+Deve mostrar:
+[{"id": 3, "symbol": "SOL/USDT", ...}]
+
+════════════════════════════════════════════════════════════
+
+Se TODOS retornam dados = APIs funcionam!
+
+Se dashboard NÃO mostra = problema no frontend React!
+
+Verificar:
+- F12 Console
+- Network tab
+- Ver se faz requests
+
+════════════════════════════════════════════════════════════
+
