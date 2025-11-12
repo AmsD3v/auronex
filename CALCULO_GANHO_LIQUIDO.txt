@@ -1,0 +1,35 @@
+════════════════════════════════════════════════════════════
+ GANHO LÍQUIDO = LUCRO - CAPITAL
+════════════════════════════════════════════════════════════
+
+Bot Binance (100% do total):
+
+Capital investido: $46.40 = R$ 232,00
+Lucro obtido: $49.31 = R$ 260,91
+GANHO LÍQUIDO: $2.91 = R$ 28,91  ← DIFERENÇA!
+
+════════════════════════════════════════════════════════════
+
+FÓRMULA:
+  ganhoLiquido = lucroBot - capitalBot
+  ganhoLiquido = $49.31 - $46.40 = $2.91
+  Em BRL: $2.91 × 5.29 = R$ 15,39
+
+════════════════════════════════════════════════════════════
+
+DASHBOARD VAI MOSTRAR:
+
+Bot Binance (BINANCE)    +R$ 28,91
+
+Não mais: +R$ 260,91
+
+════════════════════════════════════════════════════════════
+
+PORCENTAGEM:
+106.27% = ($49.31 / $46.40) × 100
+
+Está correto! Bot ganhou 106% do capital.
+Se investiu $46, ganhou $49 = 6% a mais.
+
+════════════════════════════════════════════════════════════
+
