@@ -1,0 +1,59 @@
+════════════════════════════════════════════════════════════
+ DEPLOY PRODUCAO - EXECUTAR AGORA
+════════════════════════════════════════════════════════════
+
+COMMITS PRONTOS: 76
+VERSAO ATUAL: 1.0.01b
+PROXIMA: 1.0.02b
+
+════════════════════════════════════════════════════════════
+ O QUE FOI IMPLEMENTADO
+════════════════════════════════════════════════════════════
+
+✅ Bot fecha posições automaticamente
+✅ Bot não faz spam (1 posição por símbolo)  
+✅ admin/#bots funciona (deletar/ativar)
+✅ Cryptos carregam POR EXCHANGE via ccxt
+✅ Endpoints SEM auth (balance, stats, activity)
+✅ API retorna user no login
+✅ Scripts servidor protegem banco
+
+════════════════════════════════════════════════════════════
+ NO SERVIDOR - EXECUTE
+════════════════════════════════════════════════════════════
+
+cd /home/serverhome/auronex
+./ATUALIZAR_SERVER_PRODUCAO_09_11_25.sh
+
+Aguarde ~5-8 minutos
+
+════════════════════════════════════════════════════════════
+ RESULTADO ESPERADO
+════════════════════════════════════════════════════════════
+
+Site: https://app.auronex.com.br/
+
+DEVE MOSTRAR:
+✅ Nome usuário correto
+✅ Lucro Líquido visível  
+✅ Saldo Total correto
+✅ Cryptos por exchange
+✅ admin/#bots funciona
+
+BOTS ATIVOS:
+- Bot Binance: $2 (PEPE, SHIB, SOL)
+- Bot MB: $2 (vai corrigir symbols)
+
+════════════════════════════════════════════════════════════
+ BOT CONTROLLER
+════════════════════════════════════════════════════════════
+
+Depois do deploy, iniciar:
+
+nohup python -m bot.bot_controller > logs/bot.log 2>&1 &
+
+Ver logs:
+tail -f logs/bot.log
+
+════════════════════════════════════════════════════════════
+
