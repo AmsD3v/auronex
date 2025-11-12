@@ -76,7 +76,7 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
             {lucroTotal >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(lucroTotal * cotacaoReal).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            {lucroTotal >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroTotal / capitalInvestido) * 100).toFixed(2) : '0.00'}%
+            {lucroTotal >= 0 ? '📈' : '📉'} {capitalInvestido > 0 ? ((lucroTotal / capitalInvestido) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
       </div>
@@ -90,10 +90,12 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
           {bots
             .filter(bot => bot.is_active)
             .map(bot => {
-              // ✅ Calcular lucro proporcional ao capital do bot
+              // ✅ Calcular GANHO LIQUIDO = Lucro - Capital
               const percentualBot = capitalInvestido > 0 ? (bot.capital || 0) / capitalInvestido : 0
               const lucroBot = lucroTotal * percentualBot
-              const lucroBotBRL = lucroBot * cotacaoReal
+              const capitalBot = bot.capital || 0
+              const ganhoLiquido = lucroBot - capitalBot  // ✅ DIFERENÇA!
+              const ganhoLiquidoBRL = ganhoLiquido * cotacaoReal
               
               return (
                 <div key={bot.id} className="flex justify-between text-sm">
@@ -102,8 +104,8 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
                     <span className="text-gray-300">{bot.name}</span>
                     <span className="text-xs text-gray-500">({bot.exchange.toUpperCase()})</span>
                   </div>
-                  <span className={`font-medium ${lucroBot >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
-                    {lucroBot >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(currency === 'BRL' ? lucroBotBRL : lucroBot).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  <span className={`font-medium ${ganhoLiquido >= 0 ? 'text-profit-500' : 'text-loss-500'}`}>
+                    {ganhoLiquido >= 0 ? '+' : ''}{currency === 'BRL' ? 'R$' : '$'} {Math.abs(currency === 'BRL' ? ganhoLiquidoBRL : ganhoLiquido).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </span>
                 </div>
               )
