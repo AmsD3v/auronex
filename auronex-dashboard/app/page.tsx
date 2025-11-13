@@ -14,6 +14,7 @@ import { BotsGrid } from '@/components/BotsGrid'
 import { BotActivityLog } from '@/components/BotActivityLog'
 import { Top5Performance } from '@/components/Top5Performance'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { TradesHistoryModal } from '@/components/TradesHistoryModal'
 import { LogOut, RefreshCw, Calendar } from 'lucide-react'
 
 /**
@@ -321,6 +322,12 @@ export default function DashboardPage() {
           <p>Auronex Trading Platform · React + Next.js · v{process.env.NEXT_PUBLIC_VERSION || '1.0.05b'}</p>
         </footer>
       </main>
+      
+      {/* Modal Histórico Mensal */}
+      <TradesHistoryModal 
+        isOpen={showHistoryModal} 
+        onClose={() => setShowHistoryModal(false)} 
+      />
     </div>
   )
 }
