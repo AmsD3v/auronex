@@ -51,20 +51,28 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
     setMounted(true)
   }, [])
   
-  // ✅ Buscar saldo quando exchange mudar
+  // ✅ Buscar saldo quando exchange mudar (ROBUSTO!)
   useEffect(() => {
     if (isOpen && exchange) {
+      console.log(`[CreateModal] Buscando saldo ${exchange}...`)
       setCarregandoSaldo(true)
+      setSaldoExchange(0)  // Reset
+      
       exchangeApi.getBalance(exchange.toLowerCase())
         .then(balance => {
-          setSaldoExchange(balance.total_usd || 0)
+          console.log(`[CreateModal] Saldo ${exchange}:`, balance)
+          const saldo = balance.total_usd || 0
+          setSaldoExchange(saldo)
           setCarregandoSaldo(false)
+          console.log(`[CreateModal] Saldo atualizado: $${saldo}`)
         })
-        .catch(() => {
-          // Falhou - não bloqueia, apenas não mostra
+        .catch(err => {
+          console.error(`[CreateModal] Erro saldo ${exchange}:`, err)
           setSaldoExchange(0)
           setCarregandoSaldo(false)
         })
+    } else {
+      setSaldoExchange(0)
     }
   }, [isOpen, exchange])
 
