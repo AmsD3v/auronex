@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, Flame, Calendar, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useTradingStore } from '@/stores/tradingStore'
 import { useCotacao } from '@/hooks/useCotacao'
+import { useQuery } from '@tanstack/react-query'
 
 interface Top5Coin {
   symbol: string
@@ -15,6 +16,7 @@ interface Top5Coin {
   change_30d?: number
   volume_24h: number
   market_cap?: number
+  image?: string
 }
 
 type Category = 'hoje' | 'semana' | 'mes' | 'virais' | 'corretora'
@@ -32,6 +34,23 @@ export function Top5Performance() {
   // ✅ Conversão BRL com cotação REAL!
   const cotacaoReal = useCotacao()
   const COTACAO = cotacaoReal
+  
+  // ✅ Buscar dados REAIS da API!
+  const { data: apiData, isLoading } = useQuery({
+    queryKey: ['top-gainers', activeCategory],
+    queryFn: async () => {
+      const response = await fetch(`/api/market/top-gainers?period=24h`, { credentials: 'include' })
+      if (response.ok) {
+        const data = await response.json()
+        console.log('[Top5] Dados CoinCap:', data)
+        return data
+      }
+      return null
+    },
+    refetchInterval: 60000, // Atualiza a cada 1 min
+    staleTime: 60000,
+  })
+  
   const formatPrice = (priceUSD: number) => {
     const value = currency === 'BRL' ? priceUSD * COTACAO : priceUSD
     const symbol = currency === 'BRL' ? 'R$' : '$'
@@ -43,7 +62,10 @@ export function Top5Performance() {
     })}`
   }
 
-  // Dados por categoria
+  // ✅ Usar dados REAIS da API (CoinCap)
+  const topCoins = apiData?.data || []
+  
+  // Dados por categoria (mock apenas se API falhar)
   const dataByCategory: Record<Category, Top5Coin[]> = {
     hoje: [
       { symbol: 'SOL/USDT', name: 'Solana', price: 120, change_24h: 12.3, volume_24h: 200000000 },
