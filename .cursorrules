@@ -4,35 +4,45 @@
 
 **SEMPRE implemente UMA funcionalidade por vez!**
 
-### Regras:
+**NUNCA implemente múltiplas features em paralelo!**
+
+### Regras Obrigatórias:
 
 1. **Divida prompts grandes:**
-   - Se usuário pede 5 coisas → confirme escopo
-   - Implemente item 1
-   - Teste
-   - Confirme funcionou
-   - Próximo item
+   - Usuário pede 5 coisas → Liste todas
+   - Pergunte: "Confirmo escopo: 1) X, 2) Y, 3) Z. Correto?"
+   - Aguarde confirmação explícita
+   - Implemente APENAS item 1
+   - Teste completamente
+   - Confirme que funcionou
+   - Só então → item 2
 
-2. **Confirme antes de gerar código:**
-   - "Vou implementar X. Correto?"
-   - Aguarde confirmação
-   - Depois gere código
+2. **Confirme SEMPRE antes de gerar código:**
+   - "Vou implementar X usando Y. Confirma?"
+   - Aguarde resposta do usuário
+   - Só depois gere código
+   - NUNCA assuma que está correto
 
-3. **Teste antes de continuar:**
-   - Implementou → teste
-   - Funcionou → próximo
+3. **Teste TUDO antes de continuar:**
+   - Implementou → teste imediatamente
+   - Funcionou 100% → próximo item
    - Não funcionou → corrija ANTES de continuar
+   - NUNCA deixe bugs para depois
 
-4. **Não assuma que funciona:**
-   - SEMPRE verificar código existe
-   - SEMPRE testar endpoints
-   - SEMPRE ver console F12
-   - NUNCA dizer "vai funcionar" sem testar
+4. **Verificação rigorosa (não assuma nada):**
+   - SEMPRE ler arquivo antes de modificar
+   - SEMPRE testar endpoints com curl/requests
+   - SEMPRE ver console F12 para erros JS
+   - SEMPRE confirmar valores no banco
+   - NUNCA dizer "vai funcionar" sem evidência
+   - NUNCA dizer "corrigido" sem testar
 
-5. **Commits atômicos:**
+5. **Commits atômicos e descritivos:**
    - 1 funcionalidade = 1 commit
-   - Mensagem clara
+   - Formato: feat:/fix:/docs: [mensagem clara]
+   - Mensagem explica O QUE (não como)
    - Fácil reverter se der errado
+   - Histórico Git limpo e útil
 
 ### Exemplo CERTO:
 
