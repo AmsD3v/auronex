@@ -183,7 +183,13 @@ def get_balance(
 def get_symbols(
     exchange: str = Query(default="binance")
 ):
-    """Buscar símbolos DA EXCHANGE selecionada (SEM AUTH)"""
+    """
+    Buscar símbolos PÚBLICOS da exchange (SEM API KEY necessária!)
+    
+    ✅ Cliente pode ver cryptos ANTES de criar conta
+    ✅ Não precisa API Key para listar
+    ✅ Usa ccxt em modo público
+    """
     
     try:
         import ccxt
@@ -200,25 +206,46 @@ def get_symbols(
         if ccxt_name is None:
             return []  # Exchange não suportada
         
-        # Criar exchange
+        # ✅ Criar exchange em MODO PÚBLICO (sem API Key!)
         exchange_class = getattr(ccxt, ccxt_name)
-        exchange_obj = exchange_class({'enableRateLimit': True})
+        exchange_obj = exchange_class({
+            'enableRateLimit': True,
+            # ✅ SEM apiKey/secret = modo público!
+        })
         
-        # Carregar markets
+        # ✅ Carregar markets PUBLICAMENTE (não precisa auth!)
         markets = exchange_obj.load_markets()
         
         # Pegar symbols
         symbols = list(markets.keys())
         
-        print(f"[Symbols] {exchange.upper()}: {len(symbols)} símbolos")
+        print(f"[Symbols PÚBLICO] {exchange.upper()}: {len(symbols)} símbolos")
         
-        return sorted(symbols)[:100]  # Primeiros 100
+        # ✅ Filtrar por moeda relevante
+        if exchange.lower() == 'mercadobitcoin':
+            # MB: apenas BRL
+            symbols_filtered = [s for s in symbols if '/BRL' in s]
+            print(f"[Symbols] MB filtrado: {len(symbols_filtered)} /BRL")
+            return sorted(symbols_filtered)
+        
+        elif exchange.lower() in ['binance', 'bybit', 'okx', 'gateio']:
+            # Outras: apenas USDT (mais líquido)
+            symbols_filtered = [s for s in symbols if '/USDT' in s and ':' not in s]  # Remove futuros
+            print(f"[Symbols] {exchange.upper()} filtrado: {len(symbols_filtered)} /USDT")
+            return sorted(symbols_filtered)[:200]  # Top 200
+        
+        else:
+            return sorted(symbols)[:100]
         
     except Exception as e:
         print(f"[Symbols] Erro {exchange}: {e}")
-        # Fallback para lista padrão
-        return [
-            'BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'PEPE/USDT', 'SHIB/USDT',
-            'XRP/USDT', 'DOGE/USDT', 'MATIC/USDT'
-        ]
+        import traceback
+        traceback.print_exc()
+        
+        # Fallback inteligente POR EXCHANGE
+        if exchange.lower() == 'mercadobitcoin':
+            return ['BTC/BRL', 'ETH/BRL', 'XRP/BRL', 'SOL/BRL', 'USDT/BRL']
+        else:
+            return ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'PEPE/USDT', 'SHIB/USDT', 'XRP/USDT']
+
 
