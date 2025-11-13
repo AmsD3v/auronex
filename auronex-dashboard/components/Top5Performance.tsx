@@ -261,11 +261,21 @@ export function Top5Performance() {
         ))}
       </div>
 
-      {/* Footer */}
+      {/* Footer com Attribution */}
       <div className="mt-4 pt-4 border-t border-white/5">
-        <p className="text-xs text-gray-500 text-center">
-          Dados atualizados a cada 5 minutos
-        </p>
+        {topCoins.length > 0 && apiData ? (
+          <p className="text-xs text-gray-500 text-center">
+            {apiData.source === 'coincap' ? (
+              <>Data provided by <a href="https://coincap.io" target="_blank" rel="noopener noreferrer" className="text-accent-500 hover:underline">CoinCap.io</a></>
+            ) : (
+              <>Data provided by <a href="https://www.coingecko.com?utm_source=auronex&utm_medium=referral" target="_blank" rel="noopener noreferrer" className="text-accent-500 hover:underline">CoinGecko</a></>
+            )} · Updates every 60s
+          </p>
+        ) : (
+          <p className="text-xs text-gray-500 text-center">
+            Dados atualizados a cada 5 minutos
+          </p>
+        )}
       </div>
     </div>
   )
