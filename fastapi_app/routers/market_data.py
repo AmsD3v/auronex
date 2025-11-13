@@ -1,5 +1,6 @@
 """
-Market Data - Top 5 Performance via CoinGecko
+Market Data - Top 5 Performance via CoinCap (SEM LIMITE!)
+Fallback: CoinGecko se CoinCap falhar
 """
 from fastapi import APIRouter
 import requests
@@ -7,7 +8,7 @@ from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/api/market", tags=["market-data"])
 
-# CoinGecko API Key
+# CoinGecko API Key (fallback)
 COINGECKO_API_KEY = "CG-vSM45DWyL7ujMYAAdfSSmbay"
 
 # Cache (atualiza a cada 1 min)
@@ -42,7 +43,49 @@ def get_top_gainers(period: str = "24h"):
             }
     
     try:
-        # ✅ CoinGecko API V3 com API Key
+        # ✅ MÉTODO 1: CoinCap (SEM LIMITE!)
+        try:
+            response = requests.get('https://api.coincap.io/v2/assets?limit=100', timeout=5)
+            
+            if response.status_code == 200:
+                data = response.json()['data']
+                
+                # Ordenar por ganho 24h
+                data_sorted = sorted(data, 
+                    key=lambda x: float(x.get('changePercent24Hr', 0)), 
+                    reverse=True
+                )[:5]
+                
+                result = []
+                for coin in data_sorted:
+                    result.append({
+                        "symbol": coin.get('symbol', '').upper(),
+                        "name": coin.get('name', ''),
+                        "price": float(coin.get('priceUsd', 0)),
+                        "change_24h": float(coin.get('changePercent24Hr', 0)),
+                        "change_7d": 0,  # CoinCap não tem 7d
+                        "volume_24h": float(coin.get('volumeUsd24Hr', 0)),
+                        "market_cap": float(coin.get('marketCapUsd', 0)),
+                        "image": f"https://assets.coincap.io/assets/icons/{coin.get('symbol', '').lower()}@2x.png"
+                    })
+                
+                # Atualizar cache
+                _cache[f'top_gainers_{period}'] = result
+                _cache['timestamp'] = datetime.now()
+                
+                print(f"[CoinCap] Top 5 {period}: {[c['symbol'] for c in result]}")
+                
+                return {
+                    "data": result,
+                    "source": "coincap",
+                    "attribution": "Data provided by CoinCap.io",
+                    "url": "https://coincap.io"
+                }
+        
+        except Exception as e:
+            print(f"[CoinCap] Erro (tentando CoinGecko): {e}")
+        
+        # ✅ MÉTODO 2: CoinGecko API V3 (fallback)
         headers = {
             'x-cg-pro-api-key': COINGECKO_API_KEY
         }
