@@ -14,7 +14,7 @@ import { BotsGrid } from '@/components/BotsGrid'
 import { BotActivityLog } from '@/components/BotActivityLog'
 import { Top5Performance } from '@/components/Top5Performance'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { LogOut, RefreshCw } from 'lucide-react'
+import { LogOut, RefreshCw, Calendar } from 'lucide-react'
 
 /**
  * Dashboard Principal - COM TEMPO REAL
@@ -28,6 +28,7 @@ export default function DashboardPage() {
   const { currency } = useTradingStore()
   
   const [mounted, setMounted] = useState(false)
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
   
   // ✅ Heartbeat - Detecta quando fecha navegador
   useHeartbeat()
