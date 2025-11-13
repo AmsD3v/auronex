@@ -1,0 +1,180 @@
+---
+globs: *.ts,*.tsx
+---
+
+# TypeScript Quality Rules
+
+## Sem Ignorar Erros Sem Explicação
+
+**NUNCA use `@ts-ignore` ou `@ts-expect-error` sem comentário explicativo!**
+
+### ❌ ERRADO:
+
+```typescript
+// @ts-ignore
+const value = someFunction()
+```
+
+### ✅ CORRETO:
+
+```typescript
+// @ts-ignore - API externa não tem types, aguardando @types/library
+const value = someFunction()
+
+// OU melhor ainda, criar type:
+interface ExternalAPI {
+  someFunction: () => string
+}
+const value = (someFunction as ExternalAPI['someFunction'])()
+```
+
+---
+
+## Warnings = Erros
+
+**Trate TODOS os warnings como erros críticos!**
+
+### Warnings Comuns:
+
+**1. Variável não usada:**
+```typescript
+// ❌ ERRADO
+const [data, setData] = useState()
+
+// ✅ CORRETO
+const [data, setData] = useState()
+// Usar data OU
+const [_data, setData] = useState()  // _ = intencionalmente não usado
+```
+
+**2. any não especificado:**
+```typescript
+// ❌ ERRADO
+const handleClick = (e: any) => {}
+
+// ✅ CORRETO
+const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {}
+```
+
+**3. Dependências useEffect:**
+```typescript
+// ❌ ERRADO (warning)
+useEffect(() => {
+  fetchData()
+}, [])  // fetchData não está nas deps!
+
+// ✅ CORRETO
+useEffect(() => {
+  fetchData()
+}, [fetchData])
+
+// OU se intencional:
+useEffect(() => {
+  fetchData()
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])  // Comentar POR QUÊ ignora
+```
+
+---
+
+## Regras de Qualidade
+
+### 1. **SEMPRE tipar explicitamente:**
+
+```typescript
+// ❌ ERRADO
+const fetchData = async (id) => {
+  const response = await api.get('/data')
+  return response.data
+}
+
+// ✅ CORRETO
+const fetchData = async (id: number): Promise<DataType> => {
+  const response = await api.get<DataResponse>('/data')
+  return response.data
+}
+```
+
+### 2. **Interfaces sobre types para objetos:**
+
+```typescript
+// ❌ ERRADO
+type User = {
+  id: number
+  name: string
+}
+
+// ✅ CORRETO
+interface User {
+  id: number
+  name: string
+}
+```
+
+### 3. **Evitar `any` SEMPRE:**
+
+```typescript
+// ❌ ERRADO
+const parseData = (data: any) => data.value
+
+// ✅ CORRETO
+interface DataInput {
+  value: string
+}
+const parseData = (data: DataInput) => data.value
+
+// OU se realmente desconhecido:
+const parseData = (data: unknown) => {
+  if (typeof data === 'object' && data !== null && 'value' in data) {
+    return (data as {value: string}).value
+  }
+  throw new Error('Invalid data format')
+}
+```
+
+### 4. **Comentar supressões:**
+
+```typescript
+// ✅ CORRETO - Comentar POR QUÊ ignora
+// @ts-expect-error - React 18 types incompatíveis, fix pendente em v2.0
+<Component legacyProp={value} />
+
+// @ts-ignore - ccxt não exporta types, criar definição manual é overhead
+const exchange = new ccxt.binance()
+```
+
+---
+
+## Build sem Warnings
+
+**Build DEVE passar sem warnings!**
+
+```bash
+# Antes de commitar:
+npm run build
+
+# Deve mostrar:
+✓ Compiled successfully
+# SEM warnings!
+```
+
+**Se houver warnings:**
+1. Corrija TODOS antes de commit
+2. OU comente por que são aceitáveis
+3. NUNCA commite com warnings não tratados
+
+---
+
+## Checklist TypeScript:
+
+- [ ] ✅ Sem `any` (use tipos específicos ou `unknown`)
+- [ ] ✅ Sem variáveis não usadas (ou prefixar com `_`)
+- [ ] ✅ Sem `@ts-ignore` sem comentário explicativo
+- [ ] ✅ useEffect deps completas (ou comentar por quê não)
+- [ ] ✅ Interfaces bem definidas
+- [ ] ✅ Build sem warnings
+- [ ] ✅ npm run build passa limpo
+
+---
+
+**TypeScript rigoroso = Menos bugs em produção!** ✅
