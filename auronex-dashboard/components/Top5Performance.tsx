@@ -130,9 +130,12 @@ export function Top5Performance() {
   }
   
   // Usar dados da exchange selecionada ou padrão
-  const currentData = activeCategory === 'corretora' 
-    ? (dataByExchange[searchExchange] || dataByCategory[activeCategory])
-    : dataByCategory[activeCategory]
+  // ✅ Priorizar dados REAIS da API!
+  const currentData = topCoins.length > 0 && activeCategory === 'hoje'
+    ? topCoins  // ✅ Dados CoinCap REAIS!
+    : (activeCategory === 'corretora'
+        ? (dataByExchange[searchExchange] || dataByCategory[activeCategory])
+        : dataByCategory[activeCategory])
 
   const categories = [
     { value: 'hoje', label: 'Hoje', icon: Clock, color: 'accent' },
