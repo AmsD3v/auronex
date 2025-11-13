@@ -317,7 +317,7 @@ export default function DashboardPage() {
 
         {/* Footer */}
         <footer className="mt-12 border-t border-white/5 pt-8 text-center text-sm text-gray-500">
-          <p>Auronex Trading Platform · React + Next.js · v1.0.0</p>
+          <p>Auronex Trading Platform · React + Next.js · v{process.env.NEXT_PUBLIC_VERSION || '1.0.05b'}</p>
         </footer>
       </main>
     </div>
