@@ -1,0 +1,70 @@
+════════════════════════════════════════════════════════════
+ ATUALIZAR PRODUÇÃO - PASSO A PASSO COMPLETO
+════════════════════════════════════════════════════════════
+
+NO SERVIDOR (notebook Linux), executar:
+
+════════════════════════════════════════════════════════════
+
+PASSO 1: Atualizar código
+--------------------------
+cd /home/serverhome/auronex
+./ATUALIZAR_SERVER_PRODUCAO_09_11_25.sh
+
+Aguardar ~5-8 min (build React)
+
+════════════════════════════════════════════════════════════
+
+PASSO 2: Criar API Keys Testnet
+--------------------------------
+source venv/bin/activate
+python criar_api_keys_testnet.py
+
+Deve mostrar:
+✅ API Keys TESTNET criadas!
+
+════════════════════════════════════════════════════════════
+
+PASSO 3: Corrigir Bot MB
+-------------------------
+python corrigir_bot_52.py
+
+Deve mostrar:
+Bot 52: BTC/BRL, ETH/BRL, XRP/BRL
+
+════════════════════════════════════════════════════════════
+
+PASSO 4: Iniciar Bot Controller
+--------------------------------
+nohup python -m bot.bot_controller > logs/bot.log 2>&1 &
+
+Verificar:
+tail -f logs/bot.log
+# Ctrl+C para sair
+
+════════════════════════════════════════════════════════════
+
+PASSO 5: Status
+---------------
+pm2 status
+
+Deve mostrar:
+fastapi-app       │ online
+auronex-dashboard │ online
+
+════════════════════════════════════════════════════════════
+
+PRONTO! Testar:
+
+https://app.auronex.com.br/
+
+Login deve funcionar!
+Valores devem aparecer!
+
+════════════════════════════════════════════════════════════
+
+Commits: 116
+Código pronto no GitHub!
+
+════════════════════════════════════════════════════════════
+
