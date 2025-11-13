@@ -18,7 +18,7 @@ for trade in abertas:
     
     # ✅ Simular fechamento (take profit +3%)
     exit_price = float(trade.entry_price) * 1.03
-    profit = (exit_price - float(trade.entry_price)) * trade.quantity
+    profit = (exit_price - float(trade.entry_price)) * float(trade.quantity)
     
     trade.exit_price = exit_price
     trade.exit_time = datetime.now()
