@@ -1,0 +1,90 @@
+════════════════════════════════════════════════════════════
+ ALTERNATIVAS A COINGECKO (GRATUITAS)
+════════════════════════════════════════════════════════════
+
+COINGECKO:
+- Limite: 10.000 calls/mês = 333/dia
+- Top 5 atualiza 1x/min = 1.440/dia ❌ ESTOURA!
+- Com cache 5 min = 288/dia ✅ OK!
+
+════════════════════════════════════════════════════════════
+
+ALTERNATIVA 1: CryptoCompare (Recomendado)
+-------------------------------------------
+API: https://min-api.cryptocompare.com/
+Limite: 100.000 calls/mês (GRÁTIS!)
+  = 3.333/dia
+  = Cache 1 min = OK!
+
+Endpoint:
+/data/top/totalvolfull?limit=5&tsym=USD
+
+Vantagens:
+✅ Limite 10x maior
+✅ API estável
+✅ Sem auth necessária
+✅ Dados confiáveis
+
+════════════════════════════════════════════════════════════
+
+ALTERNATIVA 2: CoinCap
+----------------------
+API: https://api.coincap.io/v2/assets
+Limite: SEM LIMITE! ✅✅✅
+  = Infinito!
+
+Endpoint:
+/v2/assets?limit=5
+
+Vantagens:
+✅✅ SEM LIMITE!
+✅ Gratuito 100%
+✅ Sem auth
+✅ Rápido
+
+Desvantagem:
+❌ Menos dados que CoinGecko
+
+════════════════════════════════════════════════════════════
+
+ALTERNATIVA 3: Binance Public API
+----------------------------------
+API: https://api.binance.com/api/v3/ticker/24hr
+Limite: SEM LIMITE!
+  = Peso: 40 por request
+  = 1.200 requests/min OK!
+
+Endpoint:
+/api/v3/ticker/24hr (todos)
+Ordenar por priceChangePercent
+
+Vantagens:
+✅ SEM LIMITE!
+✅ Gratuito
+✅ Dados em tempo real
+✅ Muito rápido
+
+Desvantagem:
+❌ Só Binance (não outras exchanges)
+
+════════════════════════════════════════════════════════════
+
+RECOMENDAÇÃO:
+
+MVP (AGORA):
+→ CoinCap (SEM LIMITE!) ✅
+→ Simples, rápido, grátis
+
+PRODUÇÃO (Depois):
+→ CryptoCompare (100k/mês)
+→ Ou CoinGecko PRO ($129/mês)
+
+════════════════════════════════════════════════════════════
+
+IMPLEMENTAR COINCAP AGORA? (15 min)
+✅ SEM LIMITE
+✅ Gratuito para sempre
+✅ Dados reais
+
+════════════════════════════════════════════════════════════
+
