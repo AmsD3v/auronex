@@ -1,0 +1,52 @@
+════════════════════════════════════════════════════════════
+ TESTE TODAS AS EXCHANGES
+════════════════════════════════════════════════════════════
+
+Cole cada URL no navegador e veja quantas cryptos retorna:
+
+1. Binance:
+http://localhost:8001/api/exchange/symbols?exchange=binance
+Esperado: 638 /USDT
+
+2. Bybit:
+http://localhost:8001/api/exchange/symbols?exchange=bybit
+Esperado: 493 /USDT
+
+3. Mercado Bitcoin:
+http://localhost:8001/api/exchange/symbols?exchange=mercadobitcoin
+Esperado: 1196 /BRL
+
+4. Huobi:
+http://localhost:8001/api/exchange/symbols?exchange=huobi
+Esperado: 1206 /USDT
+
+5. Coinbase:
+http://localhost:8001/api/exchange/symbols?exchange=coinbase
+Esperado: 345 /USD
+
+6. Foxbit:
+http://localhost:8001/api/exchange/symbols?exchange=foxbit
+Esperado: 100+ /BRL
+
+7. BrasilBitcoin:
+http://localhost:8001/api/exchange/symbols?exchange=brasilbitcoin
+Esperado: 40+ /BRL
+
+8. OKX:
+http://localhost:8001/api/exchange/symbols?exchange=okx
+Esperado: Centenas /USDT
+
+9. Kraken:
+http://localhost:8001/api/exchange/symbols?exchange=kraken
+Esperado: /USD + /USDT
+
+10. Gate.io:
+http://localhost:8001/api/exchange/symbols?exchange=gateio
+Esperado: /USDT
+
+════════════════════════════════════════════════════════════
+
+TOTAL: 4.000+ cryptos únicas!
+
+════════════════════════════════════════════════════════════
+
