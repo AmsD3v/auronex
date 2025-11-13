@@ -202,7 +202,7 @@ export function Top5Performance() {
 
       {/* Lista Top 5 */}
       <div className="space-y-3">
-        {currentData.map((coin, index) => (
+        {currentData.map((coin: Top5Coin, index: number) => (
           <motion.div
             key={coin.symbol}
             initial={{ opacity: 0, x: -20 }}

@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/api/market", tags=["market-data"])
 
-# CoinGecko API Key (fallback)
+# API Keys
+COINCAP_API_KEY = "15f75b748b66ebec0b9ece9b946682e001c2abf27e83224372efd260507f27e0"
 COINGECKO_API_KEY = "CG-vSM45DWyL7ujMYAAdfSSmbay"
 
 # Cache (atualiza a cada 1 min)
@@ -45,7 +46,10 @@ def get_top_gainers(period: str = "24h"):
     try:
         # ✅ MÉTODO 1: CoinCap (SEM LIMITE!)
         try:
-            response = requests.get('https://api.coincap.io/v2/assets?limit=100', timeout=5)
+            headers = {
+                'Authorization': f'Bearer {COINCAP_API_KEY}'
+            }
+            response = requests.get('https://api.coincap.io/v2/assets?limit=100', headers=headers, timeout=5)
             
             if response.status_code == 200:
                 data = response.json()['data']
