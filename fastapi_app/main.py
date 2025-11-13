@@ -85,6 +85,7 @@ app.include_router(trades.router)
 
 app.include_router(profile_limits.router)
 app.include_router(trades_stats.router)
+app.include_router(trades_month.router)  # ✅ Trades do mês
 app.include_router(exchange.router)
 app.include_router(heartbeat.router)  # ✅ Heartbeat para detectar navegador fechado
 app.include_router(payments.router)
