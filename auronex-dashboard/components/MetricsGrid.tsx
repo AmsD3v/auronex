@@ -70,12 +70,18 @@ export function MetricsGrid({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="metric"
+          className="metric cursor-pointer"
+          onClick={metric.action === 'history' && onShowHistory ? onShowHistory : undefined}
         >
           <div className="flex items-start justify-between mb-4">
             <span className="text-4xl">{metric.icon}</span>
             {metric.trending && (
               <TrendingUp className="h-5 w-5 text-profit-500" />
+            )}
+            {metric.action === 'history' && (
+              <span className="text-xs text-accent-500 hover:text-accent-400">
+                📊 Ver Histórico
+              </span>
             )}
           </div>
 

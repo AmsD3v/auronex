@@ -202,6 +202,7 @@ export default function DashboardPage() {
           tradesCount={tradesCount}
           winRate={winRate}
           currency={currency}
+          onShowHistory={() => setShowHistoryModal(true)}
         />
 
         {/* Balance Card + Info */}
