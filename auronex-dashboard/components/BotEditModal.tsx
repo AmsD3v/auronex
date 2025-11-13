@@ -95,11 +95,37 @@ export function BotEditModal({ isOpen, onClose, bot }: BotEditModalProps) {
   }, [bot])
 
   // Buscar símbolos disponíveis da exchange selecionada
-  const { data: availableSymbols, isLoading: loadingSymbols } = useQuery({
+  const { data: availableSymbols, isLoading: loadingSymbols, refetch: refetchSymbols } = useQuery({
     queryKey: ['symbols', exchange],
-    queryFn: () => exchangeApi.getSymbols(exchange),
+    queryFn: async () => {
+      console.log(`[EditModal] Carregando symbols para ${exchange}...`)
+      const symbols = await exchangeApi.getSymbols(exchange)
+      console.log(`[EditModal] ${exchange}: ${symbols?.length || 0} symbols`)
+      return symbols
+    },
     enabled: isOpen && !!exchange,
+    staleTime: 0,
+    refetchOnMount: true,
   })
+  
+  // ✅ Recarregar symbols quando exchange mudar!
+  useEffect(() => {
+    if (isOpen && exchange) {
+      console.log(`[EditModal] Exchange mudou para: ${exchange}, recarregando...`)
+      refetchSymbols()
+      
+      // ✅ Limpar symbols que não existem na nova exchange
+      const symbolsAtuais = symbols
+      const symbolsValidos = symbolsAtuais.filter(s => 
+        availableSymbols?.includes(s)
+      )
+      
+      if (symbolsValidos.length !== symbolsAtuais.length) {
+        console.warn(`[EditModal] ${symbolsAtuais.length - symbolsValidos.length} symbols removidos (não existem em ${exchange})`)
+        setSymbols(symbolsValidos)
+      }
+    }
+  }, [exchange, isOpen])
 
   // Mutation para atualizar bot
   const updateBotMutation = useMutation({

@@ -89,13 +89,17 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
     refetchOnMount: true,
   })
   
-  // ✅ Recarregar symbols quando exchange mudar
+  // ✅ Recarregar symbols quando exchange mudar E limpar seleção inválida
   useEffect(() => {
     if (isOpen && exchange) {
       console.log(`[Symbols] Exchange mudou para: ${exchange}, recarregando...`)
       refetchSymbols()
+      
+      // ✅ Limpar symbols selecionados (ao mudar exchange)
+      console.log(`[Symbols] Limpando seleção ao mudar exchange`)
+      setSymbols([])
     }
-  }, [exchange, isOpen, refetchSymbols])
+  }, [exchange, isOpen])
 
   // Reset form ao fechar
   useEffect(() => {
