@@ -194,11 +194,14 @@ def get_symbols(
     try:
         import ccxt
         
-        # Map de exchanges
+        # Map de exchanges (ccxt usa nomes diferentes)
         ccxt_map = {
             'mercadobitcoin': 'mercado',
-            'brasilbitcoin': None,  # Não suportada
-            'gateio': 'gate'
+            'brasilbitcoin': 'brasilbitcoin',  # ✅ Suportada!
+            'gateio': 'gate',
+            'foxbit': 'foxbit',
+            'huobi': 'huobi',
+            # Coinbase já tem nome correto
         }
         
         ccxt_name = ccxt_map.get(exchange.lower(), exchange.lower())
@@ -221,21 +224,38 @@ def get_symbols(
         
         print(f"[Symbols PÚBLICO] {exchange.upper()}: {len(symbols)} símbolos")
         
-        # ✅ Filtrar por moeda relevante
-        if exchange.lower() == 'mercadobitcoin':
-            # MB: apenas BRL
-            symbols_filtered = [s for s in symbols if '/BRL' in s]
-            print(f"[Symbols] MB filtrado: {len(symbols_filtered)} /BRL")
+        # ✅ Filtrar por moeda relevante POR EXCHANGE
+        exchange_lower = exchange.lower()
+        
+        # Exchanges brasileiras: apenas BRL
+        if exchange_lower in ['mercadobitcoin', 'brasilbitcoin', 'foxbit']:
+            symbols_filtered = [s for s in symbols if '/BRL' in s and ':' not in s]
+            print(f"[Symbols] {exchange.upper()} /BRL: {len(symbols_filtered)}")
             return sorted(symbols_filtered)
         
-        elif exchange.lower() in ['binance', 'bybit', 'okx', 'gateio']:
-            # Outras: apenas USDT (mais líquido)
-            symbols_filtered = [s for s in symbols if '/USDT' in s and ':' not in s]  # Remove futuros
-            print(f"[Symbols] {exchange.upper()} filtrado: {len(symbols_filtered)} /USDT")
-            return sorted(symbols_filtered)  # ✅ TODAS! Sem limite!
+        # Exchanges internacionais: USDT (spot) + USD (algumas)
+        elif exchange_lower in ['binance', 'bybit', 'okx', 'gateio', 'huobi']:
+            # USDT (spot apenas, sem futuros)
+            symbols_usdt = [s for s in symbols if '/USDT' in s and ':' not in s]
+            print(f"[Symbols] {exchange.upper()} /USDT: {len(symbols_usdt)}")
+            return sorted(symbols_usdt)
         
+        # Coinbase: USD
+        elif exchange_lower == 'coinbase':
+            symbols_usd = [s for s in symbols if '/USD' in s and ':' not in s]
+            print(f"[Symbols] COINBASE /USD: {len(symbols_usd)}")
+            return sorted(symbols_usd)
+        
+        # Kraken: USD e USDT
+        elif exchange_lower == 'kraken':
+            symbols_filtered = [s for s in symbols if ('/USD' in s or '/USDT' in s) and ':' not in s]
+            print(f"[Symbols] KRAKEN /USD+/USDT: {len(symbols_filtered)}")
+            return sorted(symbols_filtered)
+        
+        # Outras: retornar tudo
         else:
-            return sorted(symbols)  # ✅ TODAS!
+            print(f"[Symbols] {exchange.upper()} TODAS: {len(symbols)}")
+            return sorted(symbols)
         
     except Exception as e:
         print(f"[Symbols] Erro {exchange}: {e}")
