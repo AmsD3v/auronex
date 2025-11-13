@@ -259,13 +259,34 @@ def get_symbols(
         
     except Exception as e:
         print(f"[Symbols] Erro {exchange}: {e}")
-        import traceback
-        traceback.print_exc()
         
-        # Fallback inteligente POR EXCHANGE
-        if exchange.lower() == 'mercadobitcoin':
+        # ✅ Fallback com listas FIXAS (exchanges sem modo público)
+        from ..data.exchange_symbols import (
+            COINBASE_SYMBOLS, FOXBIT_SYMBOLS, BRASILBITCOIN_SYMBOLS, HUOBI_SYMBOLS
+        )
+        
+        exchange_lower = exchange.lower()
+        
+        if exchange_lower == 'coinbase':
+            print(f"[Symbols] Usando lista fixa Coinbase: {len(COINBASE_SYMBOLS)}")
+            return COINBASE_SYMBOLS
+        
+        elif exchange_lower == 'foxbit':
+            print(f"[Symbols] Usando lista fixa Foxbit: {len(FOXBIT_SYMBOLS)}")
+            return FOXBIT_SYMBOLS
+        
+        elif exchange_lower == 'brasilbitcoin':
+            print(f"[Symbols] Usando lista fixa BrasilBitcoin: {len(BRASILBITCOIN_SYMBOLS)}")
+            return BRASILBITCOIN_SYMBOLS
+        
+        elif exchange_lower == 'huobi':
+            print(f"[Symbols] Usando lista fixa Huobi: {len(HUOBI_SYMBOLS)}")
+            return HUOBI_SYMBOLS
+        
+        # Fallback genérico
+        elif 'brasil' in exchange_lower or 'mercado' in exchange_lower:
             return ['BTC/BRL', 'ETH/BRL', 'XRP/BRL', 'SOL/BRL', 'USDT/BRL']
         else:
-            return ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'PEPE/USDT', 'SHIB/USDT', 'XRP/USDT']
+            return ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'XRP/USDT', 'ADA/USDT']
 
 
