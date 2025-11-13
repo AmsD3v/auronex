@@ -115,18 +115,34 @@ cd ..
 echo "[10/11] Iniciando servicos..."
 
 # FastAPI
-pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app
+pm2 start "uvicorn fastapi_app.main:app --host 0.0.0.0 --port 8001" --name fastapi-app --time
 sleep 3
 
-# React (1 processo)
-pm2 start "npm --prefix auronex-dashboard start" --name auronex-dashboard
+# React
+pm2 start "npm --prefix auronex-dashboard start" --name auronex-dashboard --time
 sleep 3
+
+# ✅ BOT CONTROLLER (AUTO-START!)
+pm2 start bot/bot_controller.py --name bot-controller \
+    --interpreter python3 \
+    --cwd $(pwd) \
+    --log logs/bot_controller.log \
+    --time \
+    --restart-delay 3000 \
+    --max-restarts 10 \
+    --min-uptime 10000
+sleep 2
 
 # Tunnel
 nohup cloudflared tunnel run auronex > logs/tunnel.log 2>&1 &
 sleep 2
 
+# ✅ Salvar e configurar auto-start no boot
 pm2 save
+pm2 startup | grep -v "PM2" | bash  # Executar comando de startup automaticamente
+
+echo "OK - Bot Controller rodando em background!"
+pm2 status
 
 echo "OK"
 
