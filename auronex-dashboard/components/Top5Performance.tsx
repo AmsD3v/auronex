@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { TrendingUp, TrendingDown, Flame, Calendar, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useTradingStore } from '@/stores/tradingStore'
+import { useCotacao } from '@/hooks/useCotacao'
 
 interface Top5Coin {
   symbol: string
@@ -28,8 +29,9 @@ export function Top5Performance() {
   const [searchExchange, setSearchExchange] = useState('binance')
   const { currency } = useTradingStore()
   
-  // ✅ Conversão BRL
-  const COTACAO = 5.0
+  // ✅ Conversão BRL com cotação REAL!
+  const cotacaoReal = useCotacao()
+  const COTACAO = cotacaoReal
   const formatPrice = (priceUSD: number) => {
     const value = currency === 'BRL' ? priceUSD * COTACAO : priceUSD
     const symbol = currency === 'BRL' ? 'R$' : '$'
