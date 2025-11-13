@@ -27,7 +27,8 @@ export function MetricsGrid({
   tradesCount,
   winRate,
   currency = 'BRL',
-}: MetricsGridProps) {
+  onShowHistory,
+}: MetricsGridProps & { onShowHistory?: () => void }) {
   const metrics = [
     {
       label: 'Total de Bots',
@@ -46,10 +47,11 @@ export function MetricsGrid({
     },
     {
       label: 'Trades Hoje',
-      value: tradesCount,
-      subtitle: `${activeBots} bot${activeBots !== 1 ? 's' : ''} operando`,  // ✅ CORRETO!
+      value: tradesCount || 0,  // ✅ Fallback 0
+      subtitle: `${activeBots} bot${activeBots !== 1 ? 's' : ''} operando`,
       icon: '📈',
       color: 'purple',
+      action: 'history',  // ✅ Ação especial
     },
     {
       label: 'Taxa Sucesso',
