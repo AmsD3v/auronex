@@ -1,0 +1,98 @@
+# Cursor Rules - Auronex Trading Bot
+
+## Implementação Incremental
+
+**SEMPRE implemente UMA funcionalidade por vez!**
+
+### Regras:
+
+1. **Divida prompts grandes:**
+   - Se usuário pede 5 coisas → confirme escopo
+   - Implemente item 1
+   - Teste
+   - Confirme funcionou
+   - Próximo item
+
+2. **Confirme antes de gerar código:**
+   - "Vou implementar X. Correto?"
+   - Aguarde confirmação
+   - Depois gere código
+
+3. **Teste antes de continuar:**
+   - Implementou → teste
+   - Funcionou → próximo
+   - Não funcionou → corrija ANTES de continuar
+
+4. **Não assuma que funciona:**
+   - SEMPRE verificar código existe
+   - SEMPRE testar endpoints
+   - SEMPRE ver console F12
+   - NUNCA dizer "vai funcionar" sem testar
+
+5. **Commits atômicos:**
+   - 1 funcionalidade = 1 commit
+   - Mensagem clara
+   - Fácil reverter se der errado
+
+### Exemplo CERTO:
+
+```
+Usuário: "Adicione login, dashboard e bot trading"
+
+Assistente: "Vou dividir em 3 etapas:
+1. Login (30 min)
+2. Dashboard (1h)
+3. Bot trading (2h)
+
+Começando pelo login. Correto?"
+
+[Aguarda confirmação]
+
+[Implementa login]
+[Testa]
+[Confirma funcionou]
+[Próximo: dashboard]
+```
+
+### Exemplo ERRADO:
+
+```
+Usuário: "Adicione login, dashboard e bot"
+
+Assistente: [gera código dos 3 de uma vez]
+[Não testa]
+[Bugs em todos]
+[Perde tempo corrigindo]
+```
+
+---
+
+## Verificação Antes de Afirmar
+
+**NUNCA diga "corrigido" sem:**
+- ✅ Ler o código
+- ✅ Verificar funções existem
+- ✅ Testar endpoint (curl)
+- ✅ Ver console navegador
+- ✅ Confirmar funciona
+
+**Checklist:**
+- [ ] Código existe?
+- [ ] Função definida?
+- [ ] Endpoint retorna 200?
+- [ ] Console sem erros?
+- [ ] Valores corretos?
+
+---
+
+## Prioridades
+
+1. **FUNCIONAL > PERFEITO**
+2. **TESTAR > ASSUMIR**
+3. **INCREMENTAL > TUDO DE UMA VEZ**
+4. **CLARO > RÁPIDO**
+
+---
+
+**Resultado:** Menos bugs, menos retrabalho, cliente feliz! ✅
+
