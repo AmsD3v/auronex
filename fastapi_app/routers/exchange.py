@@ -232,10 +232,10 @@ def get_symbols(
             # Outras: apenas USDT (mais líquido)
             symbols_filtered = [s for s in symbols if '/USDT' in s and ':' not in s]  # Remove futuros
             print(f"[Symbols] {exchange.upper()} filtrado: {len(symbols_filtered)} /USDT")
-            return sorted(symbols_filtered)[:200]  # Top 200
+            return sorted(symbols_filtered)  # ✅ TODAS! Sem limite!
         
         else:
-            return sorted(symbols)[:100]
+            return sorted(symbols)  # ✅ TODAS!
         
     except Exception as e:
         print(f"[Symbols] Erro {exchange}: {e}")
