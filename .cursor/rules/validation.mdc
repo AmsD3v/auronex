@@ -1,0 +1,285 @@
+---
+alwaysApply: true
+---
+
+# Validação de Dados - TypeScript + Zod
+
+## Use TypeScript + Zod para TODAS as validações
+
+**SEMPRE valide dados de entrada (formulários, APIs) com Zod!**
+
+---
+
+## 1. Validação de Formulários
+
+### ❌ ERRADO (sem validação):
+
+```typescript
+const handleSubmit = (e: FormEvent) => {
+  e.preventDefault()
+  const email = e.target.email.value
+  const password = e.target.password.value
+  
+  // Sem validação!
+  login(email, password)
+}
+```
+
+### ✅ CORRETO (com Zod):
+
+```typescript
+import { z } from 'zod'
+
+const loginSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres')
+})
+
+type LoginForm = z.infer<typeof loginSchema>
+
+const handleSubmit = (e: FormEvent) => {
+  e.preventDefault()
+  
+  const formData = {
+    email: e.target.email.value,
+    password: e.target.password.value
+  }
+  
+  try {
+    const validated = loginSchema.parse(formData)
+    login(validated.email, validated.password)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      // Mensagem clara do primeiro erro
+      toast.error(error.errors[0].message)
+    }
+  }
+}
+```
+
+---
+
+## 2. Validação de Respostas de API
+
+### ❌ ERRADO (sem validação):
+
+```typescript
+const fetchUser = async () => {
+  const response = await fetch('/api/user')
+  const data = await response.json()
+  return data  // any implícito!
+}
+```
+
+### ✅ CORRETO (com Zod):
+
+```typescript
+import { z } from 'zod'
+
+const userSchema = z.object({
+  id: z.number(),
+  email: z.string().email(),
+  first_name: z.string(),
+  last_name: z.string(),
+  is_active: z.boolean(),
+  subscription: z.object({
+    plan: z.enum(['free', 'premium', 'pro']),
+    status: z.string()
+  }).optional()
+})
+
+type User = z.infer<typeof userSchema>
+
+const fetchUser = async (): Promise<User> => {
+  const response = await fetch('/api/user')
+  const data = await response.json()
+  
+  try {
+    return userSchema.parse(data)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('Dados inválidos da API:', error.errors)
+      throw new Error('Resposta da API está inválida')
+    }
+    throw error
+  }
+}
+```
+
+---
+
+## 3. Validação de Props de Componente
+
+### ❌ ERRADO:
+
+```typescript
+interface BotCardProps {
+  bot: any  // ❌ any!
+  onEdit: (id: number) => void
+}
+```
+
+### ✅ CORRETO:
+
+```typescript
+import { z } from 'zod'
+
+const botSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  exchange: z.enum(['binance', 'bybit', 'mercadobitcoin']),
+  symbols: z.array(z.string()),
+  capital: z.number().positive(),
+  is_active: z.boolean(),
+  is_testnet: z.boolean()
+})
+
+type Bot = z.infer<typeof botSchema>
+
+interface BotCardProps {
+  bot: Bot  // ✅ Tipado!
+  onEdit: (id: number) => void
+}
+```
+
+---
+
+## 4. Mensagens de Erro Claras
+
+### ❌ ERRADO (genérico):
+
+```typescript
+catch (error) {
+  toast.error('Erro')  // ❌ Não ajuda!
+}
+```
+
+### ✅ CORRETO (específico):
+
+```typescript
+catch (error) {
+  if (error instanceof z.ZodError) {
+    // Primeira mensagem de erro (mais relevante)
+    const firstError = error.errors[0]
+    toast.error(`${firstError.path.join('.')}: ${firstError.message}`)
+    
+    // OU todas:
+    error.errors.forEach(err => {
+      toast.error(`${err.path.join('.')}: ${err.message}`)
+    })
+  } else if (error instanceof Error) {
+    toast.error(error.message)
+  } else {
+    toast.error('Erro inesperado. Contate o suporte.')
+  }
+}
+```
+
+---
+
+## 5. Validação com Mensagens Customizadas
+
+```typescript
+const botConfigSchema = z.object({
+  name: z.string()
+    .min(3, 'Nome deve ter no mínimo 3 caracteres')
+    .max(50, 'Nome deve ter no máximo 50 caracteres'),
+  
+  exchange: z.enum(['binance', 'bybit', 'mercadobitcoin'], {
+    errorMap: () => ({ message: 'Selecione uma exchange válida' })
+  }),
+  
+  symbols: z.array(z.string())
+    .min(1, 'Selecione pelo menos 1 criptomoeda')
+    .max(5, 'Máximo 5 criptomoedas permitidas'),
+  
+  capital: z.number()
+    .positive('Capital deve ser maior que zero')
+    .max(10000, 'Capital máximo: $10.000')
+    .refine(val => val >= 2, {
+      message: 'Capital mínimo: $2.00'
+    })
+})
+```
+
+---
+
+## 6. Validação em Backend (FastAPI)
+
+```python
+from pydantic import BaseModel, Field, validator
+
+class BotCreate(BaseModel):
+    name: str = Field(..., min_length=3, max_length=50)
+    exchange: str
+    symbols: list[str] = Field(..., min_items=1, max_items=5)
+    capital: float = Field(..., ge=2.0, le=10000.0)
+    
+    @validator('exchange')
+    def validate_exchange(cls, v):
+        allowed = ['binance', 'bybit', 'mercadobitcoin']
+        if v not in allowed:
+            raise ValueError(f'Exchange deve ser uma de: {", ".join(allowed)}')
+        return v
+    
+    @validator('symbols')
+    def validate_symbols(cls, v, values):
+        exchange = values.get('exchange')
+        # Validar se symbols existem na exchange
+        return v
+```
+
+---
+
+## Checklist Validação:
+
+- [ ] ✅ Formulários validam com Zod
+- [ ] ✅ APIs validam respostas
+- [ ] ✅ Props de componentes tipadas
+- [ ] ✅ Mensagens de erro claras e específicas
+- [ ] ✅ Erros tratados individualmente
+- [ ] ✅ Backend valida com Pydantic
+- [ ] ✅ Nunca confiar em dados não validados
+
+---
+
+## Exemplo Completo (Create Bot):
+
+```typescript
+// Schema
+const createBotSchema = z.object({
+  name: z.string().min(3, 'Nome mínimo 3 caracteres'),
+  exchange: z.enum(['binance', 'bybit', 'mercadobitcoin']),
+  symbols: z.array(z.string()).min(1, 'Selecione pelo menos 1 crypto'),
+  capital: z.number().min(2, 'Capital mínimo $2').max(10000, 'Capital máximo $10k')
+})
+
+// Uso
+const handleSubmit = async () => {
+  try {
+    // ✅ Validar
+    const validated = createBotSchema.parse({
+      name,
+      exchange,
+      symbols,
+      capital: parseFloat(capital)
+    })
+    
+    // ✅ Enviar dados validados
+    await botsApi.create(validated)
+    toast.success('Bot criado com sucesso!')
+    
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      // ✅ Mensagem específica
+      toast.error(error.errors[0].message)
+    } else {
+      toast.error('Erro ao criar bot')
+    }
+  }
+}
+```
+
+---
+
+**Validação rigorosa = Menos bugs = Clientes felizes!** ✅
