@@ -188,9 +188,41 @@ def get_symbols(
     
     ✅ Cliente pode ver cryptos ANTES de criar conta
     ✅ Não precisa API Key para listar
-    ✅ Usa ccxt em modo público
+    ✅ Tenta: 1. ccxt público 2. API REST 3. Lista fixa
     """
     
+    exchange_lower = exchange.lower()
+    
+    # ✅ MÉTODO 1: Tentar APIs REST PÚBLICAS primeiro (mais confiável)
+    try:
+        import requests
+        
+        # Huobi/HTX: API REST pública
+        if exchange_lower == 'huobi':
+            response = requests.get('https://api.huobi.pro/v1/common/symbols', timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                symbols = [f"{s['base-currency'].upper()}/{s['quote-currency'].upper()}" 
+                          for s in data.get('data', [])]
+                usdt_symbols = [s for s in symbols if '/USDT' in s]
+                print(f"[Symbols API REST] Huobi /USDT: {len(usdt_symbols)}")
+                return sorted(usdt_symbols)
+        
+        # Coinbase: API V2 pública
+        elif exchange_lower == 'coinbase':
+            response = requests.get('https://api.exchange.coinbase.com/products', timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                symbols = [f"{p['base_currency']}/{p['quote_currency']}" 
+                          for p in data if p.get('status') == 'online']
+                usd_symbols = [s for s in symbols if '/USD' in s and '/USDT' not in s]
+                print(f"[Symbols API REST] Coinbase /USD: {len(usd_symbols)}")
+                return sorted(usd_symbols)
+    
+    except Exception as e:
+        print(f"[Symbols API REST] Erro {exchange}: {e}")
+    
+    # ✅ MÉTODO 2: Tentar ccxt público
     try:
         import ccxt
         
