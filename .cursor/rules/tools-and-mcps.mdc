@@ -1,0 +1,219 @@
+---
+alwaysApply: true
+---
+
+# Uso de Ferramentas e MCPs
+
+## Use TODAS as ferramentas disponíveis!
+
+**SEMPRE aproveite ao máximo os recursos disponíveis:**
+
+---
+
+## 🧰 FERRAMENTAS DISPONÍVEIS
+
+### **1. MCPs (Model Context Protocol)**
+
+**Playwright MCP:**
+- Debug de interfaces web
+- Testar navegação
+- Capturar screenshots
+- Verificar elementos DOM
+
+**Sequential Thinking MCP:**
+- Problemas complexos
+- Análise passo a passo
+- Debugging profundo
+- Planejamento de features
+
+**Context7 MCP:**
+- Documentação de bibliotecas
+- Buscar APIs públicas
+- Exemplos de código
+- Best practices
+
+**Quando usar:**
+- ❌ Problemas simples (leitura de arquivo)
+- ✅ Debug complexo de UI
+- ✅ Análise profunda de bugs
+- ✅ Pesquisa de documentação
+- ✅ Problemas que requerem raciocínio multi-etapa
+
+---
+
+## 📋 REGRAS DO PROJETO
+
+**SEMPRE consultar:**
+
+### **Workspace Rules (Always Applied):**
+- Git Commit Convention
+- README e CHANGELOG obrigatórios
+- TypeScript Quality Rules
+
+### **Repository Rules:**
+- Implementação Incremental
+- 1 tarefa = 1 commit
+
+**Como usar:**
+- Ler regras ANTES de implementar
+- Seguir convenções estabelecidas
+- Não criar padrões novos que conflitem
+
+---
+
+## 🎯 ESTRATÉGIA DE USO
+
+### **Problema Simples:**
+```
+Tarefa: "Adicionar campo email no formulário"
+
+✅ Usar: Ferramentas básicas (read_file, search_replace)
+❌ Não usar: MCPs (overkill)
+```
+
+### **Problema Complexo:**
+```
+Tarefa: "Dashboard não mostra valores e não sei por quê"
+
+✅ Usar: Sequential Thinking MCP
+  1. Analisar fluxo de dados
+  2. Verificar cada camada
+  3. Identificar onde quebra
+  4. Propor solução
+
+✅ Usar: Playwright MCP (se for UI)
+  - Navegar para página
+  - Inspecionar elementos
+  - Ver console errors
+  - Testar interações
+```
+
+### **Documentação/Biblioteca:**
+```
+Tarefa: "Implementar validação com Zod"
+
+✅ Usar: Context7 MCP
+  - Resolver library ID (/colinhacks/zod)
+  - Buscar exemplos de validação
+  - Ver best practices
+  - Implementar corretamente
+```
+
+---
+
+## 🔧 FERRAMENTAS POR CASO DE USO
+
+### **Debug UI:**
+- Playwright MCP ✅
+- Console F12 (via instruções)
+- Network tab
+
+### **Debug Lógica:**
+- Sequential Thinking MCP ✅
+- Logs detalhados
+- Print statements
+
+### **Pesquisa:**
+- Context7 MCP (bibliotecas) ✅
+- Web Search (APIs públicas)
+- grep (código existente)
+
+### **Análise Código:**
+- codebase_search ✅
+- grep ✅
+- read_file ✅
+
+---
+
+## ✅ CHECKLIST ANTES DE IMPLEMENTAR
+
+**1. Consultar regras:**
+- [ ] Li workspace rules?
+- [ ] Li repository rules?
+- [ ] Seguindo convenções?
+
+**2. Escolher ferramentas:**
+- [ ] Problema complexo? → MCPs
+- [ ] Precisa docs? → Context7
+- [ ] Debug UI? → Playwright
+- [ ] Simples? → Ferramentas básicas
+
+**3. Implementar:**
+- [ ] 1 funcionalidade por vez
+- [ ] Testar completamente
+- [ ] Commit feat:/fix:
+- [ ] Atualizar README/CHANGELOG
+
+---
+
+## 🎯 EXEMPLOS PRÁTICOS
+
+### **Exemplo 1: Bug Intermitente**
+
+```
+Problema: "Saldo modal às vezes mostra R$ 0"
+
+✅ USAR:
+1. Sequential Thinking: Analisar fluxo
+2. grep: Buscar código setSaldoExchange
+3. read_file: Ver componente completo
+4. Logs: Adicionar console.log detalhados
+5. Testar: Reproduzir erro
+6. Fix: Corrigir (reset + catch robusto)
+7. Commit: "fix: Saldo modal intermitente com reset"
+```
+
+### **Exemplo 2: Nova Feature**
+
+```
+Tarefa: "Adicionar Top 5 Performance com dados reais"
+
+✅ USAR:
+1. Context7: Pesquisar CoinGecko/CoinCap APIs
+2. Web Search: Comparar APIs (limites, custos)
+3. Sequential Thinking: Planejar implementação
+4. Implementar: Backend + Frontend
+5. Testar: Ver dados reais
+6. Commit: "feat: Top 5 Performance CoinCap tempo real"
+7. Docs: Atualizar README + CHANGELOG
+```
+
+### **Exemplo 3: Debug Produção**
+
+```
+Problema: "Login funciona local, loop em produção"
+
+✅ USAR:
+1. Sequential Thinking: Diferenças local vs prod
+2. grep: Buscar "login" em código
+3. curl: Testar API produção diretamente
+4. Logs: Ver console F12 produção
+5. Identificar: API não retorna user
+6. Fix: Remover response_model
+7. Commit: "fix: Login retorna user em producao"
+```
+
+---
+
+## 🚀 RESULTADO
+
+**Com MCPs:**
+- Debug mais rápido ✅
+- Soluções melhores ✅
+- Menos tentativa-erro ✅
+
+**Com Regras:**
+- Código organizado ✅
+- Commits claros ✅
+- Docs atualizados ✅
+
+**Com Ambos:**
+- Qualidade máxima ✅
+- Eficiência máxima ✅
+- Cliente feliz ✅
+
+---
+
+**USE TODAS AS FERRAMENTAS!** 🧰  
+**SIGA TODAS AS REGRAS!** 📋  
+**RESULTADO: EXCELÊNCIA!** 🏆
