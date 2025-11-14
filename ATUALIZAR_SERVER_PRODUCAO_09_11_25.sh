@@ -129,8 +129,7 @@ pm2 start bot/bot_controller.py --name bot-controller \
     --log logs/bot_controller.log \
     --time \
     --restart-delay 3000 \
-    --max-restarts 10 \
-    --min-uptime 10000
+    --max-restarts 10
 sleep 2
 
 # Tunnel
