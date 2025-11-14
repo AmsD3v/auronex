@@ -1,0 +1,281 @@
+---
+alwaysApply: true
+---
+
+# README e CHANGELOG - Documentação Obrigatória
+
+## Regra: Toda feature nova = README + CHANGELOG
+
+**SEMPRE atualize documentação ao adicionar funcionalidades!**
+
+---
+
+## 1. README.md - Funcionalidades
+
+### **Quando atualizar:**
+- Nova funcionalidade implementada
+- Nova API endpoint criada
+- Novo componente importante adicionado
+- Mudança no fluxo de uso
+
+### **O QUE incluir:**
+
+```markdown
+## Funcionalidades
+
+### 🎯 Nova Funcionalidade (adicionado 13/11/2025)
+
+**Descrição:**
+- O que faz
+- Por que é útil
+- Como usar
+
+**Exemplo:**
+```bash
+# Como usar a funcionalidade
+comando ou código de exemplo
+```
+
+**Requisitos:**
+- Dependência 1
+- Dependência 2
+```
+
+### ❌ NÃO FAÇA:
+
+```markdown
+## Features
+- Login
+- Dashboard
+- Bot
+```
+
+### ✅ FAÇA:
+
+```markdown
+## Funcionalidades
+
+### 🔐 Autenticação
+Sistema de login com JWT tokens e refresh automático.
+- Login/Logout
+- Sessão persistente
+- Proteção de rotas
+
+### 📊 Dashboard Tempo Real
+Dashboard com métricas atualizadas automaticamente.
+- Saldo total (cotação USD/BRL real)
+- Top 5 Performance (CoinCap API)
+- Trades em tempo real
+- Modal histórico mensal
+```
+
+---
+
+## 2. CHANGELOG.md - Histórico de Mudanças
+
+### **Formato obrigatório:**
+
+```markdown
+# Changelog
+
+## [Unreleased]
+### Added
+- Nova funcionalidade X
+- Novo componente Y
+
+### Changed
+- Melhorado performance de Z
+- Atualizado dependência A
+
+### Fixed
+- Corrigido bug no login
+- Corrigido saldo não atualizava
+
+### Removed
+- Removido código deprecated
+
+## [1.0.05b] - 2025-11-13
+### Added
+- Top 5 Performance tempo real (CoinCap API)
+- Modal histórico trades mensal
+- Cotação USD/BRL tempo real (AwesomeAPI)
+
+### Fixed
+- Saldo modal intermitente
+- Cryptos não carregavam por exchange
+```
+
+### **Categorias:**
+
+- **Added:** Novas funcionalidades
+- **Changed:** Mudanças em funcionalidades existentes
+- **Deprecated:** Funcionalidades que serão removidas
+- **Removed:** Funcionalidades removidas
+- **Fixed:** Bugs corrigidos
+- **Security:** Correções de segurança
+
+---
+
+## 3. Quando Commitar
+
+### **Após implementar funcionalidade:**
+
+**1. Implementar código**
+```bash
+git commit -m "feat: Adiciona modal historico mensal"
+```
+
+**2. Atualizar README.md**
+```bash
+git commit -m "docs: Adiciona modal historico ao README"
+```
+
+**3. Atualizar CHANGELOG.md**
+```bash
+git commit -m "docs: Atualiza CHANGELOG v1.0.05b"
+```
+
+### ✅ FLUXO CORRETO:
+
+```
+1. feat: Implementa funcionalidade
+2. docs: Atualiza README com nova funcionalidade
+3. docs: Atualiza CHANGELOG com mudanças
+```
+
+---
+
+## 4. Checklist Documentação
+
+**Antes de considerar feature completa:**
+
+- [ ] ✅ Código implementado e testado
+- [ ] ✅ README.md atualizado com:
+  - [ ] Descrição da funcionalidade
+  - [ ] Como usar
+  - [ ] Exemplo prático
+  - [ ] Requisitos (se houver)
+- [ ] ✅ CHANGELOG.md atualizado com:
+  - [ ] Categoria correta (Added/Fixed/Changed)
+  - [ ] Descrição clara da mudança
+  - [ ] Data/versão
+
+---
+
+## 5. Estrutura README.md
+
+### **Seções obrigatórias:**
+
+```markdown
+# Auronex Trading Bot
+
+## 📋 Sobre
+Breve descrição do projeto
+
+## ✨ Funcionalidades
+Lista todas funcionalidades (atualize SEMPRE!)
+
+## 🚀 Instalação
+Como instalar
+
+## 💻 Uso
+Como usar (exemplos práticos)
+
+## 📊 API Endpoints
+Lista de endpoints disponíveis
+
+## 🔧 Configuração
+Variáveis de ambiente, configs
+
+## 🤝 Contribuindo
+Como contribuir
+
+## 📝 Licença
+MIT ou outra
+```
+
+---
+
+## 6. Exemplos Práticos
+
+### **Feature: Modal Histórico**
+
+**README.md:**
+```markdown
+### 📊 Modal Histórico Mensal
+
+Visualize todos os trades do mês em uma modal interativa.
+
+**Como usar:**
+1. Abrir dashboard
+2. Clicar no card "Trades Hoje"
+3. Ver histórico completo
+4. Exportar CSV (opcional)
+
+**Endpoint:** `/api/trades/month`
+```
+
+**CHANGELOG.md:**
+```markdown
+## [1.0.05b] - 2025-11-13
+### Added
+- Modal histórico trades mensal com export CSV
+- Endpoint `/api/trades/month` para buscar trades do mês
+- Botão "Ver Histórico" no card Trades Hoje
+```
+
+---
+
+## 7. Regras Importantes
+
+### **SEMPRE:**
+- Atualizar README ao adicionar feature
+- Atualizar CHANGELOG ao fazer commit importante
+- Incluir exemplos práticos
+- Datar mudanças no CHANGELOG
+
+### **NUNCA:**
+- Commitar feature sem atualizar docs
+- README desatualizado
+- CHANGELOG sem versão/data
+- Documentação vaga
+
+---
+
+## 8. Template Rápido
+
+**Quando implementar nova feature:**
+
+```markdown
+📝 README.md:
+
+### 🆕 [Nome da Feature]
+[Descrição breve]
+
+**Como usar:**
+[Passo a passo ou exemplo código]
+
+**Requisitos:**
+[Se houver dependências]
+
+---
+
+📝 CHANGELOG.md:
+
+## [Unreleased]
+### Added
+- [Descrição clara da feature]
+```
+
+---
+
+## ✅ Resultado
+
+**README:** Sempre atualizado ✅  
+**CHANGELOG:** Histórico completo ✅  
+**Usuários:** Sabem usar todas features ✅  
+**Manutenção:** Fácil entender mudanças ✅
+
+---
+
+**Documentação = Parte essencial da feature!** 📝✅
