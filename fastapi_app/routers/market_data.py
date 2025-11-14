@@ -46,10 +46,8 @@ def get_top_gainers(period: str = "24h"):
     try:
         # ✅ MÉTODO 1: CoinCap (SEM LIMITE!)
         try:
-            headers = {
-                'Authorization': f'Bearer {COINCAP_API_KEY}'
-            }
-            response = requests.get('https://api.coincap.io/v2/assets?limit=100', headers=headers, timeout=5)
+            # CoinCap não precisa auth (API Key opcional apenas para rate limit)
+            response = requests.get('https://api.coincap.io/v2/assets?limit=100', timeout=10)
             
             if response.status_code == 200:
                 data = response.json()['data']
