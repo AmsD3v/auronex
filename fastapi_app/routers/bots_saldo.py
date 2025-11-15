@@ -89,9 +89,22 @@ def get_bot_saldo(
         if saldo_usdt == 0:
             brl = balance.get('free', {}).get('BRL', 0) or 0
             if brl > 0:
-                saldo_usdt = brl / 5.0
+                import requests
+                try:
+                    cotacao_resp = requests.get('https://economia.awesomeapi.com.br/json/last/USD-BRL', timeout=2)
+                    cotacao = float(cotacao_resp.json()['USDBRL']['bid'])
+                except:
+                    cotacao = 5.30
+                saldo_usdt = brl / cotacao
         
-        saldo_brl = saldo_usdt * 5.0
+        # Buscar cotação real para conversão BRL
+        import requests
+        try:
+            cotacao_resp = requests.get('https://economia.awesomeapi.com.br/json/last/USD-BRL', timeout=2)
+            cotacao_real = float(cotacao_resp.json()['USDBRL']['bid'])
+        except:
+            cotacao_real = 5.30
+        saldo_brl = saldo_usdt * cotacao_real
         
         return {
             "saldo_usd": round(saldo_usdt, 2),

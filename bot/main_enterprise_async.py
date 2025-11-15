@@ -293,6 +293,51 @@ class TradingBotEnterpriseAsync:
                 logger.info(f"   Exit: ${current_price:.8f}")
                 logger.info(f"   Lucro: ${trade.profit_loss:.2f}")
                 logger.info(f"{'🔴'*30}")
+                
+                # ✅ CIRCUIT BREAKER - Rastrear perdas consecutivas
+                if trade.profit_loss < 0:
+                    self.consecutive_losses += 1
+                    logger.warning(f"⚠️  Perda consecutiva #{self.consecutive_losses}")
+                    
+                    # ✅ ATIVAR CIRCUIT BREAKER
+                    if self.consecutive_losses >= self.circuit_breaker_threshold:
+                        logger.error(f"")
+                        logger.error(f"{'🚨'*40}")
+                        logger.error(f"⛔ CIRCUIT BREAKER ATIVADO!")
+                        logger.error(f"   Perdas consecutivas: {self.consecutive_losses}")
+                        logger.error(f"   Threshold: {self.circuit_breaker_threshold}")
+                        logger.error(f"   Bot será PAUSADO por 1 hora para análise")
+                        logger.error(f"{'🚨'*40}")
+                        
+                        # Pausar bot
+                        self.is_running = False
+                        
+                        # ✅ Notificar usuário
+                        try:
+                            await self.notifier.send_alert(
+                                title="🚨 CIRCUIT BREAKER ATIVADO",
+                                message=f"Bot {self.config['name']} pausado após {self.consecutive_losses} perdas consecutivas.\n\n"
+                                        f"O bot será pausado por 1 hora para você revisar a estratégia.\n\n"
+                                        f"Última perda: ${trade.profit_loss:.2f}",
+                                level="critical"
+                            )
+                        except:
+                            pass
+                        
+                        # Aguardar cooldown (1 hora)
+                        logger.info("⏳ Aguardando cooldown de 1 hora...")
+                        await asyncio.sleep(3600)  # 1 hora
+                        
+                        # Reset e continuar
+                        self.consecutive_losses = 0
+                        self.is_running = True
+                        logger.info("✅ Circuit breaker resetado. Bot continuando...")
+                        
+                else:
+                    # ✅ Reset em lucro
+                    if self.consecutive_losses > 0:
+                        logger.info(f"✅ Lucro! Resetando contador de perdas ({self.consecutive_losses} → 0)")
+                    self.consecutive_losses = 0
             
             db.close()
             return fechar

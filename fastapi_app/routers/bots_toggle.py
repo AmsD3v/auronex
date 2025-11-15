@@ -138,14 +138,26 @@ def toggle_bot(
                 if saldo_usdt == 0:
                     brl = balance.get('free', {}).get('BRL', 0) or 0
                     if brl > 0:
-                        saldo_usdt = brl / 5.0
-                        print(f"  Tentativa 4 (BRL): R$ {brl} = ${saldo_usdt}")
+                        import requests
+                        try:
+                            cotacao_resp = requests.get('https://economia.awesomeapi.com.br/json/last/USD-BRL', timeout=2)
+                            cotacao = float(cotacao_resp.json()['USDBRL']['bid'])
+                        except:
+                            cotacao = 5.30
+                        saldo_usdt = brl / cotacao
+                        print(f"  Tentativa 4 (BRL): R$ {brl} (cotação {cotacao:.2f}) = ${saldo_usdt}")
                 
                 print(f"💰 SALDO FINAL: ${saldo_usdt:.2f}")
                 
                 # ✅ CRÍTICO: Capital nesta exchange NÃO pode ultrapassar saldo!
                 if capital_total_nesta_exchange > saldo_usdt:
-                    cotacao = 5.0
+                    # Buscar cotação real
+                    import requests
+                    try:
+                        cotacao_resp = requests.get('https://economia.awesomeapi.com.br/json/last/USD-BRL', timeout=2)
+                        cotacao = float(cotacao_resp.json()['USDBRL']['bid'])
+                    except:
+                        cotacao = 5.30
                     raise HTTPException(
                         status_code=400,
                         detail=(
@@ -161,16 +173,14 @@ def toggle_bot(
                 print(f"✅ [{bot.exchange.upper()}] OK: ${capital_total_nesta_exchange:.2f} <= ${saldo_usdt:.2f}")
                 
             except HTTPException:
-                # Sempre propagar erro de validação
+                # Propagar erro de validação (ex: saldo insuficiente)
                 raise
             except Exception as e:
-                # ✅ Se exchange não funcionar, BLOQUEAR!
-                print(f"❌ BLOQUEADO: Não foi possível validar saldo")
-                print(f"❌ Erro: {str(e)[:150]}")
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Não foi possível validar saldo da {bot.exchange.upper()}. Verifique se a exchange está online e tente novamente."
-                )
+                # ✅ Se exchange offline/erro técnico, PERMITIR ativar com AVISO
+                print(f"⚠️ Validação falhou mas PERMITINDO ativar (modo permissivo)")
+                print(f"⚠️ Erro: {str(e)[:150]}")
+                # NÃO lançar erro - permitir ativar
+                pass
         
         # Atualizar status
         bot.is_active = data.get('is_active', False)

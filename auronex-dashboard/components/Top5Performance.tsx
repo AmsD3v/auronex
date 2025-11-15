@@ -39,16 +39,23 @@ export function Top5Performance() {
   const { data: apiData, isLoading } = useQuery({
     queryKey: ['top-gainers', activeCategory],
     queryFn: async () => {
-      const response = await fetch(`/api/market/top-gainers?period=24h`, { credentials: 'include' })
+      const url = `/api/market/top-gainers?period=24h&_t=${Date.now()}`
+      console.log('[Top5] Buscando dados...', new Date().toLocaleTimeString())
+      const response = await fetch(url, { 
+        credentials: 'include',
+        cache: 'no-store'  // ✅ SEM cache no navegador
+      })
       if (response.ok) {
         const data = await response.json()
-        console.log('[Top5] Dados CoinCap:', data)
+        console.log('[Top5] Dados recebidos:', data?.data?.map(c => c.symbol))
         return data
       }
       return null
     },
     refetchInterval: 60000, // Atualiza a cada 1 min
-    staleTime: 60000,
+    staleTime: 0,  // ✅ SEMPRE considera dados velhos = SEMPRE refetch!
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   })
   
   const formatPrice = (priceUSD: number) => {

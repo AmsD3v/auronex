@@ -1,0 +1,116 @@
+# ========================================
+# AURONEX TRADING BOT - Configuração SEGURA
+# ========================================
+# ✅ RENOMEIE para .env e preencha os valores
+
+# ========================================
+# 🔴 CRÍTICO: SEGURANÇA
+# ========================================
+
+# ✅ Gere uma chave segura com:
+# python scripts/generate_encryption_key.py
+ENCRYPTION_KEY=GERE_UMA_CHAVE_AQUI_44_CARACTERES
+
+# JWT Secret (gere com: openssl rand -hex 32)
+SECRET_KEY=GERE_SECRET_KEY_AQUI_64_CARACTERES_HEX
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=7
+
+# ========================================
+# BANCO DE DADOS
+# ========================================
+
+# Desenvolvimento
+DATABASE_URL=sqlite:///./db.sqlite3
+
+# ✅ Produção (MIGRAR PARA POSTGRESQL!)
+# DATABASE_URL=postgresql://auronex_user:senha_forte@localhost:5432/auronex_prod
+
+# ========================================
+# CORS - Origens Permitidas
+# ========================================
+
+# ✅ NUNCA use "*"! Liste explicitamente:
+ALLOWED_ORIGINS=http://localhost:8501,http://127.0.0.1:8501,https://app.auronex.com.br,https://auronex.com.br
+
+# ========================================
+# APIS EXTERNAS (Opcionais)
+# ========================================
+
+COINCAP_API_KEY=
+COINGECKO_API_KEY=
+
+# ========================================
+# EXCHANGES
+# ========================================
+
+USE_TESTNET=True
+PAPER_TRADING=True
+
+BINANCE_TESTNET_API_KEY=
+BINANCE_TESTNET_SECRET_KEY=
+
+# ========================================
+# BOT TRADING
+# ========================================
+
+TRADING_SYMBOL=BTC/USDT
+TIMEFRAME=15m
+STRATEGY=trend_following
+
+POSITION_SIZE_PERCENT=0.10
+STOP_LOSS_PERCENT=0.02
+TAKE_PROFIT_PERCENT=0.04
+MAX_DRAWDOWN_PERCENT=0.10
+MAX_TRADES_PER_DAY=10
+
+# ========================================
+# NOTIFICAÇÕES
+# ========================================
+
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+ENABLE_TELEGRAM=False
+
+SLACK_WEBHOOK_URL=
+DISCORD_WEBHOOK_URL=
+
+# ========================================
+# SISTEMA
+# ========================================
+
+ENVIRONMENT=development
+DEBUG_MODE=True
+LOG_LEVEL=INFO
+
+UPDATE_INTERVAL=60
+SAVE_HISTORICAL_DATA=True
+
+# ========================================
+# CACHE (Redis)
+# ========================================
+
+REDIS_URL=redis://localhost:6379/0
+
+# ========================================
+# MONITORAMENTO
+# ========================================
+
+SENTRY_DSN=
+
+# ========================================
+# INSTRUÇÕES DE USO
+# ========================================
+# 1. Renomeie este arquivo para .env
+# 2. Execute: python scripts/generate_encryption_key.py
+# 3. Cole a chave gerada em ENCRYPTION_KEY
+# 4. Gere SECRET_KEY: openssl rand -hex 32
+# 5. Configure suas API Keys das exchanges
+# 6. Se tem API Keys antigas, execute: python scripts/migrate_encryption.py
+# 7. Reinicie: pm2 restart all
+
+
+
+
+

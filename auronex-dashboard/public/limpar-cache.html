@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Cache - Auronex</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0a;
+            color: white;
+        }
+        .card {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .success {
+            background: #10b981;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .info {
+            background: #1e40af;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        h1 { color: #3b82f6; }
+        h3 { color: #60a5fa; margin-top: 20px; }
+        code {
+            background: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Limpar Cache - Auronex</h1>
+        
+        <div class="info">
+            <strong>⚠️ Use esta página se:</strong>
+            <ul>
+                <li>Login não funciona</li>
+                <li>Dashboard travado em "Carregando..."</li>
+                <li>Valores não atualizam</li>
+                <li>Erro 401/403</li>
+            </ul>
+        </div>
+
+        <h3>1. Limpar localStorage</h3>
+        <button onclick="limparLocalStorage()">🗑️ Limpar localStorage</button>
+
+        <h3>2. Limpar sessionStorage</h3>
+        <button onclick="limparSessionStorage()">🗑️ Limpar sessionStorage</button>
+
+        <h3>3. Limpar TUDO</h3>
+        <button onclick="limparTudo()">⚡ Limpar TUDO + Recarregar</button>
+
+        <h3>4. Verificar Dados</h3>
+        <button onclick="mostrarDados()">🔍 Mostrar Dados Armazenados</button>
+
+        <div id="resultado" class="success"></div>
+
+        <div style="margin-top: 30px; padding: 15px; background: #064e3b; border-radius: 5px;">
+            <strong>✅ Após limpar:</strong>
+            <ol>
+                <li>Feche esta aba</li>
+                <li>Abra: <code>http://localhost:8501</code></li>
+                <li>Faça login novamente</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function mostrarResultado(msg) {
+            const div = document.getElementById('resultado');
+            div.textContent = msg;
+            div.style.display = 'block';
+            setTimeout(() => {
+                div.style.display = 'none';
+            }, 3000);
+        }
+
+        function limparLocalStorage() {
+            const antes = localStorage.length;
+            localStorage.clear();
+            mostrarResultado(`✅ localStorage limpo! (${antes} itens removidos)`);
+            console.log('localStorage limpo!');
+        }
+
+        function limparSessionStorage() {
+            const antes = sessionStorage.length;
+            sessionStorage.clear();
+            mostrarResultado(`✅ sessionStorage limpo! (${antes} itens removidos)`);
+            console.log('sessionStorage limpo!');
+        }
+
+        function limparTudo() {
+            const local = localStorage.length;
+            const session = sessionStorage.length;
+            
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            mostrarResultado(`✅ TUDO limpo! (${local + session} itens) - Recarregando...`);
+            
+            setTimeout(() => {
+                window.location.href = 'http://localhost:8501';
+            }, 2000);
+        }
+
+        function mostrarDados() {
+            console.log('=== localStorage ===');
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                console.log(`${key}:`, localStorage.getItem(key));
+            }
+            
+            console.log('\n=== sessionStorage ===');
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                console.log(`${key}:`, sessionStorage.getItem(key));
+            }
+            
+            mostrarResultado('✅ Dados mostrados no Console (F12)');
+        }
+
+        // Mostrar dados ao carregar
+        console.log('%c🔍 DADOS ARMAZENADOS:', 'font-size: 16px; font-weight: bold;');
+        console.log('localStorage:', localStorage);
+        console.log('sessionStorage:', sessionStorage);
+    </script>
+</body>
+</html>
+
+
+

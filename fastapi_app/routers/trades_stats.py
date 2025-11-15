@@ -1,42 +1,68 @@
 """
 API de estatísticas de trades
+✅ Autenticação OPCIONAL - funciona com ou sem login
 """
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime, timedelta
+from typing import Optional
 
 from ..database import get_db
 from ..models import Trade, User
-from ..auth import get_current_user
+from ..dependencies import get_current_user_optional
 
 router = APIRouter(prefix="/api/trades", tags=["trades-stats"])
 
 @router.get("/today")
 def get_trades_today(
+    current_user: Optional[User] = Depends(get_current_user_optional),  # ✅ OPCIONAL
     db: Session = Depends(get_db)
 ):
-    """Trades realizados hoje (TODOS usuários SEM AUTH)"""
+    """
+    Trades realizados hoje
+    - Se autenticado: trades do usuário
+    - Se não autenticado: todos os trades (dashboard)
+    """
     
     hoje = datetime.now().date()
     
-    # ✅ TODOS os trades de hoje
-    count = db.query(Trade).filter(
-        func.date(Trade.entry_time) == hoje
-    ).count()
+    # ✅ Se tem usuário, filtrar por ele
+    if current_user:
+        count = db.query(Trade).filter(
+            Trade.user_id == current_user.id,
+            func.date(Trade.entry_time) == hoje
+        ).count()
+    else:
+        # Dashboard público - todos trades
+        count = db.query(Trade).filter(
+            func.date(Trade.entry_time) == hoje
+        ).count()
     
     return {"count": count, "date": str(hoje)}
 
 @router.get("/stats")
 def get_trade_stats(
+    current_user: Optional[User] = Depends(get_current_user_optional),  # ✅ OPCIONAL
     db: Session = Depends(get_db)
 ):
-    """Estatísticas de trades (win rate) - TODOS usuários SEM AUTH"""
+    """
+    Estatísticas de trades (win rate)
+    - Se autenticado: trades do usuário
+    - Se não autenticado: todos os trades (dashboard)
+    """
     
-    # ✅ TODOS os trades fechados (não filtrar por user)
-    trades = db.query(Trade).filter(
-        Trade.exit_time.isnot(None)
-    ).all()
+    # ✅ Se tem usuário, filtrar por ele
+    if current_user:
+        trades = db.query(Trade).filter(
+            Trade.user_id == current_user.id,
+            Trade.exit_time.isnot(None)
+        ).all()
+    else:
+        # Dashboard público - todos trades
+        trades = db.query(Trade).filter(
+            Trade.exit_time.isnot(None)
+        ).all()
     
     total_trades = len(trades)
     

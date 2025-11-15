@@ -27,16 +27,16 @@ const API_BASE_URL = `${BASE}/api`
 // Criar instância axios
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 60000,  // ✅ 60 segundos (exchange pode demorar)
   headers: {
     'Content-Type': 'application/json',
   },
 })
 
-// Interceptor para adicionar token automaticamente
+// Interceptor para adicionar token E cache busting
 api.interceptors.request.use(
   (config) => {
-    // Buscar token do localStorage
+    // ✅ Buscar token do localStorage
     if (typeof window !== 'undefined') {
       const authData = localStorage.getItem('auth-storage')
       if (authData) {
@@ -50,6 +50,7 @@ api.interceptors.request.use(
         }
       }
     }
+    
     return config
   },
   (error) => Promise.reject(error)

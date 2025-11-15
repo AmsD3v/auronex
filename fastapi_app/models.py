@@ -2,7 +2,7 @@
 SQLAlchemy Models - Compatíveis com Django models existentes
 """
 
-from sqlalchemy import Boolean, Column, Integer, String, Numeric, DateTime, JSON, ForeignKey, Text
+from sqlalchemy import Boolean, Column, Integer, String, Numeric, DateTime, JSON, ForeignKey, Text, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -55,22 +55,28 @@ class BotConfiguration(Base):
     __tablename__ = "bot_configurations"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("auth_user.id"))
+    user_id = Column(Integer, ForeignKey("auth_user.id"), index=True)  # ✅ Índice
     name = Column(String(100))
-    exchange = Column(String(20))
+    exchange = Column(String(20), index=True)  # ✅ Índice
     symbols = Column(JSON)  # Lista de símbolos
     capital = Column(Numeric(12, 2))
     strategy = Column(String(20))
     timeframe = Column(String(5), default='15m')
     stop_loss_percent = Column(Numeric(5, 3), default=1.5)
     take_profit_percent = Column(Numeric(5, 3), default=3.0)
-    is_active = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=False, index=True)  # ✅ Índice (buscar bots ativos)
     is_testnet = Column(Boolean, default=True)
     # ✅ NOVO: Velocidade do bot
     analysis_interval = Column(Integer, default=5)  # segundos (1-60)
     hunter_mode = Column(Boolean, default=False)  # Modo caçador
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), index=True)  # ✅ Índice
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    
+    # ✅ ÍNDICES COMPOSTOS
+    __table_args__ = (
+        Index('idx_user_active', 'user_id', 'is_active'),  # Buscar bots ativos do usuário
+        Index('idx_user_exchange', 'user_id', 'exchange'),  # Bots por exchange
+    )
     
     # Relationship
     user = relationship("User", back_populates="bot_configs")
@@ -82,20 +88,28 @@ class Trade(Base):
     __tablename__ = "trades"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("auth_user.id"))
-    bot_config_id = Column(Integer, ForeignKey("bot_configurations.id"), nullable=True)
-    exchange = Column(String(20))
-    symbol = Column(String(20))
+    user_id = Column(Integer, ForeignKey("auth_user.id"), index=True)  # ✅ Índice
+    bot_config_id = Column(Integer, ForeignKey("bot_configurations.id"), nullable=True, index=True)  # ✅ Índice
+    exchange = Column(String(20), index=True)  # ✅ Índice
+    symbol = Column(String(20), index=True)  # ✅ Índice
     side = Column(String(4))  # buy/sell
     entry_price = Column(Numeric(20, 8))
     exit_price = Column(Numeric(20, 8), nullable=True)
     quantity = Column(Numeric(20, 8))
     profit_loss = Column(Numeric(12, 2), nullable=True)
     profit_loss_percent = Column(Numeric(8, 2), nullable=True)
-    entry_time = Column(DateTime)
-    exit_time = Column(DateTime, nullable=True)
-    status = Column(String(10), default='open')  # open/closed
+    entry_time = Column(DateTime, index=True)  # ✅ Índice para queries por data
+    exit_time = Column(DateTime, nullable=True, index=True)  # ✅ Índice
+    status = Column(String(10), default='open', index=True)  # ✅ Índice (open/closed)
     highest_price = Column(Numeric(20, 8), nullable=True)  # Trailing stop
+    
+    # ✅ ÍNDICES COMPOSTOS para queries comuns
+    __table_args__ = (
+        Index('idx_user_bot_status', 'user_id', 'bot_config_id', 'status'),  # Buscar trades de um bot
+        Index('idx_user_entry_time', 'user_id', 'entry_time'),  # Trades por data
+        Index('idx_user_status', 'user_id', 'status'),  # Trades abertas/fechadas
+        Index('idx_bot_symbol_status', 'bot_config_id', 'symbol', 'status'),  # Posições abertas por symbol
+    )
     
     # Relationships
     user = relationship("User", back_populates="trades")

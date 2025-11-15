@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, TrendingUp, TrendingDown, Calendar, Download } from 'lucide-react'
 import { useTradingStore } from '@/stores/tradingStore'
+import { useCotacao } from '@/hooks/useCotacao'
 
 interface Trade {
   id: number
@@ -49,7 +50,8 @@ export function TradesHistoryModal({ isOpen, onClose }: TradesHistoryModalProps)
     }
   }
   
-  const cotacao = currency === 'BRL' ? 5.29 : 1.0
+  const cotacaoReal = useCotacao()
+  const cotacao = currency === 'BRL' ? cotacaoReal : 1.0
   const symbol = currency === 'BRL' ? 'R$' : '$'
   
   if (!isOpen) return null

@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EXCHANGES, TIMEFRAMES, STRATEGIES } from '@/lib/constants'
 import { useTradingStore } from '@/stores/tradingStore'
+import { useCotacao } from '@/hooks/useCotacao'
 import type { Bot } from '@/types'
 
 interface BotEditModalProps {

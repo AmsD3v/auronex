@@ -1,0 +1,282 @@
+---
+alwaysApply: true
+---
+
+# Git Commit Convention - Auronex
+
+## Regra: 1 Tarefa = 1 Commit
+
+**SEMPRE faça commits atômicos e descritivos!**
+
+---
+
+## 📝 Formato Obrigatório
+
+### Estrutura:
+```
+<tipo>: <descrição curta>
+
+[corpo opcional]
+
+[footer opcional]
+```
+
+### Tipos Permitidos:
+
+- **feat:** Nova funcionalidade
+- **fix:** Correção de bug
+- **docs:** Apenas documentação
+- **style:** Formatação (sem mudança de lógica)
+- **refactor:** Refatoração (sem feat/fix)
+- **perf:** Melhoria de performance
+- **test:** Adicionar/corrigir testes
+- **chore:** Tarefas de manutenção
+
+---
+
+## ✅ Exemplos CORRETOS
+
+### Features:
+```bash
+git commit -m "feat: Adiciona autenticação JWT com refresh token"
+git commit -m "feat: Implementa circuit breaker no bot após 5 perdas"
+git commit -m "feat: Adiciona validação de senha forte (8+ chars)"
+```
+
+### Fixes:
+```bash
+git commit -m "fix: Corrige criptografia hardcoded - agora usa .env"
+git commit -m "fix: Corrige CORS wildcard - lista explícita de origens"
+git commit -m "fix: Corrige bypass de validação de capital"
+```
+
+### Docs:
+```bash
+git commit -m "docs: Atualiza README com novas funcionalidades"
+git commit -m "docs: Adiciona auditoria técnica completa"
+git commit -m "docs: Atualiza CHANGELOG v1.0.06"
+```
+
+### Performance:
+```bash
+git commit -m "perf: Adiciona 12 índices no banco de dados"
+git commit -m "perf: Implementa cache Redis para cotações"
+```
+
+### Refactor:
+```bash
+git commit -m "refactor: Extrai validações para módulo separado"
+git commit -m "refactor: Move rate limiter para dependencies.py"
+```
+
+---
+
+## ❌ Exemplos INCORRETOS
+
+```bash
+# ❌ Muito vago
+git commit -m "update"
+git commit -m "fix bug"
+git commit -m "changes"
+
+# ❌ Múltiplas tarefas em 1 commit
+git commit -m "feat: Login + Dashboard + Bots + API Keys"
+
+# ❌ Sem tipo
+git commit -m "adiciona autenticação"
+
+# ❌ Tipo errado
+git commit -m "feature: adiciona login"  # ❌ deve ser "feat:"
+```
+
+---
+
+## 🎯 Workflow Recomendado
+
+### Para Cada Funcionalidade:
+
+```bash
+# 1. Implementar UMA funcionalidade
+# (ex: adicionar refresh token)
+
+# 2. Testar completamente
+# (verificar se funciona)
+
+# 3. Commit descritivo
+git add fastapi_app/auth.py fastapi_app/routers/auth.py
+git commit -m "feat: Implementa refresh token JWT (15min + 7 dias)"
+
+# 4. Próxima funcionalidade
+# (ex: adicionar rate limiting)
+
+# 5. Testar
+
+# 6. Commit separado
+git add fastapi_app/rate_limiter.py fastapi_app/routers/auth.py
+git commit -m "feat: Adiciona rate limiting em login (5 tentativas/min)"
+```
+
+---
+
+## 📊 Mensagens Detalhadas (Opcional)
+
+### Com Corpo:
+```bash
+git commit -m "feat: Adiciona autenticação JWT
+
+- Access token: 15 minutos
+- Refresh token: 7 dias
+- Endpoint /api/auth/refresh implementado
+- Compatível com frontend React"
+```
+
+### Com Breaking Changes:
+```bash
+git commit -m "feat: Adiciona autenticação obrigatória em endpoints
+
+BREAKING CHANGE: Endpoints /api/exchange/balance e /api/trades/*
+agora exigem token JWT. Frontend precisa incluir Authorization header."
+```
+
+---
+
+## 🔧 Commits de Bugfix
+
+### Durante Desenvolvimento:
+```bash
+git commit -m "fix: Adiciona load_dotenv() em auth.py"
+git commit -m "fix: Adiciona import logger em bots.py"
+git commit -m "fix: Corrige indentação em exchange.py"
+```
+
+### Após Deploy:
+```bash
+git commit -m "fix: Corrige login retornando 401 (hash incompatível)"
+git commit -m "fix: Corrige dashboard travado em carregando"
+```
+
+---
+
+## 📚 Commits de Documentação
+
+```bash
+git commit -m "docs: Adiciona auditoria técnica completa (43 problemas)"
+git commit -m "docs: Atualiza CHANGELOG para v1.0.06"
+git commit -m "docs: Adiciona guias de configuração .env"
+```
+
+---
+
+## 🎯 Regras Importantes
+
+### SEMPRE:
+- 1 funcionalidade = 1 commit
+- Mensagem clara (o QUE foi feito, não COMO)
+- Tipo correto (feat/fix/docs)
+- Testar antes de commitar
+- Commits pequenos e frequentes
+
+### NUNCA:
+- Commits gigantes (100+ arquivos)
+- Mensagens vagas ("update", "fix")
+- Múltiplas features em 1 commit
+- Commitar código não testado
+- Commitar com erros de lint
+
+---
+
+## 📅 Exemplo de Workflow de 1 Dia
+
+```bash
+# Manhã: Implementar segurança
+git commit -m "feat: Adiciona criptografia segura via .env"
+git commit -m "feat: Implementa CORS restrito com lista explícita"
+git commit -m "feat: Adiciona refresh token JWT"
+
+# Tarde: Implementar validações
+git commit -m "feat: Adiciona validação de senha forte"
+git commit -m "feat: Implementa rate limiting em login"
+git commit -m "feat: Adiciona validação de símbolos na exchange"
+
+# Noite: Performance
+git commit -m "perf: Adiciona 12 índices no banco de dados"
+
+# Bugfixes encontrados
+git commit -m "fix: Adiciona load_dotenv() em módulos principais"
+git commit -m "fix: Corrige import logger em routers"
+
+# Documentação
+git commit -m "docs: Adiciona auditoria técnica completa"
+git commit -m "docs: Atualiza CHANGELOG v1.0.06"
+```
+
+**Total:** 11 commits bem organizados! ✅
+
+---
+
+## 🚀 Push para Produção
+
+### Após Testar Local:
+```bash
+# Ver commits
+git log --oneline -10
+
+# Push
+git push origin main
+```
+
+### No Servidor:
+```bash
+ssh usuario@auronex.com.br
+cd /home/serverhome/auronex
+git pull origin main
+
+# Ver o que foi atualizado
+git log --oneline -10
+
+# Deploy
+./DEPLOY_PRODUCAO_COM_ENV.sh
+```
+
+---
+
+## 📊 Benefícios
+
+### Commits Atômicos:
+- ✅ Fácil reverter features específicas
+- ✅ Histórico limpo e compreensível
+- ✅ Code review mais fácil
+- ✅ Bisect funciona melhor
+- ✅ Cherry-pick possível
+
+### Mensagens Claras:
+- ✅ Entender mudanças sem ler código
+- ✅ Gerar CHANGELOG automaticamente
+- ✅ Rastrear quando feature foi adicionada
+- ✅ Comunicação com equipe
+
+---
+
+## ✅ Checklist Antes de Commit
+
+- [ ] Código testado e funcionando?
+- [ ] Sem erros de lint?
+- [ ] Mensagem descritiva?
+- [ ] Tipo correto (feat/fix/docs)?
+- [ ] Apenas 1 funcionalidade?
+- [ ] Arquivos relacionados incluídos?
+
+**Se SIM para todos → git commit!** ✅
+
+---
+
+## 🏆 Resultado
+
+**Com commits organizados:**
+- ✅ Histórico Git limpo
+- ✅ Fácil reverter mudanças
+- ✅ CHANGELOG automático
+- ✅ Comunicação clara
+- ✅ Code review eficiente
+
+**SEMPRE: 1 tarefa = 1 commit!** 📝

@@ -1,0 +1,350 @@
+---
+alwaysApply: true
+---
+# Princípio da Excelência - Sempre o Melhor
+
+## Filosofia Core
+
+**SEMPRE escolha a MELHOR opção em TODOS os aspectos!**
+
+Não aceite "bom o suficiente" - busque EXCELÊNCIA em tudo!
+
+---
+
+## 🏆 Tecnologia - Sempre o Melhor
+
+### Escolha Tecnologias:
+- ✅ **Modernas** - Versões atuais, não legadas
+- ✅ **Performáticas** - Rápidas e eficientes
+- ✅ **Seguras** - Zero vulnerabilidades conhecidas
+- ✅ **Mantidas** - Comunidade ativa, updates regulares
+- ✅ **Escaláveis** - Suporta crescimento
+
+### Exemplos:
+```
+❌ EVITE:
+- Bibliotecas deprecated
+- Versões antigas com vulnerabilidades
+- Soluções lentas/ineficientes
+- Tecnologias abandonadas
+
+✅ PREFIRA:
+- FastAPI (não Flask/Django lento)
+- Next.js 14+ (não Create React App)
+- PostgreSQL (não SQLite em produção)
+- Redis (não cache em memória)
+- Bcrypt/Argon2 (não MD5/SHA1)
+```
+
+---
+
+## 💻 Código - Sempre o Melhor
+
+### Qualidade de Código:
+- ✅ **Limpo** - Fácil de ler e entender
+- ✅ **Modular** - Componentes reutilizáveis
+- ✅ **Tipado** - TypeScript/Type hints completos
+- ✅ **Testado** - Cobertura >70%
+- ✅ **Documentado** - Comentários úteis
+
+### Padrões:
+```python
+# ❌ RUIM:
+def f(x):
+    return x * 2
+
+# ✅ EXCELENTE:
+def calculate_double_value(value: float) -> float:
+    """
+    Calcula o dobro de um valor.
+    
+    Args:
+        value: Valor para duplicar
+    
+    Returns:
+        Valor duplicado
+    
+    Example:
+        >>> calculate_double_value(5.0)
+        10.0
+    """
+    if value < 0:
+        raise ValueError("Valor deve ser positivo")
+    
+    return value * 2.0
+```
+
+---
+
+## 🔒 Segurança - Sempre o Melhor
+
+### Princípios de Segurança:
+- ✅ **Zero secrets** no código
+- ✅ **Validação** em TODAS entradas
+- ✅ **Criptografia** forte (AES-256)
+- ✅ **HTTPS** sempre em produção
+- ✅ **Rate limiting** em endpoints públicos
+- ✅ **Autenticação** moderna (JWT com refresh)
+- ✅ **Sanitização** de inputs (XSS/SQL injection)
+
+### Exemplos:
+```python
+# ❌ INSEGURO:
+SECRET_KEY = "my-secret-123"  # Hardcoded!
+password = request.data['password']  # Sem validação!
+sql = f"SELECT * FROM users WHERE id = {user_id}"  # SQL injection!
+
+# ✅ SEGURO:
+SECRET_KEY = os.getenv('SECRET_KEY')  # Variável de ambiente
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY não configurada!")
+
+# Validação com Pydantic/Zod
+password = PasswordValidator.validate(request.data['password'])
+
+# Query parametrizada
+user = db.query(User).filter(User.id == user_id).first()
+```
+
+---
+
+## 🏗️ Arquitetura - Sempre o Melhor
+
+### Princípios Arquiteturais:
+- ✅ **Separação de Concerns** - Backend/Frontend/Bot separados
+- ✅ **Modular** - Cada módulo uma responsabilidade
+- ✅ **Escalável** - Design para crescimento
+- ✅ **Resiliente** - Trata falhas graciosamente
+- ✅ **Observável** - Logs, métricas, monitoramento
+
+### Estrutura:
+```
+❌ EVITE:
+- Monolito gigante
+- Código duplicado
+- Acoplamento forte
+- Sem tratamento de erros
+
+✅ PREFIRA:
+- Módulos pequenos e focados
+- DRY (Don't Repeat Yourself)
+- Dependency Injection
+- Try-catch em operações críticas
+- Circuit breakers
+```
+
+---
+
+## ⚡ Performance - Sempre o Melhor
+
+### Otimizações:
+- ✅ **Índices** no banco de dados
+- ✅ **Cache** para dados frequentes
+- ✅ **Async/await** para I/O
+- ✅ **Lazy loading** de componentes
+- ✅ **Paginação** de listas grandes
+- ✅ **Compressão** de assets
+- ✅ **CDN** para estáticos
+
+### Exemplos:
+```python
+# ❌ LENTO:
+users = User.objects.all()  # Carrega TUDO
+for user in users:
+    trades = Trade.objects.filter(user_id=user.id)  # N+1 query!
+
+# ✅ RÁPIDO:
+users = User.objects.prefetch_related('trades').all()[:100]  # Limit + prefetch
+# OU
+trades = Trade.objects.filter(user_id__in=user_ids).select_related('user')
+```
+
+---
+
+## 🧪 Testes - Sempre o Melhor
+
+### Cobertura de Testes:
+- ✅ **Unitários** - Funções individuais
+- ✅ **Integração** - Fluxos completos
+- ✅ **E2E** - Interface do usuário
+- ✅ **Performance** - Benchmarks
+- ✅ **Segurança** - Penetration tests
+
+### Mínimos:
+```
+Cobertura de testes: >70%
+Testes críticos: 100%
+CI/CD: Obrigatório
+```
+
+---
+
+## 📚 Documentação - Sempre o Melhor
+
+### Documentação Completa:
+- ✅ **README** - Como usar
+- ✅ **API Docs** - Swagger/OpenAPI
+- ✅ **Inline** - Comentários úteis
+- ✅ **Guides** - Tutoriais passo a passo
+- ✅ **Changelog** - Histórico de mudanças
+- ✅ **Troubleshooting** - Soluções de problemas
+
+---
+
+## 🚀 Deploy - Sempre o Melhor
+
+### Infraestrutura:
+- ✅ **PostgreSQL** em produção (não SQLite)
+- ✅ **Redis** para cache
+- ✅ **PM2/Systemd** para processos
+- ✅ **Nginx** como proxy reverso
+- ✅ **HTTPS** com certificados válidos
+- ✅ **Backups** automatizados diários
+- ✅ **Monitoramento** 24/7 (Prometheus/Grafana)
+- ✅ **Logs** estruturados (JSON)
+- ✅ **Alertas** (Slack/Discord/Email)
+
+---
+
+## 🎯 Checklist de Excelência
+
+Antes de considerar uma feature "completa", verifique:
+
+- [ ] ✅ Usa a melhor tecnologia para o problema?
+- [ ] ✅ Código está limpo e bem estruturado?
+- [ ] ✅ Type hints/TypeScript completos?
+- [ ] ✅ Validações em todas entradas?
+- [ ] ✅ Tratamento de erros robusto?
+- [ ] ✅ Segurança verificada? (sem secrets expostos)
+- [ ] ✅ Performance otimizada? (índices, cache)
+- [ ] ✅ Testes escritos e passando?
+- [ ] ✅ Documentação atualizada?
+- [ ] ✅ Logs adequados para debug?
+- [ ] ✅ Escalável para 10x mais usuários?
+- [ ] ✅ Resiliente a falhas?
+
+**Se QUALQUER resposta for NÃO → MELHORE antes de continuar!**
+
+---
+
+## 💡 Mentalidade
+
+### Ao Implementar Qualquer Feature:
+
+**Pergunte-se:**
+1. Esta é a MELHOR solução?
+2. Há uma forma MAIS SEGURA?
+3. Há uma forma MAIS RÁPIDA?
+4. Há uma forma MAIS SIMPLES?
+5. Vai escalar para 100x mais usuários?
+6. Está usando best practices da indústria?
+
+**Se NÃO for o MELHOR → REFATORE!**
+
+---
+
+## 🔥 Exemplos Práticos
+
+### Escolha de Banco de Dados:
+
+```
+Cenário: Produção com múltiplos usuários
+
+❌ SQLite - Não escala, locks, sem replicação
+✅ PostgreSQL - Escalável, ACID, replicação, índices avançados
+
+Escolha: POSTGRESQL (sempre em produção!)
+```
+
+### Escolha de Cache:
+
+```
+Cenário: Cache de dados frequentes
+
+❌ Variável global - Perde ao reiniciar, não compartilha entre workers
+❌ Arquivo JSON - Lento, não concorrente
+✅ Redis - Rápido, persistente, distribuído, TTL automático
+
+Escolha: REDIS (sempre!)
+```
+
+### Escolha de Auth:
+
+```
+Cenário: Autenticação de usuários
+
+❌ Session cookies - Não escala horizontal, não stateless
+❌ JWT de 30 dias - Risco se token vazado
+✅ JWT curto (15min) + Refresh Token (7 dias)
+
+Escolha: JWT com REFRESH (melhor segurança + UX!)
+```
+
+---
+
+## 🛡️ Nunca Comprometa
+
+### NUNCA aceite:
+- ❌ Secrets no código
+- ❌ SQL injection vulnerabilities
+- ❌ Senhas em plaintext
+- ❌ CORS wildcard (*) em produção
+- ❌ Código sem testes em features críticas
+- ❌ Logs de senha/tokens
+- ❌ Dependencies com vulnerabilidades
+
+### SEMPRE exija:
+- ✅ Variáveis de ambiente para secrets
+- ✅ Queries parametrizadas
+- ✅ Hash de senhas (bcrypt/argon2)
+- ✅ CORS com lista explícita
+- ✅ Testes em código crítico
+- ✅ Logs estruturados (sem dados sensíveis)
+- ✅ Dependencies atualizadas
+
+---
+
+## 📊 Métricas de Qualidade
+
+### Código deve ter:
+- **Complexidade ciclomática:** <10
+- **Linhas por função:** <50
+- **Linhas por arquivo:** <500
+- **Duplicação:** <5%
+- **Cobertura de testes:** >70%
+- **Type coverage:** 100%
+
+### Performance deve ter:
+- **Response time:** <200ms (p95)
+- **Queries DB:** <50ms
+- **Cache hit rate:** >80%
+- **Uptime:** >99.9%
+
+---
+
+## 🎯 Resultado
+
+**Seguindo estes princípios:**
+- ✅ Código de qualidade enterprise
+- ✅ Segurança máxima
+- ✅ Performance ótima
+- ✅ Manutenibilidade fácil
+- ✅ Escalabilidade garantida
+
+**SEMPRE O MELHOR!** 🏆
+
+---
+
+## ⚡ Regra de Ouro
+
+**Quando em dúvida entre duas soluções:**
+
+1. Qual é mais SEGURA? → Escolha essa
+2. Se empate, qual é mais PERFORMÁTICA? → Escolha essa
+3. Se empate, qual é mais SIMPLES? → Escolha essa
+4. Se empate, qual é mais TESTÁVEL? → Escolha essa
+5. Se empate, qual é mais ESCALÁVEL? → Escolha essa
+
+**SEMPRE escolha a opção que maximiza qualidade!**
+
+**NÃO aceite "funciona" - exija "EXCELENTE"!** ✨

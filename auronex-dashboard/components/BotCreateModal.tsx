@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { EXCHANGES, TIMEFRAMES, STRATEGIES } from '@/lib/constants'
 import { useTradingStore } from '@/stores/tradingStore'
+import { useCotacao } from '@/hooks/useCotacao'
 
 interface BotCreateModalProps {
   isOpen: boolean
@@ -26,10 +27,10 @@ export function BotCreateModal({ isOpen, onClose }: BotCreateModalProps) {
   const { limits, currency } = useTradingStore()  // ✅ Moeda
   const [mounted, setMounted] = useState(false)
   
-  // ✅ Conversão
-  const COTACAO = 5.0
-  const toMoeda = (usd: number) => currency === 'BRL' ? usd * COTACAO : usd
-  const toUSD = (valor: number) => currency === 'BRL' ? valor / COTACAO : valor
+  // ✅ Conversão com cotação REAL
+  const cotacaoReal = useCotacao()  // Hook de cotação real
+  const toMoeda = (usd: number) => currency === 'BRL' ? usd * cotacaoReal : usd
+  const toUSD = (valor: number) => currency === 'BRL' ? valor / cotacaoReal : valor
   const simbolo = currency === 'BRL' ? 'R$' : '$'
 
   // ✅ Form state ANTES dos useEffects!

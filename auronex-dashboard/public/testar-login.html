@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testar Login - Auronex</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0a;
+            color: white;
+        }
+        .card {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .resultado {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .sucesso {
+            background: #065f46;
+            border: 1px solid #10b981;
+        }
+        .erro {
+            background: #7f1d1d;
+            border: 1px solid #ef4444;
+        }
+        pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        h1 { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔑 Testar Login - Direto na API</h1>
+        
+        <div style="background: #1e40af; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <strong>ℹ️ Este teste chama a API diretamente</strong>
+            <p>Sem React, sem Zustand, sem cache.</p>
+        </div>
+
+        <label>Email:</label>
+        <input type="email" id="email" value="admin@robotrader.com">
+
+        <label>Senha:</label>
+        <input type="password" id="password" value="admin123">
+
+        <button onclick="testarLogin()">🚀 TESTAR LOGIN</button>
+        
+        <button onclick="limparCache()" style="background: #dc2626; margin-top: 5px;">
+            🗑️ Limpar Cache Primeiro
+        </button>
+
+        <div id="resultado" class="resultado"></div>
+
+        <div style="margin-top: 30px;">
+            <h3 style="color: #60a5fa;">📊 Logs:</h3>
+            <pre id="logs" style="max-height: 300px; overflow-y: auto;"></pre>
+        </div>
+    </div>
+
+    <script>
+        function log(msg) {
+            const logsEl = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsEl.textContent += `[${timestamp}] ${msg}\n`;
+            logsEl.scrollTop = logsEl.scrollHeight;
+            console.log(msg);
+        }
+
+        function limparCache() {
+            log('🗑️ Limpando cache...');
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            if ('caches' in window) {
+                caches.keys().then((names) => {
+                    names.forEach((name) => caches.delete(name));
+                    log('✅ Cache API limpo');
+                });
+            }
+            
+            log('✅ localStorage limpo');
+            log('✅ sessionStorage limpo');
+            
+            mostrarResultado('✅ Cache limpo com sucesso!', true);
+        }
+
+        function mostrarResultado(msg, sucesso) {
+            const div = document.getElementById('resultado');
+            div.textContent = msg;
+            div.className = `resultado ${sucesso ? 'sucesso' : 'erro'}`;
+            div.style.display = 'block';
+        }
+
+        async function testarLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log('='.repeat(50));
+            log('🚀 Iniciando teste de login...');
+            log(`Email: ${email}`);
+            log(`Senha: ${'*'.repeat(password.length)}`);
+            log('');
+
+            const url = 'http://localhost:8001/api/auth/login';
+            const dados = { email, password };
+
+            log(`📡 URL: ${url}`);
+            log(`📦 Dados: ${JSON.stringify(dados)}`);
+            log('');
+            log('⏳ Enviando request...');
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                log(`📊 Status: ${response.status} ${response.statusText}`);
+                log('');
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    log('✅ LOGIN FUNCIONOU!');
+                    log('');
+                    log('📄 Response:');
+                    log(JSON.stringify(data, null, 2));
+                    log('');
+                    log(`🔑 Access Token: ${data.access_token?.substring(0, 30)}...`);
+                    log(`👤 User ID: ${data.user?.id}`);
+                    log(`📧 Email: ${data.user?.email}`);
+                    log('');
+                    
+                    // Salvar no localStorage
+                    log('💾 Salvando no localStorage...');
+                    const authStorage = {
+                        state: {
+                            token: data.access_token,
+                            user: data.user,
+                            isAuthenticated: true
+                        },
+                        version: 0
+                    };
+                    localStorage.setItem('auth-storage', JSON.stringify(authStorage));
+                    log('✅ Token salvo!');
+                    log('');
+                    
+                    mostrarResultado('✅ LOGIN SUCESSO! Redirecionando...', true);
+                    
+                    setTimeout(() => {
+                        window.location.href = 'http://localhost:8501';
+                    }, 2000);
+                    
+                } else {
+                    log('❌ LOGIN FALHOU!');
+                    log('');
+                    log('❌ Error:');
+                    log(JSON.stringify(data, null, 2));
+                    mostrarResultado(`❌ Login falhou: ${data.detail || 'Erro desconhecido'}`, false);
+                }
+
+            } catch (error) {
+                log('❌ EXCEÇÃO!');
+                log('');
+                log('❌ Error:');
+                log(error.toString());
+                log('');
+                mostrarResultado(`❌ Erro: ${error.message}`, false);
+            }
+        }
+
+        // Limpar logs ao carregar
+        log('🔍 Página de teste de login carregada');
+        log('📝 Preencha email e senha e clique em TESTAR LOGIN');
+        log('');
+    </script>
+</body>
+</html>
+
+
+

@@ -6,6 +6,7 @@ import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
 import { useCotacao } from '@/hooks/useCotacao'
 import { formatCurrency } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { api } from '@/lib/api'
 import type { Balance } from '@/types'
 
 interface BalanceCardProps {
@@ -27,23 +28,21 @@ export function BalanceCard({
 }: BalanceCardProps) {
   const [lucroTrades, setLucroTrades] = useState(0)
   
-  // ✅ Buscar lucro dos trades
+  // ✅ Buscar lucro dos trades usando API (com token)
   useEffect(() => {
-    console.log('[BalanceCard] Buscando lucro...')
-    fetch('/api/trades/stats', { credentials: 'include' })
-      .then(r => {
-        console.log('[BalanceCard] Stats response:', r.status)
-        return r.json()
-      })
-      .then(data => {
-        console.log('[BalanceCard] Stats data:', data)
-        console.log('[BalanceCard] total_profit:', data.total_profit)
-        setLucroTrades(data.total_profit || 0)
-      })
-      .catch(err => {
+    const fetchLucro = async () => {
+      try {
+        console.log('[BalanceCard] Buscando lucro...')
+        const response = await api.get('/trades/stats')
+        console.log('[BalanceCard] Stats data:', response.data)
+        setLucroTrades(response.data.total_profit || 0)
+      } catch (err) {
         console.error('[BalanceCard] Erro:', err)
         setLucroTrades(0)
-      })
+      }
+    }
+    
+    fetchLucro()
   }, [balance])
   
   // ✅ Saldo Total = Exchange + Lucro Trades

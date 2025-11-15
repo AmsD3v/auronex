@@ -5,11 +5,15 @@ Router de Bot Configuration - Gerenciamento de bots
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+import logging
 
 from ..database import get_db
 from ..models import BotConfiguration, User
 from ..schemas import BotConfigCreate, BotConfigUpdate, BotConfigResponse
 from ..auth import get_current_user
+from ..exchange_validator import exchange_validator
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/bots", tags=["bots"])
 
@@ -170,12 +174,46 @@ def create_bot(
                 print(f"✅ Validação: ${bot_data.capital} <= ${capital_disponivel:.2f}")
                 
             except HTTPException:
-                raise
+                raise  # Re-raise HTTPException intencional (ex: capital > saldo)
             except Exception as e:
-                print(f"⚠️ Validação falhou (permitindo criar): {str(e)[:80]}")
+                # ✅ Se validação falhar (erro de rede, etc), PERMITIR criar
+                # Modo permissivo - não bloquear por problemas técnicos
+                logger.warning(f"⚠️ Validação de saldo falhou (permitindo criar): {str(e)[:100]}")
+                print(f"⚠️ Validação ignorada - Exchange pode estar offline. Bot criado sem validar capital.")
         
         # symbols deve ser lista
         symbols_list = bot_data.symbols if isinstance(bot_data.symbols, list) else [bot_data.symbols]
+        
+        # ✅ VALIDAR SÍMBOLOS NA EXCHANGE
+        is_valid, validation_message, invalid_symbols = exchange_validator.validate_symbols(
+            exchange_name=bot_data.exchange,
+            symbols_to_validate=symbols_list
+        )
+        
+        if not is_valid and invalid_symbols:
+            # Sugerir símbolos similares
+            suggestions = []
+            for invalid in invalid_symbols:
+                similar = exchange_validator.suggest_similar_symbols(
+                    exchange_name=bot_data.exchange,
+                    invalid_symbol=invalid,
+                    max_suggestions=3
+                )
+                if similar:
+                    suggestions.append(f"{invalid} → talvez você quis dizer: {', '.join(similar[:3])}")
+            
+            error_message = f"⚠️ Símbolos inválidos para {bot_data.exchange.upper()}!\n\n"
+            error_message += f"Inválidos: {', '.join(invalid_symbols)}\n\n"
+            
+            if suggestions:
+                error_message += "Sugestões:\n" + '\n'.join(suggestions)
+            
+            raise HTTPException(
+                status_code=400,
+                detail=error_message
+            )
+        
+        logger.info(f"✅ Símbolos validados: {', '.join(symbols_list)}")
         
         now = datetime.utcnow()
         

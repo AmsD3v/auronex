@@ -9,6 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from dotenv import load_dotenv
+
+# ✅ CARREGAR .env LOGO NO INÍCIO!
+load_dotenv()
 
 from .database import engine, Base
 from .routers import auth, api_keys, bots, trades, payments, payments_public, payment_check, payment_verify, admin_api, admin_payments, admin_delete, api_keys_edit, bots_get_one, bots_toggle, admin_edit_user, bots_start_all, auth_streamlit, api_keys_decrypt, trades_stats, bots_saldo, bot_monitor, bots_update_symbols, bots_update_config, profile_limits, exchange, heartbeat, admin_bots, bot_activity, admin_bot_actions, cotacao, trades_month, market_data
@@ -31,22 +35,71 @@ app = FastAPI(
     redoc_url="/api/redoc",  # Documentação alternativa
 )
 
-# CORS (permitir Dashboard e frontend acessarem)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8501",
-        "http://127.0.0.1:8501",
-        "http://localhost:8001",
+# ========================================
+# CORS - SEGURANÇA: Lista explícita de origens
+# ========================================
+import os
+
+# ✅ Carregar origens permitidas do .env
+allowed_origins_str = os.getenv(
+    'ALLOWED_ORIGINS',
+    'http://localhost:8501,http://127.0.0.1:8501'
+)
+
+# Parse lista de origens
+ALLOWED_ORIGINS = [origin.strip() for origin in allowed_origins_str.split(',')]
+
+# ✅ Adicionar origens de produção
+if os.getenv('ENVIRONMENT') == 'production':
+    ALLOWED_ORIGINS.extend([
         "https://auronex.com.br",
         "https://www.auronex.com.br",
         "https://app.auronex.com.br",
-        "*"  # Permitir todos
-    ],
+    ])
+
+print(f"✅ CORS configurado para: {ALLOWED_ORIGINS}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,  # ✅ Lista explícita
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # ✅ Todos métodos (desenvolvimento)
+    allow_headers=["*"],  # ✅ Todos headers (desenvolvimento)
+    max_age=3600,  # Cache preflight 1h
 )
+
+# ========================================
+# MIDDLEWARE ANTI-CACHE - Previne problemas de cache
+# ========================================
+
+from fastapi import Request
+from fastapi.responses import Response
+import time
+
+@app.middleware("http")
+async def add_no_cache_headers(request: Request, call_next):
+    """
+    Adiciona headers para prevenir cache em APIs
+    Cliente SEMPRE recebe dados frescos!
+    """
+    response = await call_next(request)
+    
+    # ✅ Headers anti-cache para endpoints de API
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+    
+    # ✅ Adicionar timestamp de resposta
+    response.headers["X-Response-Time"] = str(int(time.time() * 1000))
+    
+    # ✅ Versão da API
+    response.headers["X-API-Version"] = "1.0.06"
+    
+    return response
 
 # ========================================
 # BOT CONTROLLER INTEGRADO - INICIA AUTOMATICAMENTE!

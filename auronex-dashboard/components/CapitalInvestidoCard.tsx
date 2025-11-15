@@ -98,7 +98,7 @@ export function CapitalInvestidoCard({ bots, currency }: CapitalInvestidoCardPro
               const lucroBotBRL = lucroBot * cotacaoReal
               
               // Capital com cotação FIXA (5.0) - igual ao exibido
-              const capitalBotBRL = (bot.capital || 0) * 5.0
+              const capitalBotBRL = (bot.capital || 0) * cotacaoReal
               
               // ✅ Ganho = Diferença entre valores EXIBIDOS
               const ganhoLiquidoBRL = lucroBotBRL - capitalBotBRL

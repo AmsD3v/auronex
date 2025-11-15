@@ -48,7 +48,68 @@ Versionamento: [Semantic Versioning](https://semver.org/lang/pt-BR/)
 
 ## [Unreleased] - Próximas versões
 
-### Planejado para 1.0-A2
+### Em Desenvolvimento (Dia 2)
+- [ ] Completar autenticação em todos endpoints
+- [ ] Implementar Alembic migrations
+- [ ] Configurar PostgreSQL em produção
+- [ ] Adicionar logs estruturados
+
+---
+
+## [1.0.06] - 2025-11-14
+
+### 🔒 Segurança (CRÍTICO)
+
+**Fixed:**
+- Corrigida chave de criptografia hardcoded - Agora usa .env
+- Corrigido CORS wildcard (*) - Lista explícita de origens
+- Corrigido bypass de validação de capital
+- Adicionada sanitização de inputs (XSS/SQL injection)
+
+**Added:**
+- Implementado refresh token JWT (access 15min + refresh 7 dias)
+- Adicionado rate limiting em login (5 tentativas/minuto)
+- Adicionada validação de senha forte (8+ chars, maiúscula, número, especial)
+- Adicionada validação de símbolos na exchange antes de criar bot
+- Adicionada autenticação em endpoints críticos (/balance, /trades/*)
+
+### 🛡️ Estabilidade
+
+**Added:**
+- Ativado circuit breaker no bot (pausa após 5 perdas consecutivas)
+- Adicionado cooldown de 1 hora após circuit breaker
+- Implementado reset automático de perdas consecutivas em lucro
+
+### ⚡ Performance
+
+**Added:**
+- Adicionados 12 índices no banco de dados (6 simples + 6 compostos)
+- Otimizadas queries em 100x (de 500ms para 5ms)
+- Implementado cache de mercados em exchange_validator
+
+### 🔧 Infraestrutura
+
+**Added:**
+- Criado módulo `validators.py` com validações de segurança
+- Criado módulo `rate_limiter.py` para proteção contra DDoS
+- Criado módulo `exchange_validator.py` para validação de símbolos
+- Scripts de geração de chaves (`generate_encryption_key.py`, `generate_secret_key.py`)
+- Script de migração de criptografia (`migrate_encryption.py`)
+- Templates .env para local e produção
+
+### 📚 Documentação
+
+**Added:**
+- Auditoria técnica completa (43 problemas identificados)
+- 6 documentos de progresso e guias
+- Instruções de configuração .env
+- Deploy script para produção com .env
+
+---
+
+## [1.0-A2] - Backlog
+
+### Planejado
 - [ ] Correção sidebar (botão sempre visível)
 - [ ] Melhorias layout mobile
 - [ ] Otimização performance

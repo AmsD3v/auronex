@@ -9,13 +9,15 @@ export function useCotacao() {
     queryFn: async () => {
       const response = await fetch('/api/cotacao/usd-brl', { credentials: 'include' })
       const data = await response.json()
-      console.log('[Cotacao] USD/BRL:', data.valor)
+      console.log('[Cotacao] USD/BRL atualizada:', data.valor)
       return data
     },
     refetchInterval: 5 * 60 * 1000, // Atualiza a cada 5 min
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,  // ✅ Sempre refetch
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   })
   
-  return data?.valor || 5.0  // Fallback 5.0 se não carregar
+  return data?.valor || 5.30  // ✅ Fallback 5.30 (valor real médio)
 }
 

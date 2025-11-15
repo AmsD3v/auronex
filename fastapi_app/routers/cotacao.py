@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/cotacao", tags=["cotacao"])
 
 # Cache simples (atualiza a cada 5 min)
 _cache = {
-    'valor': 5.0,
+    'valor': 5.30,  # ✅ Fallback atualizado para valor real
     'timestamp': None
 }
 
@@ -49,9 +49,9 @@ def get_cotacao_usd_brl():
     except Exception as e:
         print(f"[Cotação] Erro ao buscar: {e}")
     
-    # Fallback: usar cache ou 5.0
+    # Fallback: usar cache ou 5.30
     return {
-        "valor": _cache['valor'],
+        "valor": _cache['valor'] or 5.30,
         "fonte": "fallback",
         "atualizado": _cache['timestamp'].isoformat() if _cache['timestamp'] else None
     }

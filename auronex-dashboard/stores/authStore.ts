@@ -40,7 +40,30 @@ export const useAuthStore = create<AuthState>()(
         try {
           const data = await authApi.login(email, password)
 
-      // ✅ Salvar e garantir que persiste
+      // ✅ LIMPAR CACHE ANTES DE SALVAR
+      console.log('[Cache] Limpando cache antigo...')
+      
+      // Limpar localStorage antigo (exceto o que vamos salvar)
+      const keysToKeep = ['auth-storage']
+      Object.keys(localStorage).forEach(key => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key)
+        }
+      })
+      
+      // Limpar sessionStorage completamente
+      sessionStorage.clear()
+      
+      // Limpar Cache API (Service Worker)
+      if ('caches' in window) {
+        caches.keys().then((names) => {
+          names.forEach((name) => caches.delete(name))
+        })
+      }
+      
+      console.log('[Cache] Cache limpo!')
+      
+      // ✅ Salvar nova sessão
       set({
         token: data.access_token,
         user: data.user,
@@ -49,12 +72,15 @@ export const useAuthStore = create<AuthState>()(
         error: null,
       })
       
+      // ✅ Salvar versão para detectar mudanças
+      localStorage.setItem('app_version', '1.0.06')
+      localStorage.setItem('last_login', new Date().toISOString())
+      
       // ✅ LOG completo para debug
       console.log('[Auth] Login OK!')
       console.log('[Auth] Token:', data.access_token?.substring(0, 20))
-      console.log('[Auth] User completo:', data.user)
-      console.log('[Auth] first_name:', data.user?.first_name)
-      console.log('[Auth] email:', data.user?.email)
+      console.log('[Auth] User:', data.user?.email)
+      console.log('[Cache] Cache limpo no login!')
 
       return true
         } catch (error: any) {
@@ -78,12 +104,36 @@ export const useAuthStore = create<AuthState>()(
       // Logout
       logout: () => {
         authApi.logout()
+        
+        // ✅ LIMPAR TODO O CACHE NO LOGOUT
+        console.log('[Cache] Limpando cache no logout...')
+        
+        // LocalStorage
+        localStorage.clear()
+        
+        // SessionStorage
+        sessionStorage.clear()
+        
+        // Cache API
+        if ('caches' in window) {
+          caches.keys().then((names) => {
+            names.forEach((name) => caches.delete(name))
+          })
+        }
+        
+        console.log('[Cache] Cache limpo!')
+        
         set({
           token: null,
           user: null,
           isAuthenticated: false,
           error: null,
         })
+        
+        // ✅ Redirecionar para login SIMPLES
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 100)
       },
 
       // Set user

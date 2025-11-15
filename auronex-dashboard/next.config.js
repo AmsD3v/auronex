@@ -6,12 +6,13 @@ const nextConfig = {
   // Compressão
   compress: true,
   
-  // Headers de segurança
+  // Headers de segurança E anti-cache
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
+          // Segurança
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on'
@@ -35,6 +36,24 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
+          }
+        ]
+      },
+      {
+        // ✅ ANTI-CACHE para páginas dinâmicas
+        source: '/((?!_next/static|_next/image|favicon.ico).*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache'
+          },
+          {
+            key: 'Expires',
+            value: '0'
           }
         ]
       }

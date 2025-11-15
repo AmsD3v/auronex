@@ -18,7 +18,7 @@ export function formatCurrency(
   currency: 'USD' | 'BRL' = 'BRL',
   cotacaoReal?: number  // ✅ Aceita cotação REAL opcional!
 ): string {
-  const COTACAO = cotacaoReal || 5.0  // ✅ Usa cotação real OU 5.0 fallback
+  const COTACAO = cotacaoReal || 5.30  // ✅ Usa cotação real OU 5.30 fallback
   
   if (currency === 'BRL') {
     const valorBRL = valueUSD * COTACAO
