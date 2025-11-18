@@ -272,3 +272,4 @@ Use por sua conta e risco.
 
 **⚠️ LEMBRE-SE: Trading é arriscado. Não invista mais do que pode perder!**
 
+"# auronexbot"  
